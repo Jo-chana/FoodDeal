@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">FoodDeal</string>
+    <string name="title_home">홈</string>
+    <string name="title_grouppurchase">공구</string>
+    <string name="title_recommendation">추천</string>
+    <string name="title_chatting">채팅</string>
+    <string name="title_mypage">마이</string>
+</resources>
