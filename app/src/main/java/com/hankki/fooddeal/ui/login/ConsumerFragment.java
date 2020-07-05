@@ -42,19 +42,17 @@ public class ConsumerFragment extends Fragment {
 
         autoLoginCheck();
 
-        String id = et_id.getText().toString(); // 아이디 정보
-        String password = et_pw.getText().toString(); // 비밀번호 정보
-
-        //테스트
-        Toast.makeText(getContext(), "id: "+id+"pw: "+password, Toast.LENGTH_SHORT).show();
-
-
         /**여기에 아이디와 비밀번호 정보를 DB에 보내는 로직 추가*/
 
         btn_login = view.findViewById(R.id.btn_consumer_login); // 개인회원 로그인
         btn_login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                String id = et_id.getText().toString(); // 아이디 정보
+                String password = et_pw.getText().toString(); // 비밀번호 정보
+                //테스트
+                Toast.makeText(getContext(), "id: "+id+"  pw: "+password, Toast.LENGTH_SHORT).show();
+
                 /**아이디, 비밀번호 오류 시 팝업 출력 로직 추가*/
 
                 /**잘 입력했을 경우 해당 회원 정보 가져오는 로직 추가*/
