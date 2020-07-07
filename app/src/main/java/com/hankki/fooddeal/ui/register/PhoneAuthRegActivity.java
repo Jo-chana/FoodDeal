@@ -50,7 +50,7 @@ public class PhoneAuthRegActivity extends AppCompatActivity {
         setContentView(R.layout.activity_phone_auth_reg);
     }
 
-    // 자원 할당
+    // 초기 UX 자원 할당
     private void initFindViewById() {
         authNumSendButton = (Button) findViewById(R.id.auth_num_send_button);
         // 인증번호 전송 버튼 클릭 시, 기입한 번호로 인증번호를 전송
@@ -58,7 +58,9 @@ public class PhoneAuthRegActivity extends AppCompatActivity {
         authNumSendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setSMSTask(userPhoneNumEditText.getText().toString());
+                String phoneNo = userPhoneNumEditText.getText().toString();
+                if(isRegularPhoneNo(phoneNo)) setSMSTask(phoneNo);
+                else Toast.makeText(getApplicationContext(), "올바른 휴대폰 번호가 아닙니다\n휴대폰 번호를 확인해주세요", Toast.LENGTH_LONG).show();
             }
         });
         authNumCheckButton = (Button) findViewById(R.id.auth_num_check_button);
@@ -223,5 +225,11 @@ public class PhoneAuthRegActivity extends AppCompatActivity {
         KeyguardManager myKM = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
         if(myKM != null) return myKM.inKeyguardRestrictedInputMode();
         return false;
+    }
+
+    // 입력받은 휴대폰번호의 정규식 여부 체크
+    private boolean isRegularPhoneNo(String phoneNo) {
+        String regExp = "^01(?:0|1|[6-9])[.-]?(\\d{3}|\\d{4})[.-]?(\\d{4})$";
+        return phoneNo.matches(regExp);
     }
 }
