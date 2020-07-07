@@ -5,4 +5,7 @@
     <string name="title_recommendation">추천</string>
     <string name="title_chatting">채팅</string>
     <string name="title_mypage">마이</string>
+
+    // RegisterActivity
+    <string name="register_phoneNum_hint">인증받을 휴대폰번호를 입력하세요</string>
 </resources>
