@@ -214,12 +214,14 @@ public class PhoneAuthRegActivity extends AppCompatActivity {
     // 화면꺼짐 체크
     private boolean isScreenOn(){
         PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
-        return pm.isInteractive();
+        if(pm != null) return pm.isInteractive();
+        return false;
     }
 
     // 기기 잠금여부 체크
     private boolean isDeviceLock(){
         KeyguardManager myKM = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
-        return myKM.inKeyguardRestrictedInputMode();
+        if(myKM != null) return myKM.inKeyguardRestrictedInputMode();
+        return false;
     }
 }
