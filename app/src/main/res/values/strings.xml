@@ -22,15 +22,21 @@
     <string name="activity_register_email">이메일</string>
     <string name="activity_register_name">이름</string>
     <string name="activity_register_birth_date">생년월일</string>
+    <string name="activity_register_user_type">개인/사업자</string>
+    <string name="activity_register_user_type_p">개인</string>
+    <string name="activity_register_user_type_s">사업자</string>
     <string name="activity_register_password_hint">영문자, 숫자, 특수문자를 포함한 8~20자로 입력해주세요</string>
     <string name="activity_register_password_check_hint">비밀번호를 동일하게 입력해주세요</string>
     <string name="activity_register_email_hint">올바른 이메일 형식으로 입력해주세요</string>
+    <string name="activity_register_process_hint">모든 값을 입력해야 다음 버튼이 활성화됩니다!</string>
 
     <string name="activity_register_pre_button">이전</string>
     <string name="activity_register_post_button">다음</string>
     <string name="activity_register_dup_check_button">중복확인</string>
 
     // RegisterActivity
+    <string name="register_dup_id">사용중인 아이디입니다</string>
+    <string name="register_not_dup_id">사용 가능한 아이디입니다</string>
     <string name="register_wrong_password">올바른 비밀번호 형식이 아닙니다</string>
     <string name="register_correct_password">올바른 비밀번호 형식입니다</string>
     <string name="register_match_password_check">비밀번호 입력값이 동일합니다</string>

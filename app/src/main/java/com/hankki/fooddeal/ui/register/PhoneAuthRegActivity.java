@@ -18,6 +18,7 @@ import android.widget.Toast;
 import com.hankki.fooddeal.R;
 import com.hankki.fooddeal.data.RegularCheck;
 import com.hankki.fooddeal.data.security.AES256Util;
+import com.hankki.fooddeal.ui.IntroActivity;
 
 import java.util.Random;
 import java.util.Timer;
@@ -230,5 +231,14 @@ public class PhoneAuthRegActivity extends AppCompatActivity {
         KeyguardManager myKM = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
         if(myKM != null) return myKM.inKeyguardRestrictedInputMode();
         else return false;
+    }
+
+    // 뒤로가기 버튼
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Intent toIntroIntent = new Intent(PhoneAuthRegActivity.this, IntroActivity.class);
+        startActivity(toIntroIntent);
+        finish();
     }
 }

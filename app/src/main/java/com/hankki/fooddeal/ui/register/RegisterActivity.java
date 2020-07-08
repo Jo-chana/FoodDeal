@@ -12,6 +12,8 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,8 +22,13 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.hankki.fooddeal.R;
 import com.hankki.fooddeal.data.RegularCheck;
+import com.hankki.fooddeal.data.security.AES256Util;
+import com.hankki.fooddeal.data.security.HashMsgUtil;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -35,21 +42,28 @@ TODO 달력 클릭해서 날짜 선택되면 나머지 is 변수들 모두 배�
 
 public class RegisterActivity extends AppCompatActivity {
 
+    private final static Integer DATE_REQUEST_CODE = 1001;
+    private final static List<String> userIDList = new ArrayList<>(Arrays.asList("dlguwn13", "ggj0418", "tkyk103000"));
+
     EditText idEditText, passwordEditText, passwordCheckEditText, emailEditText, nameEditText, birthDateEditText;
     ImageView calendarImageView;
-    TextView passwordHintTextView, passwordCheckHintTextView, emailHintTextView;
+    TextView passwordHintTextView, passwordCheckHintTextView, emailHintTextView, idDupHintTextView;
     Button idDupCheckButton, preButton, postButton;
+    RadioGroup userTypeRadioGroup;
+    RadioButton personTypeRadioButton, sellerTypeRadioButton;
 
-    String phoneNo;
+    String phoneNo, userType;
     boolean isHomePressed = false;
+    // 기입률 진행 상황 알림 변수
+    boolean isIdVeified = false;
     boolean isRegularPassword = false;
     boolean isPasswordMatch = false;
     boolean isRegularEmail = false;
+    boolean isBirthDateDone = false;
+    boolean isUserTypeDone = false;
 
-    private final static Integer DATE_REQUEST_CODE = 1001;
-
-    Timer checkPasswordTimer, checkPasswordMatchTimer, checkEmailTimer;
-    TimerTask checkPasswordTimerTask, checkPasswordMatchTimerTask, checkEmailTimerTask;
+    Timer checkPasswordTimer, checkPasswordMatchTimer, checkEmailTimer, checkAllInputDoneTimer;
+    TimerTask checkPasswordTimerTask, checkPasswordMatchTimerTask, checkEmailTimerTask, checkAllInputDoneTimerTask;
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -72,6 +86,7 @@ public class RegisterActivity extends AppCompatActivity {
                         sb.append(data.getIntExtra("mDay", 0));
                     }
                     birthDateEditText.setText(sb.toString());
+                    isBirthDateDone = true;
                 }
             }
         } else {
@@ -88,6 +103,33 @@ public class RegisterActivity extends AppCompatActivity {
         if(intent.hasExtra("phoneNo")) phoneNo = intent.getStringExtra("phoneNo");
     }
 
+    // 비어있는 입력값을 확인해서 안내메시지 출력
+    /*private void checkEmptyEditText() {
+        if(!isIdVeified) Toast.makeText(getApplicationContext(), "아이디를 입력해주세요", Toast.LENGTH_LONG).show();
+        else if(!isRegularPassword) Toast.makeText(getApplicationContext(), "비밀번호를 입력해주세요", Toast.LENGTH_LONG).show();
+        else if(!isPasswordMatch) Toast.makeText(getApplicationContext(), "비밀번호 재확인 값을 확인해주세요", Toast.LENGTH_LONG).show();
+        else if(!isRegularEmail) Toast.makeText(getApplicationContext(), "이메일을 입력해주세요", Toast.LENGTH_LONG).show();
+        else if(!isBirthDateDone) Toast.makeText(getApplicationContext(), "생년월일을 선택해주세요", Toast.LENGTH_LONG).show();
+    }*/
+
+    // 모든 기입들이 제대로 이루어졌는가 체크
+    private void checkAllInputDone() {
+        checkAllInputDoneTimerTask = new TimerTask() {
+            @Override
+            public void run() {
+                postButton.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(isIdVeified && isRegularPassword && isPasswordMatch && isRegularEmail && isBirthDateDone && isUserTypeDone)
+                            postButton.setEnabled(true);
+                        else
+                            postButton.setEnabled(false);
+                    }
+                });
+            }
+        };
+        checkAllInputDoneTimer.schedule(checkAllInputDoneTimerTask, 0, 1000);
+    }
     // 패스워드의 안정성을 실시간으로 체크
     private void checkPasswordRegular() {
         checkPasswordTimerTask = new TimerTask() {
@@ -178,7 +220,10 @@ public class RegisterActivity extends AppCompatActivity {
         passwordEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
-                if(hasFocus) checkPasswordRegular();
+                if(hasFocus) {
+                    if(idDupHintTextView.getText().toString().equals("")) Toast.makeText(getApplicationContext(), "아이디 중복검사를 진행해주세요!", Toast.LENGTH_LONG).show();
+                    else checkPasswordRegular();
+                }
             }
         });
         passwordCheckEditText = (EditText) findViewById(R.id.register_password_check_editText);
@@ -210,14 +255,63 @@ public class RegisterActivity extends AppCompatActivity {
         passwordHintTextView = (TextView) findViewById(R.id.register_password_hint_textView);
         passwordCheckHintTextView = (TextView) findViewById(R.id.register_password_check_hint_textView);
         emailHintTextView = (TextView) findViewById(R.id.register_email_hint_textView);
+        idDupHintTextView = (TextView) findViewById(R.id.register_id_dup_hint_textView);
 
         idDupCheckButton = (Button) findViewById(R.id.register_dup_check_button);
+        idDupCheckButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String id = idEditText.getText().toString();
+                if(id.equals("")) Toast.makeText(getApplicationContext(), "아이디를 입력해주세요!", Toast.LENGTH_LONG).show();
+                else if(userIDList.contains(id)) {
+                    idDupHintTextView.setText(getString(R.string.register_dup_id));
+                    idDupHintTextView.setTextColor(Color.RED);
+                    isIdVeified = false;
+                } else {
+                    idDupHintTextView.setText(getString(R.string.register_not_dup_id));
+                    idDupHintTextView.setTextColor(Color.BLUE);
+                    isIdVeified = true;
+                }
+            }
+        });
         preButton = (Button) findViewById(R.id.register_pre_button);
+        preButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                stopAllTimeTask();
+                Intent toPhoneAuthRegIntent = new Intent(RegisterActivity.this, PhoneAuthRegActivity.class);
+                startActivity(toPhoneAuthRegIntent);
+                finish();
+            }
+        });
         postButton = (Button) findViewById(R.id.register_post_button);
+        postButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                stopAllTimeTask();
+                Intent toUserProfileRegIntent = new Intent(RegisterActivity.this, UserProfileRegActivity.class);
+                startActivity(toUserProfileRegIntent);
+                toUserProfileRegIntent.putExtra("userID", HashMsgUtil.getSHA256(idEditText.getText().toString()));
+                toUserProfileRegIntent.putExtra("userPassword", HashMsgUtil.getSHA256(passwordEditText.getText().toString()));
+                toUserProfileRegIntent.putExtra("userEmail", emailEditText.getText().toString());
+                toUserProfileRegIntent.putExtra("userBirthDate", birthDateEditText.getText().toString());
+                toUserProfileRegIntent.putExtra("userName", nameEditText.getText().toString());
+                toUserProfileRegIntent.putExtra("phoneNo", AES256Util.aesEncode(phoneNo));
+                toUserProfileRegIntent.putExtra("userType", userType);
+                startActivity(toUserProfileRegIntent);
+                finish();
+            }
+        });
+
+        userTypeRadioGroup = (RadioGroup) findViewById(R.id.register_user_type_radioGroup);
+        userTypeRadioGroup.setOnCheckedChangeListener(onCheckedChangeListener);
+        personTypeRadioButton = (RadioButton) findViewById(R.id.register_person_radioButton);
+        sellerTypeRadioButton = (RadioButton) findViewById(R.id.register_seller_radioButton);
 
         checkPasswordTimer = new Timer();
         checkPasswordMatchTimer = new Timer();
         checkEmailTimer = new Timer();
+        checkAllInputDoneTimer = new Timer();
     }
 
     // 자원 할당 해제
@@ -242,6 +336,7 @@ public class RegisterActivity extends AppCompatActivity {
         checkPasswordTimer = null;
         checkPasswordMatchTimer = null;
         checkEmailTimer = null;
+        checkAllInputDoneTimer = new Timer();
     }
 
     // 모든 TimerTask 중지
@@ -258,13 +353,29 @@ public class RegisterActivity extends AppCompatActivity {
             checkEmailTimerTask.cancel();
             checkEmailTimerTask = null;
         }
+        if(checkAllInputDoneTimerTask != null) {
+            checkAllInputDoneTimerTask.cancel();
+            checkAllInputDoneTimerTask = null;
+        }
     }
+
+    // 사용자 타입 분류 리스너
+    RadioGroup.OnCheckedChangeListener onCheckedChangeListener = new RadioGroup.OnCheckedChangeListener() {
+        @Override
+        public void onCheckedChanged(RadioGroup group, int checkedId) {
+            if(checkedId == R.id.register_person_radioButton) userType = "P";
+            else userType = "S";
+            isUserTypeDone = true;
+//            checkEmptyEditText();
+        }
+    };
 
     // 사용자에게 보여지기 전 자원 할당
     @Override
     protected void onResume() {
         super.onResume();
         initFindViewById();
+        checkAllInputDone();
     }
 
     // 사용자가 뒤로가기버튼으로 액티비티를 종료한 경우에서만 자원 할당 해제
@@ -297,5 +408,15 @@ public class RegisterActivity extends AppCompatActivity {
         KeyguardManager myKM = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
         if(myKM != null) return myKM.inKeyguardRestrictedInputMode();
         else return false;
+    }
+
+    // 뒤로가기 버튼
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        stopAllTimeTask();
+        Intent toPhoneAuthRegIntent = new Intent(RegisterActivity.this, PhoneAuthRegActivity.class);
+        startActivity(toPhoneAuthRegIntent);
+        finish();
     }
 }
