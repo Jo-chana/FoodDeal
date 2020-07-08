@@ -16,6 +16,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.hankki.fooddeal.R;
+import com.hankki.fooddeal.data.RegularCheck;
+import com.hankki.fooddeal.data.security.AES256Util;
 
 import java.util.Random;
 import java.util.Timer;
@@ -59,7 +61,7 @@ public class PhoneAuthRegActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String phoneNo = userPhoneNumEditText.getText().toString();
-                if(isRegularPhoneNo(phoneNo)) setSMSTask(phoneNo);
+                if(RegularCheck.isRegularPhoneNo(phoneNo)) setSMSTask(phoneNo);
                 else Toast.makeText(getApplicationContext(), "올바른 휴대폰 번호가 아닙니다\n휴대폰 번호를 확인해주세요", Toast.LENGTH_LONG).show();
             }
         });
@@ -79,8 +81,9 @@ public class PhoneAuthRegActivity extends AppCompatActivity {
                         Toast.makeText(getApplicationContext(), "인증유효시간이 초과하였습니다.\n인증번호를 재발급받아주세요", Toast.LENGTH_LONG).show();
                     } else {
                         stopTimerTask();
+                        String phoneNo = AES256Util.aesEncode(userPhoneNumEditText.getText().toString());
                         Intent toRegisterIntent = new Intent(PhoneAuthRegActivity.this, RegisterActivity.class);
-                        // TODO RegisterActivity에 휴대폰번호 인텐트 전달
+                        toRegisterIntent.putExtra("phoneNo", phoneNo);
                         startActivity(toRegisterIntent);
                         finish();
                     }
@@ -219,19 +222,13 @@ public class PhoneAuthRegActivity extends AppCompatActivity {
     private boolean isScreenOn(){
         PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
         if(pm != null) return pm.isInteractive();
-        return false;
+        else return false;
     }
 
     // 기기 잠금여부 체크
     private boolean isDeviceLock(){
         KeyguardManager myKM = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
         if(myKM != null) return myKM.inKeyguardRestrictedInputMode();
-        return false;
-    }
-
-    // 입력받은 휴대폰번호의 정규식 여부 체크
-    private boolean isRegularPhoneNo(String phoneNo) {
-        String regExp = "^01(?:0|1|[6-9])[.-]?(\\d{3}|\\d{4})[.-]?(\\d{4})$";
-        return phoneNo.matches(regExp);
+        else return false;
     }
 }
