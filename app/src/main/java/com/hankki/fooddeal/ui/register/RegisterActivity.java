@@ -24,6 +24,7 @@ import com.hankki.fooddeal.R;
 import com.hankki.fooddeal.data.RegularCheck;
 import com.hankki.fooddeal.data.security.AES256Util;
 import com.hankki.fooddeal.data.security.HashMsgUtil;
+import com.hankki.fooddeal.ui.register.location.LocationMainActivity;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -289,7 +290,7 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 stopAllTimeTask();
-                Intent toUserProfileRegIntent = new Intent(RegisterActivity.this, UserProfileRegActivity.class);
+                Intent toUserProfileRegIntent = new Intent(RegisterActivity.this, LocationMainActivity.class);
                 startActivity(toUserProfileRegIntent);
                 toUserProfileRegIntent.putExtra("userID", HashMsgUtil.getSHA256(idEditText.getText().toString()));
                 toUserProfileRegIntent.putExtra("userPassword", HashMsgUtil.getSHA256(passwordEditText.getText().toString()));
@@ -332,6 +333,10 @@ public class RegisterActivity extends AppCompatActivity {
         idDupCheckButton = null;
         preButton = null;
         postButton = null;
+
+        userTypeRadioGroup = null;
+        personTypeRadioButton = null;
+        sellerTypeRadioButton = null;
 
         checkPasswordTimer = null;
         checkPasswordMatchTimer = null;
