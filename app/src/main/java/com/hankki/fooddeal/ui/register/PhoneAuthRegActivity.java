@@ -80,6 +80,7 @@ public class PhoneAuthRegActivity extends AppCompatActivity {
                     } else {
                         stopTimerTask();
                         Intent toRegisterIntent = new Intent(PhoneAuthRegActivity.this, RegisterActivity.class);
+                        // TODO RegisterActivity에 휴대폰번호 인텐트 전달
                         startActivity(toRegisterIntent);
                         finish();
                     }
@@ -190,6 +191,7 @@ public class PhoneAuthRegActivity extends AppCompatActivity {
         }
     }
 
+    // 사용자에게 보여지기 전 자원 할당
     @Override
     protected void onResume() {
         super.onResume();
