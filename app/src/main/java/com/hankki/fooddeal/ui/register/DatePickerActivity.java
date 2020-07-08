@@ -27,6 +27,7 @@ public class DatePickerActivity extends Activity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_date_picker);
 
+        // 현재 날짜
         Calendar calendar = new GregorianCalendar();
         mYear = calendar.get(Calendar.YEAR);
         mMonth = calendar.get(Calendar.MONTH);
