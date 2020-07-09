@@ -45,7 +45,6 @@ public class IntroActivity extends AppCompatActivity {
             public void onClick(View v){
                 Intent register = new Intent(IntroActivity.this, PhoneAuthRegActivity.class);
                 startActivity(register);
-                finish();
             }
         });
     }

@@ -30,7 +30,7 @@
     <string name="activity_register_email_hint">올바른 이메일 형식으로 입력해주세요</string>
     <string name="activity_register_process_hint">모든 값을 입력해야 다음 버튼이 활성화됩니다!</string>
 
-    <string name="activity_register_pre_button">이전</string>
+    <string name="activity_register_pre_button">초기화면</string>
     <string name="activity_register_post_button">다음</string>
     <string name="activity_register_dup_check_button">중복확인</string>
 

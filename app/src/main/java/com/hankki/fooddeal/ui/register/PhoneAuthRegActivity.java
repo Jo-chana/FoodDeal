@@ -32,6 +32,7 @@ import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
 // 본격 회원가입 창 이전에 휴대폰 번호를 인증하는 액티비티
+// TODO 휴대폰 인증을 제외한 화면들은 finish를 하지 않고, startActivity 대신 startActivityForResult로 실행해서 회원가입이 완료되었으면 setResult를 보내서 이전에 있는 액티비티들을 하나하나 finish시키자
 public class PhoneAuthRegActivity extends AppCompatActivity {
 
     Button authNumSendButton, authNumCheckButton;
@@ -40,7 +41,7 @@ public class PhoneAuthRegActivity extends AppCompatActivity {
     String randomAuthNum;
 
     boolean isAuthTimerOver = false;
-    boolean isHomePressed = false;
+    boolean isBackPressed = false;
 
     Disposable disposable;
 
@@ -206,37 +207,18 @@ public class PhoneAuthRegActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        if(!isHomePressed && !isScreenOn() && !isDeviceLock()) {
+        if(isBackPressed) {
             releaseResource();
-            isHomePressed = false;
+            stopTimerTask();
+            isBackPressed = false;
         }
-    }
-
-    // 홈버튼 푸쉬 이벤트
-    @Override
-    protected void onUserLeaveHint() {
-        super.onUserLeaveHint();
-        isHomePressed = true;
-    }
-
-    // 화면꺼짐 체크
-    private boolean isScreenOn(){
-        PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
-        if(pm != null) return pm.isInteractive();
-        else return false;
-    }
-
-    // 기기 잠금여부 체크
-    private boolean isDeviceLock(){
-        KeyguardManager myKM = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
-        if(myKM != null) return myKM.inKeyguardRestrictedInputMode();
-        else return false;
     }
 
     // 뒤로가기 버튼
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+        isBackPressed = true;
         Intent toIntroIntent = new Intent(PhoneAuthRegActivity.this, IntroActivity.class);
         startActivity(toIntroIntent);
         finish();

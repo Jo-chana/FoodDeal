@@ -1,7 +1,9 @@
 package com.hankki.fooddeal.ui.register;
 
+import android.app.ActivityManager;
 import android.app.DatePickerDialog;
 import android.app.KeyguardManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -24,6 +26,7 @@ import com.hankki.fooddeal.R;
 import com.hankki.fooddeal.data.RegularCheck;
 import com.hankki.fooddeal.data.security.AES256Util;
 import com.hankki.fooddeal.data.security.HashMsgUtil;
+import com.hankki.fooddeal.ui.IntroActivity;
 import com.hankki.fooddeal.ui.register.location.LocationMainActivity;
 
 import java.util.ArrayList;
@@ -36,10 +39,6 @@ import java.util.TimerTask;
 
 /** 회원가입 회면
  *  소비자용, 사업자용 버튼 이용해서 선택*/
-/*
-TODO 달력 클릭해서 날짜 선택되면 나머지 is 변수들 모두 배교해서 true면 다음 버튼 활성화, 다음 버튼 누르면 finish하고 stopALL 소환!
- 아이디 중복처리는 여기 액티비티에 정적으로 값 아무거나 해서 처리
- */
 
 public class RegisterActivity extends AppCompatActivity {
 
@@ -54,7 +53,10 @@ public class RegisterActivity extends AppCompatActivity {
     RadioButton personTypeRadioButton, sellerTypeRadioButton;
 
     String phoneNo, userType;
-    boolean isHomePressed = false;
+
+    boolean isBackPressed = false;
+    boolean isCalendarClicked = false;
+
     // 기입률 진행 상황 알림 변수
     boolean isIdVeified = false;
     boolean isRegularPassword = false;
@@ -103,15 +105,6 @@ public class RegisterActivity extends AppCompatActivity {
         Intent intent = getIntent();
         if(intent.hasExtra("phoneNo")) phoneNo = intent.getStringExtra("phoneNo");
     }
-
-    // 비어있는 입력값을 확인해서 안내메시지 출력
-    /*private void checkEmptyEditText() {
-        if(!isIdVeified) Toast.makeText(getApplicationContext(), "아이디를 입력해주세요", Toast.LENGTH_LONG).show();
-        else if(!isRegularPassword) Toast.makeText(getApplicationContext(), "비밀번호를 입력해주세요", Toast.LENGTH_LONG).show();
-        else if(!isPasswordMatch) Toast.makeText(getApplicationContext(), "비밀번호 재확인 값을 확인해주세요", Toast.LENGTH_LONG).show();
-        else if(!isRegularEmail) Toast.makeText(getApplicationContext(), "이메일을 입력해주세요", Toast.LENGTH_LONG).show();
-        else if(!isBirthDateDone) Toast.makeText(getApplicationContext(), "생년월일을 선택해주세요", Toast.LENGTH_LONG).show();
-    }*/
 
     // 모든 기입들이 제대로 이루어졌는가 체크
     private void checkAllInputDone() {
@@ -248,6 +241,7 @@ public class RegisterActivity extends AppCompatActivity {
         calendarImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                isCalendarClicked = true;
                 Intent toDatePickerIntent = new Intent(RegisterActivity.this, DatePickerActivity.class);
                 startActivityForResult(toDatePickerIntent, DATE_REQUEST_CODE);
             }
@@ -279,9 +273,7 @@ public class RegisterActivity extends AppCompatActivity {
         preButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                stopAllTimeTask();
-                Intent toPhoneAuthRegIntent = new Intent(RegisterActivity.this, PhoneAuthRegActivity.class);
-                startActivity(toPhoneAuthRegIntent);
+                isBackPressed = true;
                 finish();
             }
         });
@@ -290,16 +282,15 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 stopAllTimeTask();
-                Intent toUserProfileRegIntent = new Intent(RegisterActivity.this, LocationMainActivity.class);
-                startActivity(toUserProfileRegIntent);
-                toUserProfileRegIntent.putExtra("userID", HashMsgUtil.getSHA256(idEditText.getText().toString()));
-                toUserProfileRegIntent.putExtra("userPassword", HashMsgUtil.getSHA256(passwordEditText.getText().toString()));
-                toUserProfileRegIntent.putExtra("userEmail", emailEditText.getText().toString());
-                toUserProfileRegIntent.putExtra("userBirthDate", birthDateEditText.getText().toString());
-                toUserProfileRegIntent.putExtra("userName", nameEditText.getText().toString());
-                toUserProfileRegIntent.putExtra("phoneNo", AES256Util.aesEncode(phoneNo));
-                toUserProfileRegIntent.putExtra("userType", userType);
-                startActivity(toUserProfileRegIntent);
+                Intent toLocationMainIntent = new Intent(RegisterActivity.this, LocationMainActivity.class);
+                toLocationMainIntent.putExtra("userID", HashMsgUtil.getSHA256(idEditText.getText().toString()));
+                toLocationMainIntent.putExtra("userPassword", HashMsgUtil.getSHA256(passwordEditText.getText().toString()));
+                toLocationMainIntent.putExtra("userEmail", emailEditText.getText().toString());
+                toLocationMainIntent.putExtra("userBirthDate", birthDateEditText.getText().toString());
+                toLocationMainIntent.putExtra("userName", nameEditText.getText().toString());
+                toLocationMainIntent.putExtra("phoneNo", AES256Util.aesEncode(phoneNo));
+                toLocationMainIntent.putExtra("userType", userType);
+                startActivity(toLocationMainIntent);
                 finish();
             }
         });
@@ -323,6 +314,15 @@ public class RegisterActivity extends AppCompatActivity {
         emailEditText = null;
         nameEditText = null;
         birthDateEditText = null;
+
+        isCalendarClicked = false;
+        // 기입률 진행 상황 알림 변수
+        isIdVeified = false;
+        isRegularPassword = false;
+        isPasswordMatch = false;
+        isRegularEmail = false;
+        isBirthDateDone = false;
+        isUserTypeDone = false;
 
         calendarImageView = null;
 
@@ -371,7 +371,6 @@ public class RegisterActivity extends AppCompatActivity {
             if(checkedId == R.id.register_person_radioButton) userType = "P";
             else userType = "S";
             isUserTypeDone = true;
-//            checkEmptyEditText();
         }
     };
 
@@ -379,49 +378,29 @@ public class RegisterActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        initFindViewById();
-        checkAllInputDone();
+        if(!isCalendarClicked) {
+            initFindViewById();
+            checkAllInputDone();
+        }
+        else isCalendarClicked = false;
     }
 
     // 사용자가 뒤로가기버튼으로 액티비티를 종료한 경우에서만 자원 할당 해제
     @Override
     protected void onPause() {
         super.onPause();
-        if(!isHomePressed && !isScreenOn() && !isDeviceLock()) {
+        if(isBackPressed) {
             releaseResource();
             stopAllTimeTask();
-            isHomePressed = false;
+            isBackPressed = false;
         }
-    }
-
-    // 홈버튼 푸쉬 이벤트
-    @Override
-    protected void onUserLeaveHint() {
-        super.onUserLeaveHint();
-        isHomePressed = true;
-    }
-
-    // 화면꺼짐 체크
-    private boolean isScreenOn(){
-        PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
-        if(pm != null) return pm.isInteractive();
-        else return false;
-    }
-
-    // 기기 잠금여부 체크
-    private boolean isDeviceLock(){
-        KeyguardManager myKM = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
-        if(myKM != null) return myKM.inKeyguardRestrictedInputMode();
-        else return false;
     }
 
     // 뒤로가기 버튼
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        stopAllTimeTask();
-        Intent toPhoneAuthRegIntent = new Intent(RegisterActivity.this, PhoneAuthRegActivity.class);
-        startActivity(toPhoneAuthRegIntent);
+        isBackPressed = true;
         finish();
     }
 }

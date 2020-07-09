@@ -1,5 +1,6 @@
 package com.hankki.fooddeal.ui.register;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,5 +15,13 @@ public class UserProfileRegActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_userprofilereg);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Intent toRegisterIntent = new Intent(UserProfileRegActivity.this, RegisterActivity.class);
+        startActivity(toRegisterIntent);
+        finish();
     }
 }
