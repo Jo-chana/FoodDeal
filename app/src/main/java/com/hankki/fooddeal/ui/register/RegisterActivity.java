@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Debug;
 import android.os.PowerManager;
 import android.view.View;
 import android.widget.Button;
@@ -39,7 +40,7 @@ import java.util.TimerTask;
 
 /** 회원가입 회면
  *  소비자용, 사업자용 버튼 이용해서 선택*/
-
+// TODO 최종 회원가입 완료창이 떴을 때, 이때에 자원 할당 해제하는 부분이 필요
 public class RegisterActivity extends AppCompatActivity {
 
     private final static Integer DATE_REQUEST_CODE = 1001;
@@ -49,11 +50,10 @@ public class RegisterActivity extends AppCompatActivity {
     ImageView calendarImageView;
     TextView passwordHintTextView, passwordCheckHintTextView, emailHintTextView, idDupHintTextView;
     Button idDupCheckButton, preButton, postButton;
-    RadioGroup userTypeRadioGroup;
-    RadioButton personTypeRadioButton, sellerTypeRadioButton;
 
-    String phoneNo, userType;
+    String phoneNo;
 
+    boolean isFirstExecuted = true;
     boolean isBackPressed = false;
     boolean isCalendarClicked = false;
 
@@ -63,7 +63,6 @@ public class RegisterActivity extends AppCompatActivity {
     boolean isPasswordMatch = false;
     boolean isRegularEmail = false;
     boolean isBirthDateDone = false;
-    boolean isUserTypeDone = false;
 
     Timer checkPasswordTimer, checkPasswordMatchTimer, checkEmailTimer, checkAllInputDoneTimer;
     TimerTask checkPasswordTimerTask, checkPasswordMatchTimerTask, checkEmailTimerTask, checkAllInputDoneTimerTask;
@@ -114,7 +113,7 @@ public class RegisterActivity extends AppCompatActivity {
                 postButton.post(new Runnable() {
                     @Override
                     public void run() {
-                        if(isIdVeified && isRegularPassword && isPasswordMatch && isRegularEmail && isBirthDateDone && isUserTypeDone)
+                        if(isIdVeified && isRegularPassword && isPasswordMatch && isRegularEmail && isBirthDateDone)
                             postButton.setEnabled(true);
                         else
                             postButton.setEnabled(false);
@@ -274,7 +273,7 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 isBackPressed = true;
-                finish();
+                onBackPressed();
             }
         });
         postButton = (Button) findViewById(R.id.register_post_button);
@@ -283,22 +282,17 @@ public class RegisterActivity extends AppCompatActivity {
             public void onClick(View v) {
                 stopAllTimeTask();
                 Intent toLocationMainIntent = new Intent(RegisterActivity.this, LocationMainActivity.class);
-                toLocationMainIntent.putExtra("userID", HashMsgUtil.getSHA256(idEditText.getText().toString()));
-                toLocationMainIntent.putExtra("userPassword", HashMsgUtil.getSHA256(passwordEditText.getText().toString()));
-                toLocationMainIntent.putExtra("userEmail", emailEditText.getText().toString());
-                toLocationMainIntent.putExtra("userBirthDate", birthDateEditText.getText().toString());
-                toLocationMainIntent.putExtra("userName", nameEditText.getText().toString());
-                toLocationMainIntent.putExtra("phoneNo", AES256Util.aesEncode(phoneNo));
-                toLocationMainIntent.putExtra("userType", userType);
+                Bundle userInfoBundle = new Bundle();
+                userInfoBundle.putString("userID", HashMsgUtil.getSHA256(idEditText.getText().toString()));
+                userInfoBundle.putString("userPassword", HashMsgUtil.getSHA256(passwordEditText.getText().toString()));
+                userInfoBundle.putString("userEmail", emailEditText.getText().toString());
+                userInfoBundle.putString("userBirthDate", birthDateEditText.getText().toString());
+                userInfoBundle.putString("userName", nameEditText.getText().toString());
+                userInfoBundle.putString("phoneNo", AES256Util.aesEncode(phoneNo));
+                toLocationMainIntent.putExtras(userInfoBundle);
                 startActivity(toLocationMainIntent);
-                finish();
             }
         });
-
-        userTypeRadioGroup = (RadioGroup) findViewById(R.id.register_user_type_radioGroup);
-        userTypeRadioGroup.setOnCheckedChangeListener(onCheckedChangeListener);
-        personTypeRadioButton = (RadioButton) findViewById(R.id.register_person_radioButton);
-        sellerTypeRadioButton = (RadioButton) findViewById(R.id.register_seller_radioButton);
 
         checkPasswordTimer = new Timer();
         checkPasswordMatchTimer = new Timer();
@@ -322,7 +316,6 @@ public class RegisterActivity extends AppCompatActivity {
         isPasswordMatch = false;
         isRegularEmail = false;
         isBirthDateDone = false;
-        isUserTypeDone = false;
 
         calendarImageView = null;
 
@@ -334,14 +327,10 @@ public class RegisterActivity extends AppCompatActivity {
         preButton = null;
         postButton = null;
 
-        userTypeRadioGroup = null;
-        personTypeRadioButton = null;
-        sellerTypeRadioButton = null;
-
         checkPasswordTimer = null;
         checkPasswordMatchTimer = null;
         checkEmailTimer = null;
-        checkAllInputDoneTimer = new Timer();
+        checkAllInputDoneTimer = null;
     }
 
     // 모든 TimerTask 중지
@@ -364,28 +353,23 @@ public class RegisterActivity extends AppCompatActivity {
         }
     }
 
-    // 사용자 타입 분류 리스너
-    RadioGroup.OnCheckedChangeListener onCheckedChangeListener = new RadioGroup.OnCheckedChangeListener() {
-        @Override
-        public void onCheckedChanged(RadioGroup group, int checkedId) {
-            if(checkedId == R.id.register_person_radioButton) userType = "P";
-            else userType = "S";
-            isUserTypeDone = true;
-        }
-    };
-
     // 사용자에게 보여지기 전 자원 할당
     @Override
     protected void onResume() {
         super.onResume();
         if(!isCalendarClicked) {
-            initFindViewById();
-            checkAllInputDone();
+            if(isFirstExecuted) {
+                initFindViewById();
+                checkAllInputDone();
+                isFirstExecuted = false;
+            }
         }
         else isCalendarClicked = false;
     }
 
-    // 사용자가 뒤로가기버튼으로 액티비티를 종료한 경우에서만 자원 할당 해제
+    // 사용자가 회원가입을 완전히 완료했을때에만 이 액티비티는 끝나야 한다
+    // 또한 회원가입 도중에 뒤의 회원가입정보를 수정하러 왔을 경우 그대로 값이 살아있어야한다
+    // 하지만 휴대폰 인증을 했다가 와서 다시 인증 화면으로 간 이후 다시 온다면 그 값은 없어진다
     @Override
     protected void onPause() {
         super.onPause();
@@ -396,11 +380,19 @@ public class RegisterActivity extends AppCompatActivity {
         }
     }
 
+    // onPause의 이유로 Destory 에서 자원할당 해제 (권장되지 않는 방식)
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        releaseResource();
+        stopAllTimeTask();
+        Debug.stopMethodTracing();
+    }
+
     // 뒤로가기 버튼
     @Override
     public void onBackPressed() {
         super.onBackPressed();
         isBackPressed = true;
-        finish();
     }
 }

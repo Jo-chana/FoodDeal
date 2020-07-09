@@ -7,10 +7,11 @@
     <string name="title_mypage">마이</string>
 
     // activity_phone_auth_reg.xml
-    <string name="phone_auth_register_phoneNum_hint">인증받을 휴대폰번호를 입력하세요</string>
-    <string name="phone_auth_register_authNum_hint">인증번호 입력</string>
-    <string name="phone_auth_register_authNum_check_button">인증번호 확인</string>
-    <string name="phone_auth_register_authNum_send_button">전송</string>
+    <string name="activity_phone_auth_register_phoneNum_hint">인증받을 휴대폰번호를 입력하세요</string>
+    <string name="activity_phone_auth_register_authNum_hint">인증번호 입력</string>
+    <string name="activity_phone_auth_register_authNum_check_button">인증번호 확인</string>
+    <string name="activity_phone_auth_register_authNum_send_button">전송</string>
+    <string name="activity_phone_auth_register_post_button">개인정보 입력</string>
 
     // PhoneAuthRegActivity
     <string name="phone_auth_register_auth_fail_message">인증번호가 일치하지 않습니다</string>
@@ -28,10 +29,10 @@
     <string name="activity_register_password_hint">영문자, 숫자, 특수문자를 포함한 8~20자로 입력해주세요</string>
     <string name="activity_register_password_check_hint">비밀번호를 동일하게 입력해주세요</string>
     <string name="activity_register_email_hint">올바른 이메일 형식으로 입력해주세요</string>
-    <string name="activity_register_process_hint">모든 값을 입력해야 다음 버튼이 활성화됩니다!</string>
+    <string name="activity_register_process_hint">뒤로가기 혹은 휴대폰인증 버튼을 클릭하면 정보가 날아가니 조심하세요!</string>
 
-    <string name="activity_register_pre_button">초기화면</string>
-    <string name="activity_register_post_button">다음</string>
+    <string name="activity_register_pre_button">휴대폰 인증</string>
+    <string name="activity_register_post_button">위치 설정</string>
     <string name="activity_register_dup_check_button">중복확인</string>
 
     // RegisterActivity
@@ -46,5 +47,9 @@
 
     // activity_date_picker.xml
     <string name="activity_date_picker_ok">확 인</string>
+
+    // activity_locationmain.xml
+    <string name="activity_locationmain_pre_button">개인정보 입력</string>
+    <string name="activity_locationmain_post_button">프로필 입력</string>
 
 </resources>

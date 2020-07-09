@@ -11,7 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="60dp"
+        android:layout_marginTop="120dp"
         android:text="@string/activity_register_id"
         android:textColor="@android:color/black"
         android:textSize="16sp"
@@ -88,7 +88,7 @@
         android:id="@+id/register_id_editText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="48dp"
+        android:layout_marginTop="108dp"
         android:layout_marginEnd="16dp"
         android:ems="10"
         android:gravity="center"
@@ -195,7 +195,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
-        android:layout_marginBottom="48dp"
+        android:layout_marginBottom="60dp"
+        android:background="@drawable/main_color_button_style"
         android:text="@string/activity_register_pre_button"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -205,8 +206,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="32dp"
-        android:layout_marginBottom="48dp"
+        android:layout_marginBottom="60dp"
         android:enabled="false"
+        android:background="@drawable/main_color_button_style"
         android:text="@string/activity_register_post_button"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
@@ -216,7 +218,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="2dp"
-        android:layout_marginTop="48dp"
+        android:layout_marginTop="108dp"
         android:layout_marginEnd="2dp"
         android:text="@string/activity_register_dup_check_button"
         app:layout_constraintEnd_toStartOf="@+id/register_id_editText"
@@ -246,56 +248,17 @@
         app:layout_constraintTop_toBottomOf="@+id/register_name_editText" />
 
     <TextView
-        android:id="@+id/textView13"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="60dp"
-        android:text="@string/activity_register_user_type"
-        android:textColor="@android:color/black"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView6" />
-
-    <RadioGroup
-        android:id="@+id/register_user_type_radioGroup"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="40dp"
-        android:layout_marginEnd="16dp"
-        android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/textView13"
-        app:layout_constraintTop_toBottomOf="@+id/register_birth_date_editText">
-
-        <RadioButton
-            android:id="@+id/register_person_radioButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/activity_register_user_type_p" />
-
-        <RadioButton
-            android:id="@+id/register_seller_radioButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16sp"
-            android:text="@string/activity_register_user_type_s" />
-
-    </RadioGroup>
-
-    <TextView
-        android:id="@+id/textView14"
+        android:id="@+id/textView7"
+        android:gravity="center"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
-        android:gravity="center"
         android:text="@string/activity_register_process_hint"
-        app:layout_constraintBottom_toTopOf="@+id/register_pre_button"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/register_user_type_radioGroup" />
+        app:layout_constraintTop_toBottomOf="@+id/register_pre_button" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

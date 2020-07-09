@@ -7,6 +7,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Debug;
 import android.os.PowerManager;
 import android.telephony.SmsManager;
 import android.view.View;
@@ -32,7 +33,7 @@ import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
 // 본격 회원가입 창 이전에 휴대폰 번호를 인증하는 액티비티
-// TODO 휴대폰 인증을 제외한 화면들은 finish를 하지 않고, startActivity 대신 startActivityForResult로 실행해서 회원가입이 완료되었으면 setResult를 보내서 이전에 있는 액티비티들을 하나하나 finish시키자
+// TODO
 public class PhoneAuthRegActivity extends AppCompatActivity {
 
     Button authNumSendButton, authNumCheckButton;
@@ -84,13 +85,15 @@ public class PhoneAuthRegActivity extends AppCompatActivity {
                     if (authNumInput.equals(randomAuthNum)) {
                         Toast.makeText(getApplicationContext(), "인증에 성공하였습니다!", Toast.LENGTH_LONG).show();
                         stopTimerTask();
+                        randomAuthNum = null;
+                        authNumEditText.setText("");
                         String phoneNo = AES256Util.aesEncode(userPhoneNumEditText.getText().toString());
                         Intent toRegisterIntent = new Intent(PhoneAuthRegActivity.this, RegisterActivity.class);
                         toRegisterIntent.putExtra("phoneNo", phoneNo);
                         startActivity(toRegisterIntent);
-                        finish();
                     } else {
                         Toast.makeText(getApplicationContext(), "인증번호가 일치하지 않습니다", Toast.LENGTH_LONG).show();
+                        authNumEditText.setText("");
                     }
                 }
             }
@@ -149,6 +152,7 @@ public class PhoneAuthRegActivity extends AppCompatActivity {
                         //onPostExecute
                         // 문자메시지를 전송한 직후에 제한시간 TimerTask를 시작
                         disposable.dispose();
+                        authNumEditText.setText("");
                         startTimerTaks();
                     }
                 });
@@ -211,7 +215,16 @@ public class PhoneAuthRegActivity extends AppCompatActivity {
             releaseResource();
             stopTimerTask();
             isBackPressed = false;
+            isAuthTimerOver = false;
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        releaseResource();
+        stopTimerTask();
+        Debug.stopMethodTracing();
     }
 
     // 뒤로가기 버튼

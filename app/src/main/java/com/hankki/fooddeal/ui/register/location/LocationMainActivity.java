@@ -13,6 +13,8 @@ import com.hankki.fooddeal.ui.register.RegisterActivity;
 // TODO 다음 버튼 클릭 시, 사용자 종류(userType)에 따라 다른 화면으로 이동
 public class LocationMainActivity extends AppCompatActivity {
 
+    Bundle userInfoBundle;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -20,8 +22,22 @@ public class LocationMainActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        // 사용자가 정보를 바꿔 입력하려고 화면을 이리저리 옮겨다닐 때에 여러번 입력받을 수 있으므로 onStart에서 받아준다
+       if(getIntent().getExtras() != null) {
+            Intent fromRegisterIntent = getIntent();
+            userInfoBundle = fromRegisterIntent.getExtras();
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+    }
+
+    @Override
     public void onBackPressed() {
         super.onBackPressed();
-        this.finish();
     }
 }
