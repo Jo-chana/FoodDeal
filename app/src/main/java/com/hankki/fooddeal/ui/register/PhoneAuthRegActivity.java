@@ -78,19 +78,20 @@ public class PhoneAuthRegActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String authNumInput = authNumEditText.getText().toString();
-                if(authNumInput.equals(randomAuthNum)) {
-                    if(isAuthTimerOver) {
-                        Toast.makeText(getApplicationContext(), "인증유효시간이 초과하였습니다.\n인증번호를 재발급받아주세요", Toast.LENGTH_LONG).show();
-                    } else {
+                if(isAuthTimerOver) {
+                    Toast.makeText(getApplicationContext(), "인증유효시간이 초과하였습니다.\n인증번호를 재발급받아주세요", Toast.LENGTH_LONG).show();
+                } else {
+                    if (authNumInput.equals(randomAuthNum)) {
+                        Toast.makeText(getApplicationContext(), "인증에 성공하였습니다!", Toast.LENGTH_LONG).show();
                         stopTimerTask();
                         String phoneNo = AES256Util.aesEncode(userPhoneNumEditText.getText().toString());
                         Intent toRegisterIntent = new Intent(PhoneAuthRegActivity.this, RegisterActivity.class);
                         toRegisterIntent.putExtra("phoneNo", phoneNo);
                         startActivity(toRegisterIntent);
                         finish();
+                    } else {
+                        Toast.makeText(getApplicationContext(), "인증번호가 일치하지 않습니다", Toast.LENGTH_LONG).show();
                     }
-                } else {
-                    Toast.makeText(getApplicationContext(), "인증번호가 일치하지 않습니다", Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -178,8 +179,7 @@ public class PhoneAuthRegActivity extends AppCompatActivity {
                 });
                 count--;
                 if(count == 0) {
-                    String authNumInput = authNumEditText.getText().toString();
-                    if(!authNumInput.equals(randomAuthNum)) isAuthTimerOver = true;
+                    isAuthTimerOver = true;
                     stopTimerTask();
                 }
             }
@@ -219,8 +219,6 @@ public class PhoneAuthRegActivity extends AppCompatActivity {
     public void onBackPressed() {
         super.onBackPressed();
         isBackPressed = true;
-        Intent toIntroIntent = new Intent(PhoneAuthRegActivity.this, IntroActivity.class);
-        startActivity(toIntroIntent);
         finish();
     }
 }
