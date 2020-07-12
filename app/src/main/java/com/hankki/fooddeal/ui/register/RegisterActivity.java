@@ -1,395 +1,273 @@
 package com.hankki.fooddeal.ui.register;
 
-import android.app.ActivityManager;
-import android.app.DatePickerDialog;
-import android.app.KeyguardManager;
-import android.content.ComponentName;
-import android.content.Context;
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Debug;
-import android.os.PowerManager;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.text.method.HideReturnsTransformationMethod;
+import android.text.method.PasswordTransformationMethod;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.hankki.fooddeal.R;
 import com.hankki.fooddeal.data.RegularCheck;
-import com.hankki.fooddeal.data.security.AES256Util;
-import com.hankki.fooddeal.data.security.HashMsgUtil;
 import com.hankki.fooddeal.ui.IntroActivity;
-import com.hankki.fooddeal.ui.register.location.LocationMainActivity;
+import com.hankki.fooddeal.ui.MainActivity;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
-import java.util.Objects;
-import java.util.Timer;
-import java.util.TimerTask;
 
 /** 회원가입 회면
  *  소비자용, 사업자용 버튼 이용해서 선택*/
 // TODO 최종 회원가입 완료창이 떴을 때, 이때에 자원 할당 해제하는 부분이 필요
 public class RegisterActivity extends AppCompatActivity {
 
-    private final static Integer DATE_REQUEST_CODE = 1001;
     private final static List<String> userIDList = new ArrayList<>(Arrays.asList("dlguwn13", "ggj0418", "tkyk103000"));
-
-    EditText idEditText, passwordEditText, passwordCheckEditText, emailEditText, nameEditText, birthDateEditText;
-    ImageView calendarImageView;
-    TextView passwordHintTextView, passwordCheckHintTextView, emailHintTextView, idDupHintTextView;
-    Button idDupCheckButton, preButton, postButton;
 
     String phoneNo;
 
-    boolean isFirstExecuted = true;
+    Animation animAppearHint;
+
+    View toolbarView;
+
+    TextView idHintTextView, passwordHintTextView, emailHintTextView;
+    EditText idEditText, passwordEditText, emailEditText;
+    ImageView backButton;
+    Button dupIDCheckButton, postButton;
+
+    TextWatcher passwordTextWatcher, emailTextWatcher;
+
     boolean isBackPressed = false;
-    boolean isCalendarClicked = false;
-
-    // 기입률 진행 상황 알림 변수
-    boolean isIdVeified = false;
-    boolean isRegularPassword = false;
-    boolean isPasswordMatch = false;
-    boolean isRegularEmail = false;
-    boolean isBirthDateDone = false;
-
-    Timer checkPasswordTimer, checkPasswordMatchTimer, checkEmailTimer, checkAllInputDoneTimer;
-    TimerTask checkPasswordTimerTask, checkPasswordMatchTimerTask, checkEmailTimerTask, checkAllInputDoneTimerTask;
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if(data.getExtras() != null) {
-            if (requestCode == DATE_REQUEST_CODE) {
-                if (resultCode == RESULT_OK) {
-                    StringBuilder sb = new StringBuilder();
-                    sb.append(data.getIntExtra("mYear", 0));
-                    if(data.getIntExtra("mMonth", 0) < 10) {
-                        sb.append(0);
-                        sb.append(data.getIntExtra("mMonth", 0));
-                    } else {
-                        sb.append(data.getIntExtra("mMonth", 0));
-                    }
-                    if(data.getIntExtra("mDay", 0) < 10) {
-                        sb.append(0);
-                        sb.append(data.getIntExtra("mDay", 0));
-                    } else {
-                        sb.append(data.getIntExtra("mDay", 0));
-                    }
-                    birthDateEditText.setText(sb.toString());
-                    isBirthDateDone = true;
-                }
-            }
-        } else {
-            Toast.makeText(getApplicationContext(), "onActivityResult 값이 null입니다", Toast.LENGTH_LONG).show();
-        }
-    }
+    boolean isPasswordVisible;
+    boolean isNewID, isRegularPassword, isRegularEmail;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
-        Intent intent = getIntent();
-        if(intent.hasExtra("phoneNo")) phoneNo = intent.getStringExtra("phoneNo");
+        if(getIntent() != null) phoneNo = getIntent().getStringExtra("phoneNo");
     }
 
-    // 모든 기입들이 제대로 이루어졌는가 체크
-    private void checkAllInputDone() {
-        checkAllInputDoneTimerTask = new TimerTask() {
-            @Override
-            public void run() {
-                postButton.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        if(isIdVeified && isRegularPassword && isPasswordMatch && isRegularEmail && isBirthDateDone)
-                            postButton.setEnabled(true);
-                        else
-                            postButton.setEnabled(false);
-                    }
-                });
-            }
-        };
-        checkAllInputDoneTimer.schedule(checkAllInputDoneTimerTask, 0, 1000);
-    }
-    // 패스워드의 안정성을 실시간으로 체크
-    private void checkPasswordRegular() {
-        checkPasswordTimerTask = new TimerTask() {
-            String password = passwordEditText.getText().toString();;
-            @Override
-            public void run() {
-                passwordHintTextView.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        if(password != null) {
-                            if(RegularCheck.isRegularPassword(password)) {
-                                passwordHintTextView.setText(getString(R.string.register_correct_password));
-                                passwordHintTextView.setTextColor(Color.BLUE);
-                                isRegularPassword = true;
-                            } else {
-                                passwordHintTextView.setText(getString(R.string.register_wrong_password));
-                                passwordHintTextView.setTextColor(Color.RED);
-                                isRegularPassword = false;
-                            }
-                        }
-                        password = passwordEditText.getText().toString();
-                    }
-                });
-            }
-        };
-        checkPasswordTimer.schedule(checkPasswordTimerTask, 0, 100);
-    }
-    // 비밀번호와 체크값이 일치하는지 실시간으로 체크
-    private void checkPasswordMatch() {
-        checkPasswordMatchTimerTask = new TimerTask() {
-            String password = passwordEditText.getText().toString();
-            String passwordCheck = passwordCheckEditText.getText().toString();
-            @Override
-            public void run() {
-                passwordCheckHintTextView.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        if(password != null && passwordCheck != null) {
-                            if(password.equals(passwordCheck)) {
-                                passwordCheckHintTextView.setText(getString(R.string.register_match_password_check));
-                                passwordCheckHintTextView.setTextColor(Color.BLUE);
-                                isPasswordMatch = true;
-                            } else {
-                                passwordCheckHintTextView.setText(getString(R.string.register_not_match_password_check));
-                                passwordCheckHintTextView.setTextColor(Color.RED);
-                                isPasswordMatch = false;
-                            }
-                        }
-                        passwordCheck = passwordCheckEditText.getText().toString();
-                    }
-                });
-            }
-        };
-        checkPasswordMatchTimer.schedule(checkPasswordMatchTimerTask, 0, 100);
-    }
-    // 이메일이 정규표현식인가 실시간으로 체크
-    private void checkEmailRegular() {
-        checkEmailTimerTask = new TimerTask() {
-            String email = emailEditText.getText().toString();
-            @Override
-            public void run() {
-                emailHintTextView.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        if(email != null) {
-                            if(RegularCheck.isRegularEmail(email)) {
-                                emailHintTextView.setText(getString(R.string.register_correct_email));
-                                emailHintTextView.setTextColor(Color.BLUE);
-                                isRegularEmail = true;
-                            } else {
-                                emailHintTextView.setText(getString(R.string.register_wrong_email));
-                                emailHintTextView.setTextColor(Color.RED);
-                                isRegularEmail = false;
-                            }
-                        }
-                        email = emailEditText.getText().toString();
-                    }
-                });
-            }
-        };
-        checkEmailTimer.schedule(checkEmailTimerTask, 0, 100);
-    }
-
-    // 자원 할당
+    // 자원할당 및 이벤트 설정
+    @SuppressLint("ClickableViewAccessibility")
     private void initFindViewById() {
-        idEditText = (EditText) findViewById(R.id.register_id_editText);
-        passwordEditText = (EditText) findViewById(R.id.register_password_editText);
+        // 패스워드의 정규성을 실시간으로 파악
+        passwordTextWatcher = new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            @Override
+            public void afterTextChanged(Editable s) {
+                String inputPassword = passwordEditText.getText().toString();
+                if(RegularCheck.isRegularPassword(inputPassword)) {
+                    passwordHintTextView.setTextColor(Color.BLUE);
+                    passwordHintTextView.setText("올바른 비밀번호 형식입니다");
+                    isRegularPassword = true;
+                }
+                else {
+                    passwordHintTextView.setTextColor(Color.RED);
+                    passwordHintTextView.setText("올바르지 않은 비밀번호 형식입니다");
+                    isRegularPassword = false;
+                }
+            }
+        };
+        // 이메일의 정규성을 실시간으로 파악
+        emailTextWatcher = new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            @Override
+            public void afterTextChanged(Editable s) {
+                String inputEmail = emailEditText.getText().toString();
+                if(RegularCheck.isRegularEmail(inputEmail)) {
+                    emailHintTextView.setTextColor(Color.BLUE);
+                    emailHintTextView.setText("올바른 이메일 형식입니다");
+                    isRegularEmail = true;
+                }
+                else {
+                    emailHintTextView.setTextColor(Color.RED);
+                    emailHintTextView.setText("올바르지 않은 이메일 형식입니다");
+                    isRegularEmail = false;
+                }
+            }
+        };
+
+        toolbarView = findViewById(R.id.register_toolbar);
+        idHintTextView = findViewById(R.id.register_id_dup_hint_textView);
+        passwordHintTextView = findViewById(R.id.register_password_hint_textView);
+        emailHintTextView = findViewById(R.id.register_email_hint_textView);
+
+        // 힌트 텍스트 애니메이션
+        animAppearHint = AnimationUtils.loadAnimation(this, R.anim.anim_appear_hint_text);
+        animAppearHint.setInterpolator(AnimationUtils.loadInterpolator(this, android.R.anim.decelerate_interpolator));
+
+        // 툴바 이미지 클릭 이벤트
+        backButton = toolbarView.findViewById(R.id.back_button);
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
+
+        dupIDCheckButton = findViewById(R.id.register_dup_check_button);
+        dupIDCheckButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String inputID = idEditText.getText().toString();
+                if(userIDList.contains(inputID)) {
+                    idHintTextView.setTextColor(Color.RED);
+                    idHintTextView.setText("이미 존재하는 아이디입니다");
+                } else {
+                    idHintTextView.setTextColor(Color.BLUE);
+                    idHintTextView.setText("사용가능한 아이디입니다");
+                    isNewID = true;
+                }
+            }
+        });
+
+        postButton = findViewById(R.id.register_post_button);
+        postButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(isNewID && isRegularEmail && isRegularPassword) {
+                    Intent toMainIntent = new Intent(RegisterActivity.this, MainActivity.class);
+                    startActivity(toMainIntent);
+                    IntroActivity a1 = (IntroActivity) IntroActivity.activity;
+                    PhoneAuthActivity a2 = (PhoneAuthActivity) PhoneAuthActivity.activity;
+                    a1.finish();
+                    a2.finish();
+                    finish();
+                }
+            }
+        });
+
+        idEditText = findViewById(R.id.register_id_editText);
+        idEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if(hasFocus) {
+                    idHintTextView.setTextColor(getResources().getColor(R.color.defaultText));
+                    idHintTextView.setText(getString(R.string.activity_register_id_hint));
+                    idHintTextView.startAnimation(animAppearHint);
+                } else {
+                    idHintTextView.setText("");
+                }
+            }
+        });
+
+        passwordEditText = findViewById(R.id.register_password_editText);
+        passwordEditText.addTextChangedListener(passwordTextWatcher);
+        passwordEditText.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                final int RIGHT = 2;
+                if (event.getAction() == MotionEvent.ACTION_UP) {
+                    if (event.getRawX() >= (passwordEditText.getRight() - passwordEditText.getCompoundDrawables()[RIGHT].getBounds().width())) {
+                        int selection = passwordEditText.getSelectionEnd();
+                        if (isPasswordVisible) {
+                            // set drawable image
+                            passwordEditText.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_password_eye_close, 0);
+                            // hide Password
+                            passwordEditText.setTransformationMethod(PasswordTransformationMethod.getInstance());
+                            isPasswordVisible = false;
+                        } else  {
+                            // set drawable image
+                            passwordEditText.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_password_eye_open, 0);
+                            // show Password
+                            passwordEditText.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
+                            isPasswordVisible = true;
+                        }
+                        passwordEditText.setSelection(selection);
+                        return true;
+                    }
+                }
+                return false;
+            }
+        });
         passwordEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if(hasFocus) {
-                    if(idDupHintTextView.getText().toString().equals("")) Toast.makeText(getApplicationContext(), "아이디 중복검사를 진행해주세요!", Toast.LENGTH_LONG).show();
-                    else checkPasswordRegular();
+                    passwordHintTextView.setTextColor(getResources().getColor(R.color.defaultText));
+                    passwordHintTextView.setText(getString(R.string.activity_register_password_hint));
+                    passwordHintTextView.startAnimation(animAppearHint);
+                } else {
+                    passwordHintTextView.setText("");
                 }
             }
         });
-        passwordCheckEditText = (EditText) findViewById(R.id.register_password_check_editText);
-        passwordCheckEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if(hasFocus) checkPasswordMatch();
-            }
-        });
-        emailEditText = (EditText) findViewById(R.id.register_email_editText);
+
+        emailEditText = findViewById(R.id.register_email_editText);
+        emailEditText.addTextChangedListener(emailTextWatcher);
         emailEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
-                if(hasFocus) checkEmailRegular();
-            }
-        });
-        nameEditText = (EditText) findViewById(R.id.register_name_editText);
-        birthDateEditText = (EditText) findViewById(R.id.register_birth_date_editText);
-
-        calendarImageView = (ImageView) findViewById(R.id.register_calendar_imageView);
-        calendarImageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                isCalendarClicked = true;
-                Intent toDatePickerIntent = new Intent(RegisterActivity.this, DatePickerActivity.class);
-                startActivityForResult(toDatePickerIntent, DATE_REQUEST_CODE);
-            }
-        });
-
-        passwordHintTextView = (TextView) findViewById(R.id.register_password_hint_textView);
-        passwordCheckHintTextView = (TextView) findViewById(R.id.register_password_check_hint_textView);
-        emailHintTextView = (TextView) findViewById(R.id.register_email_hint_textView);
-        idDupHintTextView = (TextView) findViewById(R.id.register_id_dup_hint_textView);
-
-        idDupCheckButton = (Button) findViewById(R.id.register_dup_check_button);
-        idDupCheckButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String id = idEditText.getText().toString();
-                if(id.equals("")) Toast.makeText(getApplicationContext(), "아이디를 입력해주세요!", Toast.LENGTH_LONG).show();
-                else if(userIDList.contains(id)) {
-                    idDupHintTextView.setText(getString(R.string.register_dup_id));
-                    idDupHintTextView.setTextColor(Color.RED);
-                    isIdVeified = false;
+                if(hasFocus) {
+                    emailHintTextView.setTextColor(getResources().getColor(R.color.defaultText));
+                    emailHintTextView.setText(getString(R.string.activity_register_email_hint));
+                    emailHintTextView.startAnimation(animAppearHint);
                 } else {
-                    idDupHintTextView.setText(getString(R.string.register_not_dup_id));
-                    idDupHintTextView.setTextColor(Color.BLUE);
-                    isIdVeified = true;
+                    emailHintTextView.setText("");
                 }
             }
         });
-        preButton = (Button) findViewById(R.id.register_pre_button);
-        preButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                isBackPressed = true;
-                onBackPressed();
-            }
-        });
-        postButton = (Button) findViewById(R.id.register_post_button);
-        postButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                stopAllTimeTask();
-                Intent toLocationMainIntent = new Intent(RegisterActivity.this, LocationMainActivity.class);
-                Bundle userInfoBundle = new Bundle();
-                userInfoBundle.putString("userID", HashMsgUtil.getSHA256(idEditText.getText().toString()));
-                userInfoBundle.putString("userPassword", HashMsgUtil.getSHA256(passwordEditText.getText().toString()));
-                userInfoBundle.putString("userEmail", emailEditText.getText().toString());
-                userInfoBundle.putString("userBirthDate", birthDateEditText.getText().toString());
-                userInfoBundle.putString("userName", nameEditText.getText().toString());
-                userInfoBundle.putString("phoneNo", AES256Util.aesEncode(phoneNo));
-                toLocationMainIntent.putExtras(userInfoBundle);
-                startActivity(toLocationMainIntent);
-            }
-        });
+    }
 
-        checkPasswordTimer = new Timer();
-        checkPasswordMatchTimer = new Timer();
-        checkEmailTimer = new Timer();
-        checkAllInputDoneTimer = new Timer();
+    // 자원할당 해제
+    private void releaseResource() {
+        animAppearHint = null;
+
+        toolbarView = null;
+
+        idHintTextView = null;
+        passwordHintTextView = null;
+        emailHintTextView = null;
+
+        idEditText = null;
+        emailEditText = null;
+        passwordEditText = null;
+
+        dupIDCheckButton = null;
+
+        emailTextWatcher = null;
+        passwordTextWatcher = null;
+
+        backButton = null;
+    }
+
+    // 자원 할당
+    @Override
+    protected void onStart() {
+        super.onStart();
+        initFindViewById();
     }
 
     // 자원 할당 해제
-    private void releaseResource() {
-        idEditText = null;
-        passwordEditText = null;
-        passwordCheckEditText = null;
-        emailEditText = null;
-        nameEditText = null;
-        birthDateEditText = null;
-
-        isCalendarClicked = false;
-        // 기입률 진행 상황 알림 변수
-        isIdVeified = false;
-        isRegularPassword = false;
-        isPasswordMatch = false;
-        isRegularEmail = false;
-        isBirthDateDone = false;
-
-        calendarImageView = null;
-
-        passwordHintTextView = null;
-        passwordCheckHintTextView = null;
-        emailHintTextView = null;
-
-        idDupCheckButton = null;
-        preButton = null;
-        postButton = null;
-
-        checkPasswordTimer = null;
-        checkPasswordMatchTimer = null;
-        checkEmailTimer = null;
-        checkAllInputDoneTimer = null;
-    }
-
-    // 모든 TimerTask 중지
-    private void stopAllTimeTask() {
-        if(checkPasswordTimerTask != null) {
-            checkPasswordTimerTask.cancel();
-            checkPasswordTimerTask = null;
-        }
-        if(checkPasswordMatchTimerTask != null) {
-            checkPasswordMatchTimerTask.cancel();
-            checkPasswordMatchTimerTask = null;
-        }
-        if(checkEmailTimerTask != null) {
-            checkEmailTimerTask.cancel();
-            checkEmailTimerTask = null;
-        }
-        if(checkAllInputDoneTimerTask != null) {
-            checkAllInputDoneTimerTask.cancel();
-            checkAllInputDoneTimerTask = null;
-        }
-    }
-
-    // 사용자에게 보여지기 전 자원 할당
     @Override
-    protected void onResume() {
-        super.onResume();
-        if(!isCalendarClicked) {
-            if(isFirstExecuted) {
-                initFindViewById();
-                checkAllInputDone();
-                isFirstExecuted = false;
-            }
-        }
-        else isCalendarClicked = false;
-    }
-
-    // 사용자가 회원가입을 완전히 완료했을때에만 이 액티비티는 끝나야 한다
-    // 또한 회원가입 도중에 뒤의 회원가입정보를 수정하러 왔을 경우 그대로 값이 살아있어야한다
-    // 하지만 휴대폰 인증을 했다가 와서 다시 인증 화면으로 간 이후 다시 온다면 그 값은 없어진다
-    @Override
-    protected void onPause() {
-        super.onPause();
+    protected void onStop() {
+        super.onStop();
         if(isBackPressed) {
             releaseResource();
-            stopAllTimeTask();
             isBackPressed = false;
         }
     }
 
-    // onPause의 이유로 Destory 에서 자원할당 해제 (권장되지 않는 방식)
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        releaseResource();
-        stopAllTimeTask();
-        Debug.stopMethodTracing();
-    }
-
-    // 뒤로가기 버튼
     @Override
     public void onBackPressed() {
         super.onBackPressed();

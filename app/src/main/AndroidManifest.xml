@@ -10,7 +10,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".ui.register.DatePickerActivity" android:theme="@android:style/Theme.DeviceDefault.Light.Dialog"/>
-        <activity android:name=".ui.register.PhoneAuthRegActivity" />
+        <activity android:name=".ui.register.PhoneAuthActivity"/>
         <activity android:name=".ui.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
