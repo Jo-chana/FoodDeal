@@ -22,6 +22,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.hankki.fooddeal.R;
 import com.hankki.fooddeal.data.RegularCheck;
+import com.hankki.fooddeal.data.security.HashMsgUtil;
 import com.hankki.fooddeal.ui.IntroActivity;
 import com.hankki.fooddeal.ui.MainActivity;
 
@@ -36,7 +37,7 @@ public class RegisterActivity extends AppCompatActivity {
 
     private final static List<String> userIDList = new ArrayList<>(Arrays.asList("dlguwn13", "ggj0418", "tkyk103000"));
 
-    String phoneNo;
+    String phoneNo, userID, userPassword, userEmail;
 
     Animation animAppearHint;
 
@@ -49,9 +50,7 @@ public class RegisterActivity extends AppCompatActivity {
 
     TextWatcher passwordTextWatcher, emailTextWatcher;
 
-    boolean isBackPressed = false;
-    boolean isPasswordVisible;
-    boolean isNewID, isRegularPassword, isRegularEmail;
+    boolean isFirstExecuted = true, isBackPressed, isPasswordVisible, isNewID, isRegularPassword, isRegularEmail;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,6 +76,7 @@ public class RegisterActivity extends AppCompatActivity {
                     passwordHintTextView.setTextColor(Color.BLUE);
                     passwordHintTextView.setText("올바른 비밀번호 형식입니다");
                     isRegularPassword = true;
+                    userPassword = inputPassword;
                 }
                 else {
                     passwordHintTextView.setTextColor(Color.RED);
@@ -98,6 +98,7 @@ public class RegisterActivity extends AppCompatActivity {
                     emailHintTextView.setTextColor(Color.BLUE);
                     emailHintTextView.setText("올바른 이메일 형식입니다");
                     isRegularEmail = true;
+                    userEmail = inputEmail;
                 }
                 else {
                     emailHintTextView.setTextColor(Color.RED);
@@ -137,6 +138,7 @@ public class RegisterActivity extends AppCompatActivity {
                     idHintTextView.setTextColor(Color.BLUE);
                     idHintTextView.setText("사용가능한 아이디입니다");
                     isNewID = true;
+                    userID = inputID;
                 }
             }
         });
@@ -147,6 +149,10 @@ public class RegisterActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if(isNewID && isRegularEmail && isRegularPassword) {
                     Intent toMainIntent = new Intent(RegisterActivity.this, MainActivity.class);
+                    toMainIntent.putExtra("phoneNo", phoneNo);
+                    toMainIntent.putExtra("userID", HashMsgUtil.getSHA256(userID));
+                    toMainIntent.putExtra("userPassword", HashMsgUtil.getSHA256(userPassword));
+                    toMainIntent.putExtra("userEmail", userEmail);
                     startActivity(toMainIntent);
                     IntroActivity a1 = (IntroActivity) IntroActivity.activity;
                     PhoneAuthActivity a2 = (PhoneAuthActivity) PhoneAuthActivity.activity;
@@ -255,7 +261,10 @@ public class RegisterActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        initFindViewById();
+        if(isFirstExecuted) {
+            initFindViewById();
+            isFirstExecuted = false;
+        }
     }
 
     // 자원 할당 해제

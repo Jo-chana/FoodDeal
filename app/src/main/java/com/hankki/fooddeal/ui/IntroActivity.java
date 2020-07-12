@@ -53,4 +53,10 @@ public class IntroActivity extends AppCompatActivity {
             }
         });
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        activity = null;
+    }
 }

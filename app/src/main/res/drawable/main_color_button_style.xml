@@ -13,7 +13,7 @@
         android:bottom="0dp"
         />
     <stroke
-        android:width="2dp"
+        android:width="2sp"
         android:color="#000000"
         />
 </shape>

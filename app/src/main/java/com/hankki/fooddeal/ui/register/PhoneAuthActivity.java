@@ -47,10 +47,8 @@ public class PhoneAuthActivity extends AppCompatActivity {
     TextView timerTextView;
     String randomAuthNum;
 
-    boolean isAuthTimerOver = false;
-    boolean isBackPressed = false;
     boolean isFirstExecuted = true;
-    boolean isAuthDone;
+    boolean isAuthDone, isAuthTimerOver, isBackPressed;
 
     Disposable disposable;
 
@@ -67,7 +65,6 @@ public class PhoneAuthActivity extends AppCompatActivity {
 
     // 초기 UX 자원 할당
     private void initFindViewById() {
-
         authNumSendButton = (Button) findViewById(R.id.auth_num_send_button);
         // 인증번호 전송 버튼 클릭 시, 기입한 번호로 인증번호를 전송
         // TODO DB 연동 시, 해당 휴대폰 번호 중복여부 확인
@@ -287,6 +284,7 @@ public class PhoneAuthActivity extends AppCompatActivity {
             stopAuthNumTimerTask();
             stopRegularPhoneNoCheckTimerTask();
             releaseResource();
+            activity = null;
         }
     }
 
