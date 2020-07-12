@@ -11,7 +11,7 @@
 
     <include
         android:id="@+id/register_toolbar"
-        layout="@layout/layout_register_toolbar"
+        layout="@layout/layout_default_toolbar"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

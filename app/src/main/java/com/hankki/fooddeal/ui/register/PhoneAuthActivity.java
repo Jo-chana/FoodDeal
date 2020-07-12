@@ -17,6 +17,7 @@ import android.view.ViewTreeObserver;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -42,9 +43,12 @@ public class PhoneAuthActivity extends AppCompatActivity {
     @SuppressLint("StaticFieldLeak")
     public static Activity activity;
 
+    View toolbarView;
+
     Button authNumSendButton, authNumCheckButton, postButton;
     EditText userPhoneNumEditText, authNumEditText;
-    TextView timerTextView;
+    TextView timerTextView, toolbarTextView;
+    ImageView backButton;
     String randomAuthNum;
 
     boolean isFirstExecuted = true;
@@ -65,6 +69,19 @@ public class PhoneAuthActivity extends AppCompatActivity {
 
     // 초기 UX 자원 할당
     private void initFindViewById() {
+        toolbarView = findViewById(R.id.register_toolbar);
+
+        toolbarTextView = toolbarView.findViewById(R.id.toolbar_title);
+        toolbarTextView.setText(getString(R.string.activity_register_toolbar));
+
+        backButton = toolbarView.findViewById(R.id.back_button);
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
+
         authNumSendButton = (Button) findViewById(R.id.auth_num_send_button);
         // 인증번호 전송 버튼 클릭 시, 기입한 번호로 인증번호를 전송
         // TODO DB 연동 시, 해당 휴대폰 번호 중복여부 확인
@@ -255,6 +272,9 @@ public class PhoneAuthActivity extends AppCompatActivity {
 
     // 자원 해제
     private void releaseResource() {
+        toolbarView = null;
+        backButton = null;
+
         authNumSendButton = null;
         authNumCheckButton = null;
         userPhoneNumEditText = null;

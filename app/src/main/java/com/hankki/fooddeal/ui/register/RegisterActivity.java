@@ -43,7 +43,7 @@ public class RegisterActivity extends AppCompatActivity {
 
     View toolbarView;
 
-    TextView idHintTextView, passwordHintTextView, emailHintTextView;
+    TextView idHintTextView, passwordHintTextView, emailHintTextView, toolbarTextView;
     EditText idEditText, passwordEditText, emailEditText;
     ImageView backButton;
     Button dupIDCheckButton, postButton;
@@ -109,6 +109,10 @@ public class RegisterActivity extends AppCompatActivity {
         };
 
         toolbarView = findViewById(R.id.register_toolbar);
+
+        toolbarTextView = toolbarView.findViewById(R.id.toolbar_title);
+        toolbarTextView.setText(getString(R.string.activity_register_toolbar));
+
         idHintTextView = findViewById(R.id.register_id_dup_hint_textView);
         passwordHintTextView = findViewById(R.id.register_password_hint_textView);
         emailHintTextView = findViewById(R.id.register_email_hint_textView);
