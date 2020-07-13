@@ -56,5 +56,5 @@ dependencies {
     implementation 'com.android.volley:volley:1.1.0'
 
     // 메모리 누수 탐지 라이브러리
-    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.0-beta-2'
+    // debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.0-beta-2'
 }
