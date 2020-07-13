@@ -20,8 +20,14 @@ import android.widget.Toast;
 
 import com.hankki.fooddeal.R;
 import com.hankki.fooddeal.data.RegularCheck;
+import com.hankki.fooddeal.data.retrofit.APIClient;
+import com.hankki.fooddeal.data.retrofit.APIInterface;
+import com.hankki.fooddeal.data.retrofit.retrofitDTO.MemberResponse;
 import com.hankki.fooddeal.data.security.AES256Util;
+import com.hankki.fooddeal.ui.MainActivity;
+import com.hankki.fooddeal.ui.login.LoginActivity;
 
+import java.util.HashMap;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -32,10 +38,15 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 // 본격 회원가입 창 이전에 휴대폰 번호를 인증하는 액티비티
 // TODO TimeTask 대신 TextWatcher를 사용하면 더 자원관리가 효율적일 것 같으니 나중에 변경하면 될듯
 public class PhoneAuthActivity extends AppCompatActivity {
+
+    private APIInterface apiInterface;
 
     @SuppressLint("StaticFieldLeak")
     public static Activity activity;
@@ -66,6 +77,8 @@ public class PhoneAuthActivity extends AppCompatActivity {
 
     // 초기 UX 자원 할당
     private void initFindViewById() {
+        apiInterface = APIClient.getClient().create(APIInterface.class);
+
         toolbarView = findViewById(R.id.login_toolbar);
 
         toolbarTextView = toolbarView.findViewById(R.id.toolbar_title);
@@ -84,12 +97,7 @@ public class PhoneAuthActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String phoneNo = userPhoneNumEditText.getText().toString();
-                if(RegularCheck.isRegularPhoneNo(phoneNo)) {
-                    setSMSTask(phoneNo);
-                    authNumCheckButton.setEnabled(true);
-                    authNumSendButton.setText("재전송");
-                    authNumEditText.requestFocus();
-                }
+                if(RegularCheck.isRegularPhoneNo(phoneNo)) { checkPhoneNo(phoneNo); }
                 else { Toast.makeText(getApplicationContext(), "올바른 휴대폰 번호가 아닙니다\n휴대폰 번호를 확인해주세요", Toast.LENGTH_LONG).show(); }
             }
         });
@@ -147,6 +155,34 @@ public class PhoneAuthActivity extends AppCompatActivity {
         });
         authNumEditText = (EditText) findViewById(R.id.auth_num_edittext);
         timerTextView = (TextView) findViewById(R.id.auth_num_check_timer);
+    }
+
+    @SuppressWarnings("NullableProblems")
+    private void checkPhoneNo(String phoneNo) {
+        HashMap<String, String> body = new HashMap<>();
+        body.put("USER_PHONE", AES256Util.aesEncode(phoneNo));
+
+        Call<MemberResponse> checkPhoneNoCall = apiInterface.checkPhoneNo(body);
+        checkPhoneNoCall.enqueue(new Callback<MemberResponse>() {
+            @Override
+            public void onResponse(Call<MemberResponse> call, Response<MemberResponse> response) {
+                MemberResponse memberResponse = response.body();
+                if (memberResponse != null &&
+                        memberResponse.getResponseCode() == 700) {
+                    setSMSTask(phoneNo);
+                    authNumCheckButton.setEnabled(true);
+                    authNumSendButton.setText("재전송");
+                    authNumEditText.requestFocus();
+
+                    body.clear();
+                } else { Toast.makeText(getApplicationContext(), "이미 등록된 휴대폰 번호입니다", Toast.LENGTH_LONG).show(); }
+            }
+
+            @Override
+            public void onFailure(Call<MemberResponse> call, Throwable t) {
+                t.printStackTrace();
+            }
+        });
     }
 
     // 인증번호를 포함한 문자메시지 전송
@@ -260,6 +296,8 @@ public class PhoneAuthActivity extends AppCompatActivity {
 
     // 자원 해제
     private void releaseResource() {
+        apiInterface = null;
+
         toolbarView = null;
         backButton = null;
 

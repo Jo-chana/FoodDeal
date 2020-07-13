@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Debug;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.method.HideReturnsTransformationMethod;
@@ -16,25 +17,35 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.hankki.fooddeal.R;
 import com.hankki.fooddeal.data.RegularCheck;
+import com.hankki.fooddeal.data.retrofit.APIClient;
+import com.hankki.fooddeal.data.retrofit.APIInterface;
+import com.hankki.fooddeal.data.retrofit.retrofitDTO.MemberResponse;
+import com.hankki.fooddeal.data.security.AES256Util;
 import com.hankki.fooddeal.data.security.HashMsgUtil;
 import com.hankki.fooddeal.ui.IntroActivity;
 import com.hankki.fooddeal.ui.MainActivity;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /** 회원가입 회면
  *  소비자용, 사업자용 버튼 이용해서 선택*/
 // TODO 최종 회원가입 완료창이 떴을 때, 이때에 자원 할당 해제하는 부분이 필요
 public class RegisterActivity extends AppCompatActivity {
 
-    private final static List<String> userIDList = new ArrayList<>(Arrays.asList("dlguwn13", "ggj0418", "tkyk103000"));
+    private APIInterface apiInterface;
 
     String phoneNo, userID, userPassword, userEmail;
 
@@ -56,12 +67,15 @@ public class RegisterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
+        // 암호화 된 전화번호가 넘어왔음
         if(getIntent() != null) phoneNo = getIntent().getStringExtra("phoneNo");
     }
 
     // 자원할당 및 이벤트 설정
     @SuppressLint("ClickableViewAccessibility")
     private void initFindViewById() {
+        apiInterface = APIClient.getClient().create(APIInterface.class);
+
         // 패스워드의 정규성을 실시간으로 파악
         passwordTextWatcher = new TextWatcher() {
             @Override
@@ -75,7 +89,7 @@ public class RegisterActivity extends AppCompatActivity {
                     passwordHintTextView.setTextColor(Color.BLUE);
                     passwordHintTextView.setText("올바른 비밀번호 형식입니다");
                     isRegularPassword = true;
-                    userPassword = inputPassword;
+                    userPassword = AES256Util.aesEncode(inputPassword);
                 }
                 else {
                     passwordHintTextView.setTextColor(Color.RED);
@@ -132,15 +146,7 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String inputID = idEditText.getText().toString();
-                if(userIDList.contains(inputID)) {
-                    idHintTextView.setTextColor(Color.RED);
-                    idHintTextView.setText("이미 존재하는 아이디입니다");
-                } else {
-                    idHintTextView.setTextColor(Color.BLUE);
-                    idHintTextView.setText("사용가능한 아이디입니다");
-                    isNewID = true;
-                    userID = inputID;
-                }
+                checkDupID(inputID);
             }
         });
 
@@ -148,19 +154,8 @@ public class RegisterActivity extends AppCompatActivity {
         postButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(isNewID && isRegularEmail && isRegularPassword) {
-                    Intent toMainIntent = new Intent(RegisterActivity.this, MainActivity.class);
-                    toMainIntent.putExtra("phoneNo", phoneNo);
-                    toMainIntent.putExtra("userID", HashMsgUtil.getSHA256(userID));
-                    toMainIntent.putExtra("userPassword", HashMsgUtil.getSHA256(userPassword));
-                    toMainIntent.putExtra("userEmail", userEmail);
-                    startActivity(toMainIntent);
-                    IntroActivity a1 = (IntroActivity) IntroActivity.activity;
-                    PhoneAuthActivity a2 = (PhoneAuthActivity) PhoneAuthActivity.activity;
-                    a1.finish();
-                    a2.finish();
-                    finish();
-                }
+                if(isNewID && isRegularEmail && isRegularPassword) { register(phoneNo, userID, userPassword, userEmail); }
+                else { Toast.makeText(getApplicationContext(), "입력값을 다시 한번 확인해주세요", Toast.LENGTH_SHORT).show(); }
             }
         });
 
@@ -222,7 +217,7 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if(hasFocus) {
-                    emailHintTextView.setTextColor(getResources().getColor(R.color.defaultText));
+                    emailHintTextView.setTextColor(getColor(R.color.defaultText));
                     emailHintTextView.setText(getString(R.string.activity_register_email_hint));
                     emailHintTextView.startAnimation(animAppearHint);
                 } else { emailHintTextView.setText(""); }
@@ -232,6 +227,8 @@ public class RegisterActivity extends AppCompatActivity {
 
     // 자원할당 해제
     private void releaseResource() {
+        apiInterface = null;
+
         animAppearHint = null;
 
         toolbarView = null;
@@ -245,11 +242,79 @@ public class RegisterActivity extends AppCompatActivity {
         passwordEditText = null;
 
         dupIDCheckButton = null;
+        postButton = null;
 
         emailTextWatcher = null;
         passwordTextWatcher = null;
 
         backButton = null;
+    }
+
+    @SuppressWarnings("NullableProblems")
+    private void register(String phone, String id, String password, String email) {
+        HashMap<String, String> body = new HashMap<>();
+        body.put("USER_PHONE", phone);
+        body.put("USER_HASH_ID", id);
+        body.put("USER_HASH_PW", password);
+        body.put("USER_EMAIL", email);
+
+        Call<MemberResponse> registerCall = apiInterface.register(body);
+        registerCall.enqueue(new Callback<MemberResponse>() {
+            @Override
+            public void onResponse(Call<MemberResponse> call, Response<MemberResponse> response) {
+                MemberResponse memberResponse = response.body();
+                if (memberResponse != null &&
+                        memberResponse.getResponseCode() == 600) {
+                    IntroActivity a1 = (IntroActivity) IntroActivity.activity;
+                    PhoneAuthActivity a2 = (PhoneAuthActivity) PhoneAuthActivity.activity;
+                    a1.finish();
+                    a2.finish();
+
+                    Intent toMainIntent = new Intent(RegisterActivity.this, MainActivity.class);
+                    startActivity(toMainIntent);
+                    releaseResource();
+                    finish();
+
+                    body.clear();
+                } else { Toast.makeText(getApplicationContext(), "서버와의 연결이 불안정합니다", Toast.LENGTH_SHORT).show(); }
+            }
+
+            @Override
+            public void onFailure(Call<MemberResponse> call, Throwable t) {
+                t.printStackTrace();
+            }
+        });
+    }
+
+    @SuppressWarnings("NullableProblems")
+    private void checkDupID(String userId) {
+        HashMap<String, String> body = new HashMap<>();
+        body.put("USER_HASH_ID", AES256Util.aesEncode(userId));
+
+        Call<MemberResponse> checkDupIDCall = apiInterface.checkDupID(body);
+        checkDupIDCall.enqueue(new Callback<MemberResponse>() {
+            @Override
+            public void onResponse(Call<MemberResponse> call, Response<MemberResponse> response) {
+                MemberResponse memberResponse = response.body();
+                if (memberResponse != null &&
+                        memberResponse.getResponseCode() == 605) {
+                    idHintTextView.setTextColor(Color.BLUE);
+                    idHintTextView.setText("사용가능한 아이디입니다");
+                    isNewID = true;
+                    userID = AES256Util.aesEncode(userId);
+
+                    body.clear();
+                } else {
+                    idHintTextView.setTextColor(Color.RED);
+                    idHintTextView.setText("이미 존재하는 아이디입니다");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<MemberResponse> call, Throwable t) {
+                t.printStackTrace();
+            }
+        });
     }
 
     // 자원 할당
@@ -276,5 +341,11 @@ public class RegisterActivity extends AppCompatActivity {
     public void onBackPressed() {
         super.onBackPressed();
         isBackPressed = true;
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Debug.stopMethodTracing();
     }
 }
