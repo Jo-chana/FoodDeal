@@ -124,9 +124,7 @@ public class RegisterActivity extends AppCompatActivity {
         backButton = toolbarView.findViewById(R.id.back_button);
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
+            public void onClick(View v) { onBackPressed(); }
         });
 
         dupIDCheckButton = findViewById(R.id.register_dup_check_button);
@@ -174,9 +172,7 @@ public class RegisterActivity extends AppCompatActivity {
                     idHintTextView.setTextColor(getResources().getColor(R.color.defaultText));
                     idHintTextView.setText(getString(R.string.activity_register_id_hint));
                     idHintTextView.startAnimation(animAppearHint);
-                } else {
-                    idHintTextView.setText("");
-                }
+                } else { idHintTextView.setText(""); }
             }
         });
 
@@ -216,9 +212,7 @@ public class RegisterActivity extends AppCompatActivity {
                     passwordHintTextView.setTextColor(getResources().getColor(R.color.defaultText));
                     passwordHintTextView.setText(getString(R.string.activity_register_password_hint));
                     passwordHintTextView.startAnimation(animAppearHint);
-                } else {
-                    passwordHintTextView.setText("");
-                }
+                } else { passwordHintTextView.setText(""); }
             }
         });
 
@@ -231,9 +225,7 @@ public class RegisterActivity extends AppCompatActivity {
                     emailHintTextView.setTextColor(getResources().getColor(R.color.defaultText));
                     emailHintTextView.setText(getString(R.string.activity_register_email_hint));
                     emailHintTextView.startAnimation(animAppearHint);
-                } else {
-                    emailHintTextView.setText("");
-                }
+                } else { emailHintTextView.setText(""); }
             }
         });
     }
