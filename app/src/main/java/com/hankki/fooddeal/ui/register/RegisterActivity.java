@@ -42,7 +42,6 @@ import retrofit2.Response;
 
 /** 회원가입 회면
  *  소비자용, 사업자용 버튼 이용해서 선택*/
-// TODO 최종 회원가입 완료창이 떴을 때, 이때에 자원 할당 해제하는 부분이 필요
 public class RegisterActivity extends AppCompatActivity {
 
     private APIInterface apiInterface;
@@ -226,6 +225,7 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     // 자원할당 해제
+    @SuppressLint("ClickableViewAccessibility")
     private void releaseResource() {
         apiInterface = null;
 
@@ -265,15 +265,8 @@ public class RegisterActivity extends AppCompatActivity {
                 MemberResponse memberResponse = response.body();
                 if (memberResponse != null &&
                         memberResponse.getResponseCode() == 600) {
-                    IntroActivity a1 = (IntroActivity) IntroActivity.activity;
-                    PhoneAuthActivity a2 = (PhoneAuthActivity) PhoneAuthActivity.activity;
-                    a1.finish();
-                    a2.finish();
-
                     Intent toMainIntent = new Intent(RegisterActivity.this, MainActivity.class);
                     startActivity(toMainIntent);
-                    releaseResource();
-                    finish();
 
                     body.clear();
                 } else { Toast.makeText(getApplicationContext(), "서버와의 연결이 불안정합니다", Toast.LENGTH_SHORT).show(); }
@@ -346,6 +339,7 @@ public class RegisterActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        releaseResource();
         Debug.stopMethodTracing();
     }
 }

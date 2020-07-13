@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.os.Handler;
 
 import com.hankki.fooddeal.R;
+import com.hankki.fooddeal.data.ForcedTerminationService;
 import com.hankki.fooddeal.data.PreferenceManager;
 import com.hankki.fooddeal.ui.login.LoginActivity;
 
@@ -19,6 +20,7 @@ public class SplashActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
+        startService(new Intent(this, ForcedTerminationService.class));
 
         /**스플래쉬 핸들러 바꾸어야 함.
          * 메인으로 넘어가기 전 로그인 유지 상태인지, 아닌지 판단하여

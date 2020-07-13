@@ -43,13 +43,10 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 // 본격 회원가입 창 이전에 휴대폰 번호를 인증하는 액티비티
-// TODO TimeTask 대신 TextWatcher를 사용하면 더 자원관리가 효율적일 것 같으니 나중에 변경하면 될듯
+// TODO 패스워드 입력 텍스트를 rightDrawable 대신 Toggle로 해야지 InputMethodManager 자원 해제 가능
 public class PhoneAuthActivity extends AppCompatActivity {
 
     private APIInterface apiInterface;
-
-    @SuppressLint("StaticFieldLeak")
-    public static Activity activity;
 
     View toolbarView;
 
@@ -71,8 +68,6 @@ public class PhoneAuthActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_phone_auth_reg);
-
-        activity = PhoneAuthActivity.this;
     }
 
     // 초기 UX 자원 할당
@@ -92,7 +87,6 @@ public class PhoneAuthActivity extends AppCompatActivity {
 
         authNumSendButton = (Button) findViewById(R.id.auth_num_send_button);
         // 인증번호 전송 버튼 클릭 시, 기입한 번호로 인증번호를 전송
-        // TODO DB 연동 시, 해당 휴대폰 번호 중복여부 확인
         authNumSendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -299,12 +293,16 @@ public class PhoneAuthActivity extends AppCompatActivity {
         apiInterface = null;
 
         toolbarView = null;
-        backButton = null;
 
+        backButton = null;
         authNumSendButton = null;
         authNumCheckButton = null;
+        postButton = null;
+
         userPhoneNumEditText = null;
+
         authNumEditText = null;
+
         timerTextView = null;
         authNumTimer = null;
         checkRegularPhoneNoTimer = null;
@@ -330,12 +328,10 @@ public class PhoneAuthActivity extends AppCompatActivity {
             stopAuthNumTimerTask();
             stopRegularPhoneNoCheckTimerTask();
             releaseResource();
-            activity = null;
         }
     }
 
-    // 개인정보입력 액티비티가 끝나면 이 액티비티도 자동으로 종료되게 만들 예정이라 자원할당 해제할 타이밍이 없음.
-    // 비권장사항이지만 일단은 이렇게
+    // 메인 액티비티에서 프로세스 종료시 자원 할당 해제
     @Override
     protected void onDestroy() {
         super.onDestroy();

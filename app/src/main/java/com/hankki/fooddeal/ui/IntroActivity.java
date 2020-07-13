@@ -18,15 +18,11 @@ public class IntroActivity extends AppCompatActivity {
 
     private Button btn_login, btn_register;
 
-    @SuppressLint("StaticFieldLeak")
-    public static Activity activity;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_intro);
         onClickButton();
-        activity = IntroActivity.this;
     }
 
     private void onClickButton(){
@@ -57,6 +53,7 @@ public class IntroActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        activity = null;
+        btn_login = null;
+        btn_register = null;
     }
 }

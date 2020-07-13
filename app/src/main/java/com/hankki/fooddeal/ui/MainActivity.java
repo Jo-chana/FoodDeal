@@ -34,4 +34,12 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupWithNavController(navView, navController);
     }
+
+    // 뒤로가기 버튼 클릭 시 루트 액티비티인 인트로 액티비티 종료
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        navView = null;
+        finishAffinity();
+    }
 }

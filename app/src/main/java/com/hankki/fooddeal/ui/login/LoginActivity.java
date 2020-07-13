@@ -63,6 +63,7 @@ import retrofit2.Response;
 /* 이현준 (2020.07.13)
 사업자 탭이 없어졌으므로 탭 부분 삭제
 */
+// TODO 패스워드 입력 텍스트를 rightDrawable 대신 Toggle로 해야지 InputMethodManager 자원 해제 가능
 public class LoginActivity extends AppCompatActivity {
 
     private APIInterface apiInterface;
@@ -198,12 +199,8 @@ public class LoginActivity extends AppCompatActivity {
                 MemberResponse memberResponse = response.body();
                 if (memberResponse != null &&
                         memberResponse.getResponseCode() == 500) {
-                    IntroActivity a1 = (IntroActivity) IntroActivity.activity;
-                    a1.finish();
-
                     Intent toMainIntent = new Intent(LoginActivity.this, MainActivity.class);
                     startActivity(toMainIntent);
-                    finish();
                 } else { loginErrorHintTextView.setText(getString(R.string.activity_login_error_input)); }
             }
 

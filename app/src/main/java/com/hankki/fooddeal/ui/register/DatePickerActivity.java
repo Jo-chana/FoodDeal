@@ -64,10 +64,7 @@ public class DatePickerActivity extends Activity {
     //바깥레이어 클릭시 안닫히게
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if(event.getAction()==MotionEvent.ACTION_OUTSIDE){
-            return false;
-        }
-        return true;
+        return event.getAction() != MotionEvent.ACTION_OUTSIDE;
     }
 
     //안드로이드 백버튼 막기
