@@ -6,6 +6,14 @@
     <string name="title_chatting">채팅</string>
     <string name="title_mypage">마이</string>
 
+    // activity_login.xml
+    <string name="activity_login_welcome">푸드딜에 어서오세요</string>
+    <string name="activity_login_welcome_hint">아이디와 비밀번호를 입력해주세요 :)</string>
+    <string name="activity_login_missing_password">비밀번호를 잊으셨나요?</string>
+    <string name="activity_login_error_input">아이디와 비밀번호를 확인해주세요</string>
+
+    <string name="activity_login_login_button">로그인</string>
+
     // activity_phone_auth_reg.xml
     <string name="activity_phone_auth_phoneNum_hint">전화번호를 인증하세요</string>
     <string name="activity_phone_auth_authNum_hint">전송받은 6자리 인증번호를 입력해주세요</string>

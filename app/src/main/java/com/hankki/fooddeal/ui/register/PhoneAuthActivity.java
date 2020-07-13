@@ -1,19 +1,16 @@
 package com.hankki.fooddeal.ui.register;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Debug;
 import android.telephony.SmsManager;
 import android.view.View;
-import android.view.ViewTreeObserver;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -69,7 +66,7 @@ public class PhoneAuthActivity extends AppCompatActivity {
 
     // 초기 UX 자원 할당
     private void initFindViewById() {
-        toolbarView = findViewById(R.id.register_toolbar);
+        toolbarView = findViewById(R.id.login_toolbar);
 
         toolbarTextView = toolbarView.findViewById(R.id.toolbar_title);
         toolbarTextView.setText(getString(R.string.activity_register_toolbar));
@@ -77,9 +74,7 @@ public class PhoneAuthActivity extends AppCompatActivity {
         backButton = toolbarView.findViewById(R.id.back_button);
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
+            public void onClick(View v) { onBackPressed(); }
         });
 
         authNumSendButton = (Button) findViewById(R.id.auth_num_send_button);
@@ -95,7 +90,7 @@ public class PhoneAuthActivity extends AppCompatActivity {
                     authNumSendButton.setText("재전송");
                     authNumEditText.requestFocus();
                 }
-                else Toast.makeText(getApplicationContext(), "올바른 휴대폰 번호가 아닙니다\n휴대폰 번호를 확인해주세요", Toast.LENGTH_LONG).show();
+                else { Toast.makeText(getApplicationContext(), "올바른 휴대폰 번호가 아닙니다\n휴대폰 번호를 확인해주세요", Toast.LENGTH_LONG).show(); }
             }
         });
         authNumCheckButton = (Button) findViewById(R.id.auth_num_check_button);
@@ -109,9 +104,8 @@ public class PhoneAuthActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String authNumInput = authNumEditText.getText().toString();
-                if(isAuthTimerOver) {
-                    Toast.makeText(getApplicationContext(), "인증유효시간이 초과하였습니다.\n인증번호를 재발급받아주세요", Toast.LENGTH_LONG).show();
-                } else {
+                if(isAuthTimerOver) { Toast.makeText(getApplicationContext(), "인증유효시간이 초과하였습니다.\n인증번호를 재발급받아주세요", Toast.LENGTH_LONG).show(); }
+                else {
                     if (authNumInput.equals(randomAuthNum)) {
                         stopAuthNumTimerTask();
                         if(v != null) {
@@ -129,7 +123,7 @@ public class PhoneAuthActivity extends AppCompatActivity {
                 }
             }
         });
-        postButton = findViewById(R.id.auth_num_post_button);
+        postButton = findViewById(R.id.login_button);
         postButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -140,21 +134,15 @@ public class PhoneAuthActivity extends AppCompatActivity {
                     toRegisterIntent.putExtra("phoneNo", phoneNo);
                     startActivity(toRegisterIntent);
                     isAuthDone = false;
-                } else {
-                    Toast.makeText(getApplicationContext(), "휴대폰 인증이 완료되지 않았습니다", Toast.LENGTH_LONG).show();
-                }
+                } else { Toast.makeText(getApplicationContext(), "휴대폰 인증이 완료되지 않았습니다", Toast.LENGTH_LONG).show(); }
             }
         });
-        userPhoneNumEditText = (EditText) findViewById(R.id.user_phone_num_edittext);
+        userPhoneNumEditText = (EditText) findViewById(R.id.user_id_edittext);
         userPhoneNumEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
-                if(hasFocus) {
-                    startRegularPhoneNoCheckTimerTask();
-                }
-                else {
-                    stopRegularPhoneNoCheckTimerTask();
-                }
+                if(hasFocus) { startRegularPhoneNoCheckTimerTask(); }
+                else { stopRegularPhoneNoCheckTimerTask(); }
             }
         });
         authNumEditText = (EditText) findViewById(R.id.auth_num_edittext);

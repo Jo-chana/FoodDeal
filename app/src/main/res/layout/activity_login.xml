@@ -1,26 +1,170 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="#FFFFFF">
+
+    <include
+        android:id="@+id/login_toolbar"
+        layout="@layout/layout_default_toolbar"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:padding="30dp"
-        android:layout_width="match_parent"
+        android:id="@+id/textView8"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="로그인"
+        android:text="@string/activity_login_welcome"
+        android:textColor="#000000"
         android:textSize="30sp"
-        android:textAlignment="center"
-        android:layout_marginBottom="20dp"/>
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintStart_toStartOf="@+id/textView10"
+        app:layout_constraintTop_toTopOf="@+id/login_toolbar"
+        app:layout_constraintVertical_bias="0.275"
+        app:layout_constraintWidth_default="percent"
+        app:layout_constraintWidth_percent="0.8" />
 
-    <com.google.android.material.tabs.TabLayout
-        android:id="@+id/tl_login"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+    <TextView
+        android:id="@+id/textView10"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/activity_login_welcome_hint"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/textView11"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintStart_toStartOf="@+id/textView11"
+        app:layout_constraintTop_toBottomOf="@+id/textView8"
+        app:layout_constraintVertical_bias="0.3"
+        app:layout_constraintWidth_default="percent"
+        app:layout_constraintWidth_percent="0.8" />
 
-    <androidx.viewpager2.widget.ViewPager2
-        android:id="@+id/vp_login"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
-</LinearLayout>
+    <TextView
+        android:id="@+id/textView11"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/activity_register_id"
+        android:textColor="#000000"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/user_id_edittext"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/user_id_edittext"
+        app:layout_constraintTop_toTopOf="@+id/login_toolbar"
+        app:layout_constraintVertical_bias="0.98"
+        app:layout_constraintWidth_default="percent"
+        app:layout_constraintWidth_percent="0.15" />
+
+    <androidx.appcompat.widget.AppCompatEditText
+        android:id="@+id/user_id_edittext"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/round_edittext"
+        android:ems="10"
+        android:gravity="start"
+        android:inputType="textMultiLine|textNoSuggestions|textUri"
+        android:paddingStart="12sp"
+        android:paddingTop="12sp"
+        android:paddingEnd="12sp"
+        android:paddingBottom="12sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent="0.063"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/login_toolbar"
+        app:layout_constraintVertical_bias="0.5"
+        app:layout_constraintWidth_default="percent"
+        app:layout_constraintWidth_percent="0.867" />
+
+    <TextView
+        android:id="@+id/id_password_error_hint"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/user_id_edittext"
+        app:layout_constraintTop_toBottomOf="@+id/user_id_edittext"
+        app:layout_constraintVertical_bias="0.02"
+        app:layout_constraintWidth_default="percent"
+        app:layout_constraintWidth_percent="0.8" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/activity_register_password"
+        android:textColor="#000000"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintStart_toStartOf="@+id/user_id_edittext"
+        app:layout_constraintTop_toBottomOf="@+id/user_id_edittext"
+        app:layout_constraintVertical_bias="0.1152"
+        app:layout_constraintWidth_default="percent"
+        app:layout_constraintWidth_percent="0.2" />
+
+    <TextView
+        android:id="@+id/missing_password_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="end"
+        android:text="@string/activity_login_missing_password"
+        android:textColor="#000000"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/user_id_edittext"
+        app:layout_constraintHorizontal_bias="1"
+        app:layout_constraintStart_toEndOf="@+id/textView3"
+        app:layout_constraintTop_toTopOf="@+id/textView3"
+        app:layout_constraintVertical_bias="0"
+        app:layout_constraintWidth_default="percent"
+        app:layout_constraintWidth_percent="0.4" />
+
+    <androidx.appcompat.widget.AppCompatEditText
+        android:id="@+id/user_password_edittext"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/round_edittext"
+        android:ems="10"
+        android:gravity="start"
+        android:paddingStart="12sp"
+        android:paddingTop="12sp"
+        android:paddingEnd="12sp"
+        android:paddingBottom="12sp"
+        android:drawableEnd="@drawable/ic_password_eye_close"
+        android:inputType="textMultiLine|textNoSuggestions|textPassword"
+        android:longClickable="false"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent="0.063"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView3"
+        app:layout_constraintVertical_bias="0.02"
+        app:layout_constraintWidth_default="percent"
+        app:layout_constraintWidth_percent="0.867" />
+
+    <Button
+        android:id="@+id/login_button"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/post_button"
+        android:enabled="false"
+        android:text="@string/activity_login_login_button"
+        android:textColor="#FFFFFF"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/user_password_edittext"
+        app:layout_constraintStart_toStartOf="@+id/user_password_edittext"
+        app:layout_constraintTop_toTopOf="@+id/login_toolbar"
+        app:layout_constraintVertical_bias="0.78"
+        app:layout_constraintWidth_default="percent"
+        app:layout_constraintWidth_percent="0.867" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

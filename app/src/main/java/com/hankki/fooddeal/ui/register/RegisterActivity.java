@@ -16,7 +16,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -108,7 +107,7 @@ public class RegisterActivity extends AppCompatActivity {
             }
         };
 
-        toolbarView = findViewById(R.id.register_toolbar);
+        toolbarView = findViewById(R.id.login_toolbar);
 
         toolbarTextView = toolbarView.findViewById(R.id.toolbar_title);
         toolbarTextView.setText(getString(R.string.activity_register_toolbar));

@@ -10,7 +10,7 @@
     >
 
     <include
-        android:id="@+id/register_toolbar"
+        android:id="@+id/login_toolbar"
         layout="@layout/layout_default_toolbar"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -28,7 +28,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/register_toolbar"
+        app:layout_constraintTop_toTopOf="@+id/login_toolbar"
         app:layout_constraintVertical_bias="0.112"
         app:layout_constraintHorizontal_bias="0.067"
         app:layout_constraintWidth_default="percent"
