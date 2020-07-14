@@ -42,6 +42,7 @@ import retrofit2.Response;
 
 /** 회원가입 회면
  *  소비자용, 사업자용 버튼 이용해서 선택*/
+// TODO 패스워드 입력 텍스트를 rightDrawable 대신 Toggle로 해야지 InputMethodManager 자원 해제 가능
 public class RegisterActivity extends AppCompatActivity {
 
     private APIInterface apiInterface;

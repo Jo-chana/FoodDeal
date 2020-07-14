@@ -16,7 +16,7 @@
         android:usesCleartextTraffic="true">
         <service android:name=".data.ForcedTerminationService"
             android:stopWithTask="false"/>
-        <activity android:name=".ui.register.DatePickerActivity" android:theme="@android:style/Theme.DeviceDefault.Light.Dialog"/>
+
         <activity android:name=".ui.register.PhoneAuthActivity"/>
         <activity android:name=".ui.SplashActivity">
             <intent-filter>
@@ -28,12 +28,9 @@
         <activity android:name=".ui.IntroActivity" />
         <activity android:name=".ui.login.LoginActivity" />
         <activity android:name=".ui.register.RegisterActivity"/>
-        <activity android:name=".ui.register.CommonRegisterActivity" />
         <activity android:name=".ui.register.location.CurrentLocationReg" />
         <activity android:name=".ui.register.location.LocationMainActivity" />
         <activity android:name=".ui.register.location.WriteLocationReg" />
-        <activity android:name=".ui.register.MarketRegActivity" />
-        <activity android:name=".ui.register.UserProfileRegActivity" />
         <activity android:name=".ui.MainActivity" />
     </application>
 

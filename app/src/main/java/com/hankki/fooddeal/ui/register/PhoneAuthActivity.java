@@ -43,7 +43,6 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 // 본격 회원가입 창 이전에 휴대폰 번호를 인증하는 액티비티
-// TODO 패스워드 입력 텍스트를 rightDrawable 대신 Toggle로 해야지 InputMethodManager 자원 해제 가능
 public class PhoneAuthActivity extends AppCompatActivity {
 
     private APIInterface apiInterface;
