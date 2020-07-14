@@ -13,11 +13,6 @@
         android:title="@string/title_grouppurchase" />
 
     <item
-        android:id="@+id/navigation_recommendation"
-        android:icon="@drawable/test"
-        android:title="@string/title_recommendation" />
-
-    <item
         android:id="@+id/navigation_chatting"
         android:icon="@drawable/test"
         android:title="@string/title_chatting" />

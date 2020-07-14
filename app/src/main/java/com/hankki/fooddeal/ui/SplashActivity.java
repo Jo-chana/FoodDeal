@@ -3,13 +3,11 @@ package com.hankki.fooddeal.ui;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 
 import com.hankki.fooddeal.R;
 import com.hankki.fooddeal.data.PreferenceManager;
-import com.hankki.fooddeal.ui.login.LoginActivity;
 
 /**스플래쉬 화면*/
 public class SplashActivity extends AppCompatActivity {

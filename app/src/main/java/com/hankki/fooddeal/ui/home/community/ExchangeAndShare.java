@@ -1,6 +1,6 @@
 package com.hankki.fooddeal.ui.home.community;
 
-import android.app.ActionBar;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,7 +11,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.hankki.fooddeal.R;
-import com.hankki.fooddeal.ux.recyclerview.PostAdapter;
+import com.hankki.fooddeal.data.staticdata.StaticPost;
 import com.hankki.fooddeal.ux.recyclerview.SetRecyclerViewOption;
 import com.scalified.fab.ActionButton;
 
@@ -21,6 +21,8 @@ public class ExchangeAndShare extends Fragment {
     View view;
     RecyclerView recyclerView;
     ActionButton fab;
+    StaticPost staticPost = new StaticPost();
+    SetRecyclerViewOption setRecyclerViewOption;
 
     public ExchangeAndShare(){}
 
@@ -28,15 +30,39 @@ public class ExchangeAndShare extends Fragment {
                              ViewGroup container, Bundle savedInstanceState){
 
         view = inflater.inflate(R.layout.fragment_exchange, container, false);
+        setPostLists();
         setRecyclerView();
+        setPostWrite();
         return view;
     }
 
     public void setRecyclerView(){
         recyclerView = view.findViewById(R.id.rv_exchange);
         fab = view.findViewById(R.id.fab_write);
-        SetRecyclerViewOption setRecyclerViewOption = new SetRecyclerViewOption(recyclerView,
+        setRecyclerViewOption = new SetRecyclerViewOption(recyclerView,
                 fab, view, getContext(),R.layout.community_item);
-        setRecyclerViewOption.build();
+        setRecyclerViewOption.setPostItems(staticPost.getPostList(0));
+        setRecyclerViewOption.build(0);
+    }
+
+    public void setPostLists(){
+        staticPost.ExchangeAndShareDefault();
+    }
+
+    public void setPostWrite(){
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                /**글 쓰기 버튼 클릭 이벤트*/
+                Intent intent = new Intent(getContext(),PostActivity.class);
+                intent.putExtra("page",0);
+                intent.putExtra("mode","write");
+                startActivity(intent);
+            }
+        });
+    }
+
+    public void distanceSorting(){
+        setRecyclerViewOption.sortPostItems();
     }
 }
