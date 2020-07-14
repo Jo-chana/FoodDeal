@@ -18,12 +18,6 @@
         tools:layout="@layout/fragment_grouppurchase" />
 
     <fragment
-        android:id="@+id/navigation_recommendation"
-        android:name="com.hankki.fooddeal.ui.recommendation.RecommendationFragment"
-        android:label="@string/title_recommendation"
-        tools:layout="@layout/fragment_recommendation" />
-
-    <fragment
         android:id="@+id/navigation_chatting"
         android:name="com.hankki.fooddeal.ui.chatting.ChattingFragment"
         android:label="@string/title_chatting"

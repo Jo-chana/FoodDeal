@@ -2361,11 +2361,10 @@ public class ItemTouchHelperExtension extends RecyclerView.ItemDecoration
                     // Long press is deferred.
                     // Check w/ active pointer id to avoid selecting after motion
                     // event is canceled.
+                    final int index = e.findPointerIndex(mActivePointerId);
                     if (pointerId == mActivePointerId) {
-                        final int index = MotionEventCompat
-                                .findPointerIndex(e, mActivePointerId);
-                        final float x = MotionEventCompat.getX(e, index);
-                        final float y = MotionEventCompat.getY(e, index);
+                        final float x = e.getX(index);
+                        final float y = e.getY(index);
                         mInitialTouchX = x;
                         mInitialTouchY = y;
                         mDx = mDy = 0f;

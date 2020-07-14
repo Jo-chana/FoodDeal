@@ -19,7 +19,7 @@
             android:layout_height="40dp"
             android:layout_toRightOf="@id/tv_location"/>
         <Button
-            android:id="@+id/btn_search"
+            android:id="@+id/btn_filter"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_alignParentRight="true"/>

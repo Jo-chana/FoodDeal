@@ -1,6 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <TextView
+        android:id="@+id/tv_user_name"
+        android:text="게스트"
+        android:textSize="30sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="@id/cv_user_profile"
+        app:layout_constraintBottom_toBottomOf="@id/cv_user_profile"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="@id/cv_user_profile"
+        app:layout_constraintHorizontal_bias="0.3"/>
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/cv_user_profile"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:background="#000000"
+        app:layout_constraintLeft_toRightOf="@id/tv_user_name"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintHorizontal_bias="0.6"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintVertical_bias="0.1"/>
+
+    <Button
+        android:id="@+id/btn_revise"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        app:layout_constraintRight_toRightOf="@id/cv_user_profile"
+        app:layout_constraintCircle="@id/cv_user_profile"
+        app:layout_constraintCircleAngle="135"
+        app:layout_constraintCircleRadius="40dp"
+        tools:ignore="MissingConstraints" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
