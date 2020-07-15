@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -54,16 +56,16 @@ public class PostAdapter extends RecyclerView.Adapter<PostViewHolder> {
                 holder.mView.getContext().startActivity(intent);
             }
         });
-        holder.btn_revise.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(holder.mView.getContext(), PostActivity.class);
-                intent.putExtra("page",page);
-                intent.putExtra("mode","revise");
-                intent.putExtra("index",position);
-                holder.mView.getContext().startActivity(intent);
-            }
-        });
+//        holder.btn_revise.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Intent intent = new Intent(holder.mView.getContext(), PostActivity.class);
+//                intent.putExtra("page",page);
+//                intent.putExtra("mode","revise");
+//                intent.putExtra("index",position);
+//                holder.mView.getContext().startActivity(intent);
+//            }
+//        });
     }
 
     /**총 게시글/채팅방 수.*/
@@ -75,9 +77,13 @@ public class PostAdapter extends RecyclerView.Adapter<PostViewHolder> {
     public void setCommunityItem(PostViewHolder holder, PostItem item){
         holder.mTitle.setText(item.getUserTitle()); // 수정해야 함! 테스트용
         holder.mUserLocation.setText(String.valueOf(item.getDistance())+"m");
-        holder.mUserName.setText(item.getUserName());
-        holder.mPost.setText(item.getUserPost());
         holder.mTime.setText(item.getUserTime());
+        if(item.getImages() != null){
+            if(item.getImages().size() > 0){
+                holder.mImage.setImageBitmap(item.getImages().get(0));
+                holder.mImage.setScaleType(ImageView.ScaleType.FIT_XY);
+            }
+        }
     }
 
     public void setPage(int page){
