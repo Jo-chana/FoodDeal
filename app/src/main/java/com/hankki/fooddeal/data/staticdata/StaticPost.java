@@ -37,7 +37,7 @@ public class StaticPost {
 
     public void addPost(int page, PostItem post){
         ArrayList<PostItem> posts = getPostList(page);
-        posts.add(post);
+        posts.add(0,post);
         postList.put(page, posts);
     }
 

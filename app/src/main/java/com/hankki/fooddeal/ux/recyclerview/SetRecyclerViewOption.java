@@ -1,14 +1,16 @@
 package com.hankki.fooddeal.ux.recyclerview;
 
-
 import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
+import android.view.animation.AnimationUtils;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.hankki.fooddeal.R;
 import com.hankki.fooddeal.data.CommentItem;
 import com.hankki.fooddeal.data.PostItem;
 import com.scalified.fab.ActionButton;
@@ -25,27 +27,26 @@ public class SetRecyclerViewOption {
     Context context;
     Bundle bundle;
     ArrayList<PostItem> postItems;
+    CardView cv = null;
     int layout;
     int direction = RecyclerView.VERTICAL;
 
-    public SetRecyclerViewOption(RecyclerView rv, ActionButton ab, View v,
-                                 Context ct, int layout){
+    public SetRecyclerViewOption(RecyclerView rv, CardView cardView, View v
+                                 , Context ct, int layout){
         recyclerView = rv;
-        fab = ab;
+        cv = cardView;
         view = v;
         context = ct;
         this.layout = layout;
     }
-    public SetRecyclerViewOption(RecyclerView rv, View v, Context ct, int layout){
-        recyclerView = rv;
-        view = v;
-        context = ct;
-        this.layout = layout;
-    }
+
+
     public void build(int page){
         setRecyclerView(page);
         if(fab != null)
             setFloatingActionButton();
+        if(cv!=null)
+            setCardViewAnimation();
     }
     public void setDirectionHorizontal(){
         direction = RecyclerView.HORIZONTAL;
@@ -99,6 +100,21 @@ public class SetRecyclerViewOption {
                     fab.hide();
                 } else if (dy < 0 && fab.getVisibility() != View.VISIBLE) {
                     fab.show();
+                }
+            }
+        });
+    }
+
+    public void setCardViewAnimation() {
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                if (dy > 0 && cv.getVisibility() == View.VISIBLE) {
+                    cv.setAnimation(AnimationUtils.loadAnimation(context,R.anim.fade_out));
+                    cv.setVisibility(View.INVISIBLE);
+                } else if (dy < 0 && cv.getVisibility() != View.VISIBLE) {
+                    cv.startAnimation(AnimationUtils.loadAnimation(context,R.anim.fade_in));
+                    cv.setVisibility(View.VISIBLE);
                 }
             }
         });
