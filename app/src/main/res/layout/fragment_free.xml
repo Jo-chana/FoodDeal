@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:fab="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+
     tools:context=".ui.home.community.ExchangeAndShare">
 
 
@@ -12,15 +13,23 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <com.scalified.fab.ActionButton
-        android:id="@+id/fab_write"
-        android:layout_gravity="bottom|center"
-        android:layout_marginBottom="20dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        fab:button_color="@color/colorPrimary"
-        fab:type="DEFAULT"
-        fab:show_animation="@anim/fab_fade_in"
-        fab:hide_animation="@anim/fab_fade_out"/>
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cv_post"
+        android:layout_gravity="center|bottom"
+        app:cardCornerRadius="20dp"
+        app:cardElevation="0dp"
+        android:backgroundTint="#000000"
+        android:layout_width="120dp"
+        android:layout_height="40dp"
+        android:layout_marginBottom="20dp">
+        <TextView
+            android:textSize="15sp"
+            android:layout_gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#ffffff"
+            android:fontFamily="sans-serif"
+            android:text="글 쓰러가기" />
+    </androidx.cardview.widget.CardView>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
