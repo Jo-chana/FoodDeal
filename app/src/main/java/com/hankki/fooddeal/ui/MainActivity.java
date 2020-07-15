@@ -12,6 +12,8 @@ import android.os.Bundle;
 import android.widget.Toast;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.hankki.fooddeal.R;
 import com.hankki.fooddeal.ui.chatting.ChatDetail;
 
@@ -20,6 +22,9 @@ public class MainActivity extends AppCompatActivity {
     BottomNavigationView navView;
     public static Context mainContext;
     long backKeyPressedTime = 0;
+    boolean isBackPressed;
+
+    FirebaseUser firebaseUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,10 +39,14 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         }
 
-
         mainContext = this;
 
         setBottomNavigation();
+        if(FirebaseAuth.getInstance().getCurrentUser() != null) {
+            firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+            String uid = firebaseUser.getUid();
+            Toast.makeText(getApplicationContext(), uid, Toast.LENGTH_SHORT).show();
+        } else Toast.makeText(getApplicationContext(), "파이어베이스 사용자 없음", Toast.LENGTH_SHORT).show();
     }
 
     /**네비게이션 바 세팅*/
@@ -51,6 +60,14 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupWithNavController(navView, navController);
 
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if(isBackPressed) {
+            FirebaseAuth.getInstance().signOut();
+        }
     }
 
     @Override
@@ -70,15 +87,8 @@ public class MainActivity extends AppCompatActivity {
         // 마지막으로 뒤로가기 버튼을 눌렀던 시간이 2초가 지나지 않았으면 종료
         // 현재 표시된 Toast 취소
         if (System.currentTimeMillis() <= backKeyPressedTime + 2000) {
+            isBackPressed = true;
             this.finishAffinity();
         }
-    }
-
-    // 뒤로가기 버튼 클릭 시 루트 액티비티인 인트로 액티비티 종료
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        navView = null;
-        finishAffinity();
     }
 }

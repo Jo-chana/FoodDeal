@@ -20,7 +20,7 @@
             android:stopWithTask="false"/>
 
         <activity android:name=".ui.register.PhoneAuthActivity"/>
-        <activity android:name=".ui.chatting.ChatDetail"></activity>
+        <activity android:name=".ui.chatting.ChatDetail"/>
         <activity android:name=".ui.home.community.PostActivity" />
         <activity android:name=".ui.SplashActivity">
             <intent-filter>
@@ -35,9 +35,6 @@
         <activity android:name=".ui.home.community.Community_detail" />
         <activity android:name=".ui.login.LoginActivity" />
         <activity android:name=".ui.register.RegisterActivity"/>
-        <activity android:name=".ui.register.location.CurrentLocationReg" />
-        <activity android:name=".ui.register.location.LocationMainActivity" />
-        <activity android:name=".ui.register.location.WriteLocationReg" />
     </application>
 
 </manifest>
