@@ -38,70 +38,11 @@ public class IntroActivity extends AppCompatActivity {
 
     private Button btn_login, btn_register;
 
-    /*
-       이현준
-       자동 로그인 구현
-       */
-    private FirebaseAuth firebaseAuth;
-    private Activity activity = this;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_intro);
         onClickButton();
-
-        firebaseAuth = FirebaseAuth.getInstance();
-
-        /*
-        이현준
-        자동 로그인 구현
-        */
-        if(!PreferenceManager.getString(getApplicationContext(), "userToken").equals("")) {
-            String userToken = PreferenceManager.getString(getApplicationContext(), "userToken");
-            APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
-            Call<MemberResponse> autoLoginCall = apiInterface.autoLogin(userToken);
-            autoLoginCall.enqueue(new Callback<MemberResponse>() {
-                @Override
-                public void onResponse(Call<MemberResponse> call, Response<MemberResponse> response) {
-                    MemberResponse memberResponse = response.body();
-                    if (memberResponse != null &&
-                            memberResponse.getResponseCode() == 500) {
-                        signInWithCustomToken(memberResponse.getFirebaseToken(), memberResponse.getUserToken());
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<MemberResponse> call, Throwable t) {
-                    t.printStackTrace();
-                }
-            });
-
-
-
-
-        }
-    }
-
-    // 토큰을 사용한 인증
-    private void signInWithCustomToken(String firebaseToken, String userToken) {
-        firebaseAuth.signInWithCustomToken(firebaseToken)
-                .addOnCompleteListener(activity, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            Intent toMainIntent = new Intent(IntroActivity.this, MainActivity.class);
-                            startActivity(toMainIntent);
-                            finish();
-                        }
-                    }
-                })
-                .addOnFailureListener(activity, new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        e.printStackTrace();
-                    }
-                });
     }
 
     private void onClickButton(){
