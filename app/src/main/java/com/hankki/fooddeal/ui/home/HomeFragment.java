@@ -62,7 +62,7 @@ public class HomeFragment extends Fragment {
     /**상단 탭 바에 나타낼 Title 적용*/
     public void setTabLayout(){
         /**이부분은 따로 String Class 정의해서 사용하는 것이 나을 듯*/
-        String[] names = new String[]{"교환/나눔","레시피","자유"};
+        String[] names = new String[]{"식재공유","레시피","자유"};
         tabLayout = view.findViewById(R.id.tl_home);
         new TabLayoutMediator(tabLayout, viewpager,
                 (tab, position) -> tab.setText(names[position])
