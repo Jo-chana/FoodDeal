@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.hankki.fooddeal.data.PostItem;
@@ -82,6 +83,37 @@ public class PostAdapter extends RecyclerView.Adapter<PostViewHolder> {
             if(item.getImages().size() > 0){
                 holder.mImage.setImageBitmap(item.getImages().get(0));
                 holder.mImage.setScaleType(ImageView.ScaleType.FIT_XY);
+            }
+        }
+        if(page==0){ // 식재 나눔 교환
+            /**찜 아이콘을 지우고, 댓글 부분은 찜으로 대체*/
+            holder.iv_like.setImageBitmap(null);
+            holder.tv_like.setText(null);
+            if(item.getLike_count()==0){
+                holder.iv_comment.setImageBitmap(null);
+                holder.tv_comment.setText(null);
+            } else {
+                holder.tv_comment.setText(String.valueOf(item.getLike_count()));
+            }
+        } else { // 레시피 자유
+            int like = item.getLike_count();
+            int comment = item.getComments().size();
+            if(like==0&&comment==0){ // 둘다 0
+                holder.iv_like.setImageBitmap(null);
+                holder.tv_like.setText(null);
+                holder.iv_comment.setImageBitmap(null);
+                holder.tv_comment.setText(null);
+            } else if (like==0){ // like 만 0
+                holder.iv_like.setImageBitmap(null);
+                holder.tv_like.setText(null);
+                holder.tv_comment.setText(String.valueOf(comment));
+            } else if (comment==0){ // comment 만 0
+                holder.iv_like.setImageBitmap(null);
+                holder.tv_like.setText(null);
+                holder.tv_comment.setText(String.valueOf(like));
+            } else { // 둘다 양수
+                holder.tv_comment.setText(String.valueOf(comment));
+                holder.tv_like.setText(String.valueOf(like));
             }
         }
     }

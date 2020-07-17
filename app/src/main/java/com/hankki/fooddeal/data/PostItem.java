@@ -19,6 +19,24 @@ public class PostItem implements Comparable<PostItem> {
     String UserTitle;
     Uri UserProfile;
     ArrayList<Bitmap> images;
+    String category = "";
+    int like_count = 0;
+
+    public void setLike_count(int like_count) {
+        this.like_count = like_count;
+    }
+
+    public int getLike_count() {
+        return like_count;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public String getCategory() {
+        return category;
+    }
 
     int Distance; // 내 위치와 글 쓴 사람의 거리 (필터링용)
 

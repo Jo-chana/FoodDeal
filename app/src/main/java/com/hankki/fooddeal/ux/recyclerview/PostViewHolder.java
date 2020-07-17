@@ -18,7 +18,9 @@ public class PostViewHolder extends RecyclerView.ViewHolder {
     TextView mUserLocation;
     TextView mTitle;
     TextView mTime;
-    ImageView mImage;
+    TextView tv_like, tv_comment;
+    ImageView mImage, iv_like, iv_comment;
+
 
     public PostViewHolder(@NonNull View itemView) {
         super(itemView);
@@ -27,5 +29,9 @@ public class PostViewHolder extends RecyclerView.ViewHolder {
         mTitle = itemView.findViewById(R.id.tv_title);
         mTime = itemView.findViewById(R.id.tv_time);
         mImage = itemView.findViewById(R.id.iv_post_image);
+        tv_like = itemView.findViewById(R.id.tv_likecount);
+        tv_comment = itemView.findViewById(R.id.tv_commentcount);
+        iv_like = itemView.findViewById(R.id.iv_heart);
+        iv_comment = itemView.findViewById(R.id.iv_comment);
     }
 }
