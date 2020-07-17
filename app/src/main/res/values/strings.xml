@@ -2,7 +2,6 @@
     <string name="app_name">FoodDeal</string>
     <string name="title_home">홈</string>
     <string name="title_grouppurchase">공구</string>
-    <string name="title_recommendation">추천</string>
     <string name="title_chatting">채팅</string>
     <string name="title_mypage">마이</string>
 
@@ -25,7 +24,6 @@
     <string name="activity_phone_auth_default_timer">00:00</string>
 
     // PhoneAuthActivity
-    <string name="phone_auth_fail_message">인증번호가 일치하지 않습니다</string>
 
     // activity_register.xml
     <string name="activity_register_toolbar">회원가입</string>
@@ -33,31 +31,16 @@
     <string name="activity_register_password">비밀번호</string>
     <string name="activity_register_email">이메일</string>
     <string name="activity_register_password_hint">영문자, 숫자, 특수문자를 포함한 8~20자로 입력해주세요</string>
-    <string name="activity_register_password_check_hint">비밀번호를 동일하게 입력해주세요</string>
     <string name="activity_register_email_hint">올바른 이메일 형식으로 입력해주세요</string>
-    <string name="activity_register_process_hint">뒤로가기 혹은 휴대폰인증 버튼을 클릭하면 정보가 날아가니 조심하세요!</string>
 
     <string name="activity_register_id_hint">다른 사람이 보게 될 이름입니다</string>
 
-    <string name="activity_register_pre_button">휴대폰 인증</string>
-    <string name="activity_register_post_button">위치 설정</string>
     <string name="activity_register_dup_check_button">중복확인</string>
 
     // RegisterActivity
-    <string name="register_dup_id">사용중인 아이디입니다</string>
-    <string name="register_not_dup_id">사용 가능한 아이디입니다</string>
-    <string name="register_wrong_password">올바른 비밀번호 형식이 아닙니다</string>
-    <string name="register_correct_password">올바른 비밀번호 형식입니다</string>
-    <string name="register_match_password_check">비밀번호 입력값이 동일합니다</string>
-    <string name="register_not_match_password_check">비밀번호 입력값이 서로 다릅니다</string>
-    <string name="register_wrong_email">올바른 이메일 형식이 아닙니다</string>
-    <string name="register_correct_email">올바른 이메일 형식입니다</string>
 
     // activity_date_picker.xml
-    <string name="activity_date_picker_ok">확 인</string>
 
     // activity_locationmain.xml
-    <string name="activity_locationmain_pre_button">개인정보 입력</string>
-    <string name="activity_locationmain_post_button">프로필 입력</string>
 
 </resources>

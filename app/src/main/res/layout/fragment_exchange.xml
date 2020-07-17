@@ -21,13 +21,13 @@
                 android:id="@+id/cv_exchange"
                 android:layout_centerVertical="true"
                 android:layout_marginLeft="@dimen/margin_left"
-                android:backgroundTint="#c4c4c4"
                 android:layout_width="85dp"
                 android:layout_height="40dp"
                 app:cardCornerRadius="20dp"
                 app:cardElevation="0dp">
                 <FrameLayout
                     android:id="@+id/fl_exchange"
+                    android:background="@drawable/cardview_unselector"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
                 <TextView
@@ -70,6 +70,7 @@
 
             <Button
                 android:id="@+id/btn_filter"
+                android:background="@drawable/round_edittext"
                 android:layout_centerVertical="true"
                 android:layout_alignParentRight="true"
                 android:layout_marginRight="20dp"
@@ -87,7 +88,9 @@
         android:id="@+id/rv_exchange"
         android:layout_below="@id/ll_menu"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="10dp"/>
     </RelativeLayout>
 
     <androidx.cardview.widget.CardView
