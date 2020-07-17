@@ -1,24 +1,27 @@
 package com.hankki.fooddeal.ui.home.community;
 
-import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.shapes.OvalShape;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager.widget.ViewPager;
 
 import com.hankki.fooddeal.R;
 import com.hankki.fooddeal.data.staticdata.StaticChatRoom;
@@ -28,32 +31,33 @@ import com.hankki.fooddeal.ux.itemtouchhelper.ChatRoomItem;
 import com.hankki.fooddeal.ux.recyclerview.CommentAdapter;
 import com.hankki.fooddeal.data.CommentItem;
 import com.hankki.fooddeal.data.PostItem;
+import com.hankki.fooddeal.ux.viewpager.GalleryAdapter;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
 public class Community_detail extends AppCompatActivity {
-    ImageView iv_profile; // 프로필 사진
-    RecyclerView rv_comment; // 댓글 창
-    TextView tv_user_name; // 글쓴 유저 이름
-    TextView tv_user_location; // 글쓴 유저 장소
-    TextView tv_title; // 게시글 제목
-    TextView tv_post; // 게시글 내용
-    EditText et_comment; // 댓글 입력창
-    Button btn_like; // 찜 버튼
-    Button btn_chat; // 채팅하기 버튼
-    Button btn_comment; // 댓글 남기기 버튼
-    ImageButton btn_image; //이미지 업로드 버튼
+    ViewPager vp_image; // 이미지 뷰페이저
+    GalleryAdapter galleryAdapter; // 뷰페이저 어댑터
+    View topToolbar; // 상단 툴바,
+    ConstraintLayout post_common, bottomToolbar; // 게시글 몸통, 하단 툴바(채팅 및 댓글창)
+    ImageView profile; // 유저 프로필
+    TextView userLocation, mapLocation; // 유저 위치, 게시글 위치(교환/나눔)
+    TextView userId, postInfo, postText, postLike; //아이디, 게시글 정보(시간, 장소 등), 관심도(찜, 좋아요)
+    RecyclerView rv_comment; // 댓글 리사이클러 뷰
+
     ArrayList<CommentItem> commentItems; // 댓글 리스트
     PostItem mPost;
     StaticPost staticPost = new StaticPost();
     CommentAdapter mAdapter;
     Context mContext;
 
+    NestedScrollView scrollView;
+
+    boolean myPost = false; // 자기 게시글이 아님
+
     ArrayList<Bitmap> postImages;
-    int[] imageViews = new int[]{R.id.image_1,R.id.image_2,R.id.image_3,R.id.image_4};
-    int imageIndex = 0;
 
     int order;
     int page;
@@ -61,7 +65,6 @@ public class Community_detail extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.community_detail);
         mContext = this;
         if(getIntent()!=null) {
             Intent intent = getIntent();
@@ -70,81 +73,53 @@ public class Community_detail extends AppCompatActivity {
         }
         mPost = staticPost.getPost(page,order);
 
-
-        setPostDetail();
-        setCommentList();
-        setOnClickListenerButtons();
+        switch (page){
+            case 0:
+                setContentView(R.layout.post_exchange_share);
+                setPostCommon();
+                setExchangeSharePostDetail();
+                break;
+            case 1:
+            case 2:
+            default:
+                setContentView(R.layout.post_recipe_free);
+                setPostCommon();
+                setRecipeFreePostDetail();
+                break;
+        }
     }
 
-    public void setPostDetail(){
-        iv_profile = findViewById(R.id.iv_userprofile); //글쓴이 프사
-        tv_user_name = findViewById(R.id.tv_username); //글쓴이 이름
-        tv_user_location = findViewById(R.id.tv_userlocation); //글쓴이 위치
-        tv_title = findViewById(R.id.tv_title); //글 제목
-        tv_post = findViewById(R.id.tv_userpost); //글 내용
-        rv_comment = findViewById(R.id.rv_comment); //댓글 창
-        et_comment = findViewById(R.id.et_comment); //댓글 입력 창
-        btn_chat = findViewById(R.id.btn_chat); //채팅하기 버튼
-        btn_like = findViewById(R.id.btn_like); //찜하기 버튼
-        btn_comment = findViewById(R.id.btn_comment); //댓글 보내기 버튼
-        btn_image = findViewById(R.id.btn_image); //댓글 이미지 삽입 버튼
+    public void setExchangeSharePostDetail(){
+        /**지도 설정*/
+        mapLocation = findViewById(R.id.tv_post_loc);
+        postInfo.setText(mPost.getCategory()+" ･ "+mPost.getUserTime());
 
-        tv_user_name.setText(mPost.getUserName());
-        tv_user_location.setText(mPost.getUserLocation());
-        tv_title.setText(mPost.getUserTitle());
-        tv_post.setText(mPost.getUserPost());
-        commentItems = mPost.getComments();
-        postImages = mPost.getImages();
-
-        if(postImages!=null) {
-            for (int i = 0; i < postImages.size(); i++) {
-                ImageView imageView = findViewById(imageViews[i]);
-                Bitmap imageBitmap = postImages.get(i);
-                imageView.setImageBitmap(imageBitmap);
-                imageView.setScaleType(ImageView.ScaleType.FIT_XY);
-                imageView.setOnClickListener(new View.OnClickListener() {
-                    @Override /**이미지 클릭했을 때 팝업창 띄워서 크게 보여줌*/
-                    public void onClick(View v) {
-                        Dialog dialog = new Dialog(mContext);
-                        dialog.setContentView(R.layout.post_image_detail);
-                        dialog.setTitle("Image Detail");
-                        ImageView image = dialog.findViewById(R.id.iv_image);
-                        image.setImageBitmap(imageBitmap);
-
-                        dialog.show();
-                        image.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                dialog.dismiss();
-                            }
-                        });
-                    }
-                });
-            }
-        }
-
-        rv_comment.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+        Button btn_chat = bottomToolbar.findViewById(R.id.btn_chatting);
+        btn_chat.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
-                if (bottom < oldBottom){
-                    v.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            rv_comment.smoothScrollToPosition(commentItems.size());
-                        }
-                    }, 100);
-                }
+            public void onClick(View v) {
+                ChatRoomItem item = new ChatRoomItem(mPost.getUserTitle(), page);
+                item.setInformation("새로운 채팅방이 개설되었습니다. 이야기를 나눠보세요!");
+                StaticChatRoom staticChatRoom = new StaticChatRoom();
+                int index = staticChatRoom.getChatItems().size();
+                staticChatRoom.addChatItem(item);
+                Intent intent = new Intent(Community_detail.this,MainActivity.class);
+                intent.putExtra("Chat",1);
+                intent.putExtra("index",index);
+                startActivity(intent);
             }
         });
     }
 
-    public void setCommentList(){
-        mAdapter = new CommentAdapter(commentItems);
-        rv_comment.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false));
-        rv_comment.setAdapter(mAdapter);
-    }
+    public void setRecipeFreePostDetail(){
+        /**댓글 설정*/
+        rv_comment = findViewById(R.id.rv_comment);
+        postInfo.setText(mPost.getUserTime());
+        scrollView = findViewById(R.id.scroll);
+        rv_comment.setNestedScrollingEnabled(false);
 
-    public void setOnClickListenerButtons(){
+        EditText et_comment = bottomToolbar.findViewById(R.id.et_comment);
+        Button btn_comment = bottomToolbar.findViewById(R.id.btn_comment);
         btn_comment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -160,31 +135,73 @@ public class Community_detail extends AppCompatActivity {
                 et_comment.setText(null);
             }
         });
-
-        btn_chat.setOnClickListener(new View.OnClickListener() {
+        setCommentList();
+        scrollView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
             @Override
-            public void onClick(View v) {
-                ChatRoomItem item = new ChatRoomItem(tv_title.getText().toString() ,page);
-                item.setInformation("새로운 채팅방이 개설되었습니다. 이야기를 나눠보세요!");
-                StaticChatRoom staticChatRoom = new StaticChatRoom();
-                int index = staticChatRoom.getChatItems().size();
-                staticChatRoom.addChatItem(item);
-                Intent intent = new Intent(Community_detail.this,MainActivity.class);
-                intent.putExtra("Chat",1);
-                intent.putExtra("index",index);
-                startActivity(intent);
+            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                if (bottom < oldBottom){
+                    v.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            scrollView.fullScroll(ScrollView.FOCUS_DOWN);
+                        }
+                    }, 100);
+                }
             }
         });
+    }
 
-        btn_image.setOnClickListener(new View.OnClickListener() {
+    public void setPostCommon(){
+        vp_image = findViewById(R.id.vp_image);
+
+        bottomToolbar = findViewById(R.id.bottom_toolbar);
+        post_common = findViewById(R.id.post_common);
+
+        profile = post_common.findViewById(R.id.iv_user_profile);
+        profile.setBackground(new ShapeDrawable(new OvalShape()));
+        profile.setClipToOutline(true);
+
+        userId = post_common.findViewById(R.id.tv_user_id);
+        userId.setText(mPost.getUserName());
+
+        userLocation = post_common.findViewById(R.id.tv_user_location);
+        userLocation.setText(mPost.getUserLocation());
+
+        postInfo = post_common.findViewById(R.id.tv_post_info);
+        postText = post_common.findViewById(R.id.tv_post);
+        postText.setText(mPost.getUserPost());
+
+        postLike = post_common.findViewById(R.id.tv_post_like);
+
+        commentItems = mPost.getComments();
+        postImages = mPost.getImages();
+        setImageViewPager();
+    }
+
+    public void setImageViewPager(){
+        ConstraintLayout main = findViewById(R.id.main_layout);
+        if(postImages==null) {
+            main.removeView(vp_image);
+            View view = findViewById(R.id.trick);
+            view.getLayoutParams().height=30;
+            return;
+        } else if (postImages.size()==0){
+            main.removeView(vp_image);
+            return;
+        }
+        galleryAdapter = new GalleryAdapter(this,postImages);
+        vp_image.setAdapter(galleryAdapter);
+    }
+
+    public void setCommentList(){
+        mAdapter = new CommentAdapter(commentItems);
+        rv_comment.setLayoutManager(new LinearLayoutManager(this){
             @Override
-            public void onClick(View v) {
-                Intent intent = new Intent();
-                intent.setType("image/*");
-                intent.setAction(Intent.ACTION_GET_CONTENT);
-                startActivityForResult(intent, 0);
+            public boolean canScrollVertically() {
+                return false;
             }
         });
+        rv_comment.setAdapter(mAdapter);
     }
 
     public String getTime(){
