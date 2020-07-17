@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -17,10 +18,11 @@ import com.scalified.fab.ActionButton;
 
 public class FreeCommunity extends Fragment {
     RecyclerView recyclerView;
-    ActionButton fab;
+    CardView cv_post;
     View view;
     SetRecyclerViewOption setRecyclerViewOption;
     StaticPost staticPost = new StaticPost();
+    boolean fromMyPage = false;
 
     public FreeCommunity(){}
 
@@ -28,17 +30,21 @@ public class FreeCommunity extends Fragment {
                              ViewGroup container, Bundle savedInstanceState){
 
         view = inflater.inflate(R.layout.fragment_free, container, false);
-        setPostLists();
-        setRecyclerView();
-        setPostWrite();
+        if(!fromMyPage) {
+            setPostLists();
+            setRecyclerView();
+            setPostWrite();
+        } else {
+            setMyPostOption();
+        }
         return view;
     }
 
     public void setRecyclerView(){
         recyclerView = view.findViewById(R.id.rv_free);
-        fab = view.findViewById(R.id.fab_write);
+        cv_post = view.findViewById(R.id.cv_post);
         setRecyclerViewOption = new SetRecyclerViewOption(
-                recyclerView, fab, view, getContext(), R.layout.community_item );
+                recyclerView, cv_post, view, getContext(), R.layout.community_item );
         setRecyclerViewOption.setPostItems(staticPost.getPostList(2));
         setRecyclerViewOption.build(2);
     }
@@ -48,7 +54,7 @@ public class FreeCommunity extends Fragment {
     }
 
     public void setPostWrite(){
-        fab.setOnClickListener(new View.OnClickListener() {
+        cv_post.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 /**글 쓰기 버튼 클릭 이벤트*/
@@ -61,5 +67,14 @@ public class FreeCommunity extends Fragment {
     }
     public void distanceSorting(){
         setRecyclerViewOption.sortPostItems();
+    }
+    public void fromMyPageOption(){
+        fromMyPage = true;
+    }
+
+    public void setMyPostOption(){
+        cv_post = view.findViewById(R.id.cv_post);
+        cv_post.setClickable(false);
+        cv_post.setVisibility(View.INVISIBLE);
     }
 }
