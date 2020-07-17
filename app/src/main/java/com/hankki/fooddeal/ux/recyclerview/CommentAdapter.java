@@ -1,7 +1,10 @@
 package com.hankki.fooddeal.ux.recyclerview;
 
+import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.shapes.OvalShape;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -46,12 +49,19 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
         TextView tv_username;
         TextView tv_message;
         TextView tv_time;
+        TextView tv_reply, tv_btn_reply;
+        ImageView iv_profile;
 
         public CommentViewHolder(@NonNull View itemView) {
             super(itemView);
             tv_message = itemView.findViewById(R.id.tv_comment_message);
             tv_username = itemView.findViewById(R.id.tv_comment_user_name);
             tv_time = itemView.findViewById(R.id.tv_comment_time);
+            tv_reply = itemView.findViewById(R.id.tv_reply);
+            tv_btn_reply = itemView.findViewById(R.id.tv_btn_reply);
+            iv_profile = itemView.findViewById(R.id.iv_comment_user_profile);
+            iv_profile.setBackground(new ShapeDrawable(new OvalShape()));
+            iv_profile.setClipToOutline(true);
         }
     }
 }

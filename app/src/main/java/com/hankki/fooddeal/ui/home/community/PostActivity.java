@@ -1,19 +1,15 @@
 package com.hankki.fooddeal.ui.home.community;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.content.pm.PackageStats;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.Image;
@@ -26,6 +22,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.gun0912.tedpermission.PermissionListener;
@@ -46,23 +43,28 @@ import java.util.List;
 public class PostActivity extends AppCompatActivity {
     EditText et_title;
     EditText et_post;
-    Button btn_location;
+    LinearLayout select_location,ll_images, ll_choice, ll_post;
     Button btn_write;
-    Button btn_image;
     Intent intent;
+    TextView select_exchange, select_share, toolbarTextView;
+    View toolbarView;
+    ImageView backButton;
     StaticPost staticPost = new StaticPost();
     int page, index;
 
+    String category = ""; // 테스트용/ 교환인지 나눔인지
+
     ArrayList<Bitmap> postImages = new ArrayList<>();
     int[] imageResources = new int[]{R.id.image_1,R.id.image_2,R.id.image_3,R.id.image_4};
+    int[] imageTexts = new int[]{R.id.tv_image_num,R.id.tv_image_num2, R.id.tv_image_num3, R.id.tv_image_num4};
     ImageView[] imageViews = new ImageView[4];
-    int imageIndex = 0;
+    TextView[] textViews = new TextView[4];
+    String tag;
 
     Context mContext;
 
 
     //테스트
-    EditText et_distance;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,46 +72,117 @@ public class PostActivity extends AppCompatActivity {
         mContext = this;
         setContentView(R.layout.activity_post);
         intent = getIntent();
+        tag = "exchange";
         page = intent.getIntExtra("page",-1);
         index = intent.getIntExtra("index",-1);
+        category = intent.getStringExtra("category");
         setIdComponents();
     }
 
-    public void setIdComponents(){
-        et_distance = findViewById(R.id.et_distance);
+    public void setIdComponents() {
+        ll_post = findViewById(R.id.ll_post);
         et_title = findViewById(R.id.et_post_title);
         et_post = findViewById(R.id.et_post_post);
-        btn_location = findViewById(R.id.btn_post_location);
-        setLocation();
-        btn_image = findViewById(R.id.btn_post_image);
-        btn_write = findViewById(R.id.btn_post_write);
+        select_exchange = findViewById(R.id.select_exchange);
+        select_share = findViewById(R.id.select_share);
+        select_location = findViewById(R.id.select_location);
+        ll_images = findViewById(R.id.ll_images);
+        ll_choice = findViewById(R.id.ll_choice);
+        toolbarView = findViewById(R.id.post_toolbar);
+        toolbarTextView = toolbarView.findViewById(R.id.toolbar_title);
+        toolbarTextView.setText("글쓰기");
+        backButton = toolbarView.findViewById(R.id.back_button);
 
-        for(int i=0;i<4;i++){
-            imageViews[i] = findViewById(imageResources[i]);
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
+
+        if(page==0){
+            setExchangeAndShareComponents();
+        } else {
+            setRecipeFreeComponents();
         }
 
-        if(intent.getStringExtra("mode").equals("revise"))
+        btn_write = findViewById(R.id.btn_post_write);
+
+        for (int i = 0; i < 4; i++) {
+            imageViews[i] = findViewById(imageResources[i]);
+            textViews[i] = findViewById(imageTexts[i]);
+        }
+        textViews[0].setText("0/4");
+
+        if (intent.getStringExtra("mode").equals("revise"))
             setPostRevise();
-        else
+        else {
+            setImageWrite();
             setPostWrite();
+        }
+    }
+
+
+    public void setExchangeAndShareComponents(){
+            select_exchange.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    select_exchange.setBackgroundResource(R.drawable.textview_selector);
+                    select_exchange.setTextColor(getResources().getColor(R.color.colorAccent));
+                    select_share.setBackgroundResource(R.drawable.textview_unselector);
+                    select_share.setTextColor(getResources().getColor(R.color.outFocus));
+                    tag = "exchange";
+                }
+            });
+            select_share.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    select_share.setBackgroundResource(R.drawable.textview_selector);
+                    select_share.setTextColor(getResources().getColor(R.color.colorAccent));
+                    select_exchange.setBackgroundResource(R.drawable.textview_unselector);
+                    select_exchange.setTextColor(getResources().getColor(R.color.outFocus));
+                    tag = "share";
+                }
+            });
+        setLocation();
+    }
+    public void setRecipeFreeComponents(){
+        ll_post.removeView(ll_choice);
+        ll_post.removeView(select_location);
     }
 
     public void setLocation(){
         /**위치정보 입력*/
     }
 
-    public void setPostWrite(){
-            btn_image.setOnClickListener(new View.OnClickListener() {
-            @Override /**이미지 삽입*/
-            public void onClick(View v) {
-                if(imageIndex>3) {
-                    Toast.makeText(mContext, "이미지는 최대 4장까지 올릴 수 있어요", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                tedPermission();
-            }
-        });
+    public void setImageWrite(){
+        int image_size = postImages.size();
 
+        if(image_size > 0){
+            for(int i=0;i<image_size;i++){
+                final int finalI = i;
+                imageViews[i].setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        postImages.remove(finalI);
+                        onImageAttach();
+                    }
+                });
+            }
+        }
+
+        if(image_size < 4) {
+            imageViews[image_size].setOnClickListener(new View.OnClickListener() {
+                @Override
+                /**이미지 삽입*/
+                public void onClick(View v) {
+                    tedPermission();
+                }
+            });
+        }
+    }
+
+    public void setPostWrite(){
         btn_write.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -118,14 +191,10 @@ public class PostActivity extends AppCompatActivity {
                 SimpleDateFormat sdfnow = new SimpleDateFormat("MM/dd HH:mm");
                 String timeData = sdfnow.format(date);
                 int distance = 0;
-                if(et_distance.getText().toString().equals("")) {
-                }else{
-                    distance = Integer.parseInt(et_distance.getText().toString());
-                }
                 PostItem item = new PostItem("익명",et_post.getText().toString(),
                         "비전동",et_title.getText().toString(),timeData,
                         distance, null, postImages);
-
+                item.setCategory(category);
                 staticPost.addPost(page,item); // 게시글 추가
 
                 /**게시글 추가 후, 해당 커뮤니티에서 즉각적으로 Update*/
@@ -200,30 +269,7 @@ public class PostActivity extends AppCompatActivity {
                     in.close();
                     postImages.add(img);
                     /**이미지 Attach*/
-                    for(int i=0;i<4;i++){
-                        if(i>=postImages.size()){
-                            imageViews[i].setImageBitmap(null); continue;
-                        }
-                        imageViews[i].setImageBitmap(postImages.get(i));
-                        imageViews[i].setScaleType(ImageView.ScaleType.FIT_XY);
-                        int finalI = i;
-                        imageViews[i].setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                postImages.remove(finalI);
-                                imageIndex-=1;
-                                for(int i=0;i<4;i++) {
-                                    if (i >= postImages.size()) {
-                                        imageViews[i].setImageBitmap(null);
-                                        continue;
-                                    }
-                                    imageViews[i].setImageBitmap(postImages.get(i));
-                                    imageViews[i].setScaleType(ImageView.ScaleType.FIT_XY);
-                                }
-                            }
-                        });
-                    }
-                    imageIndex+=1;
+                    onImageAttach();
 
                     Toast.makeText(this,"사진 업로드 완료",Toast.LENGTH_SHORT).show();
                 } catch (Exception e) {
@@ -234,6 +280,25 @@ public class PostActivity extends AppCompatActivity {
             }
         }
     }
+
+    public void onImageAttach(){
+        for(int i=0;i<4;i++){
+            if(i<postImages.size()){
+                imageViews[i].setImageBitmap(postImages.get(i));
+                textViews[i].setText(null);
+            }
+            else if(i==postImages.size()) {
+                imageViews[i].setImageResource(R.drawable.camera_test);
+                textViews[i].setText(String.valueOf(i)+"/4");
+            }
+            else{
+                imageViews[i].setImageBitmap(null);
+                textViews[i].setText(null);
+            }
+        }
+        setImageWrite();
+    }
+
 
     public void tedPermission(){
         PermissionListener permissionListener = new PermissionListener() {
