@@ -27,7 +27,6 @@ import com.hankki.fooddeal.R;
 import com.hankki.fooddeal.data.staticdata.StaticChatRoom;
 import com.hankki.fooddeal.data.staticdata.StaticPost;
 import com.hankki.fooddeal.data.staticdata.StaticUser;
-import com.hankki.fooddeal.ui.MainActivity;
 import com.hankki.fooddeal.ux.itemtouchhelper.ChatRoomItem;
 import com.hankki.fooddeal.ux.recyclerview.CommentAdapter;
 import com.hankki.fooddeal.data.CommentItem;
@@ -104,7 +103,7 @@ public class Community_detail extends AppCompatActivity {
                 StaticChatRoom staticChatRoom = new StaticChatRoom();
                 int index = staticChatRoom.getChatItems().size();
                 staticChatRoom.addChatItem(item);
-                Intent intent = new Intent(Community_detail.this,MainActivity.class);
+                Intent intent = new Intent();
                 intent.putExtra("Chat",1);
                 intent.putExtra("index",index);
                 startActivity(intent);
