@@ -77,15 +77,11 @@ public class ChatRoomFragment extends Fragment {
                 String uid = "ggj0418";
                 List<String> roomUserList = new ArrayList<>();
                 roomUserList.add(uid);
-                roomUserList.add("dlguwn13");
-                roomUserList.add("gyronnn103");
-                roomUserList.add("cloud1300");
+                roomUserList.add("cr00870");
 
                 HashMap<String, Integer> unreadUserCountMap = new HashMap<>();
                 unreadUserCountMap.put(uid, 0);
-                unreadUserCountMap.put("dlguwn13", 0);
-                unreadUserCountMap.put("gyronnn103", 0);
-                unreadUserCountMap.put("cloud1300", 0);
+                unreadUserCountMap.put("cr00870", 0);
 
                 roomId = HashMsgUtil.getSHARoomID(3, roomUserList);
 
@@ -129,7 +125,7 @@ public class ChatRoomFragment extends Fragment {
                     .collection("rooms")
                     .whereArrayContains("roomUserList", sUID)
                     .orderBy("lastMessageTime", Query.Direction.DESCENDING)
-                    .addSnapshotListener(MetadataChanges.INCLUDE, new EventListener<QuerySnapshot>() {
+                    .addSnapshotListener(new EventListener<QuerySnapshot>() {
                         @Override
                         public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
                             // TODO 여기서 다이얼로그 팝업
@@ -193,8 +189,8 @@ public class ChatRoomFragment extends Fragment {
             }
 
             //noinspection ConstantConditions
-            if(chatRoomModel.getUnreadMemberCountMap().get("ggj0418") > 0) {
-                roomViewHolder.unread_count.setText(chatRoomModel.getUnreadMemberCountMap().get("ggj0418"));
+            if(chatRoomModel.getUnreadMemberCountMap().get(sUID) > 0) {
+                roomViewHolder.unread_count.setText(chatRoomModel.getUnreadMemberCountMap().get(sUID).toString());
                 roomViewHolder.unread_count.setVisibility(View.VISIBLE);
             } else {
                 roomViewHolder.unread_count.setVisibility(View.INVISIBLE);

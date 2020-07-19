@@ -42,7 +42,9 @@ import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.ListenerRegistration;
+import com.google.firebase.firestore.MetadataChanges;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
@@ -61,9 +63,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**채팅방 상세화면*/
+/**
+ * 채팅방 상세화면
+ */
 // TODO 채팅을 보낼때, 서버에 등록되는 시간을 기준으로 해야지 동기화 문제가 해결될거같음. 이 문제 해결 필요
-    // TODO 아직 내가 채팅방을 보고 있을때 다른 사람이 보낸 채팅을 실시간으로 읽음 처리 할 수 있는지 모름
+// TODO 아직 내가 채팅방을 보고 있을때 다른 사람이 보낸 채팅을 실시간으로 읽음 처리 할 수 있는지 모름
 public class ChatActivity extends AppCompatActivity {
     private Button sendBtn;
     private EditText msg_input;
@@ -84,14 +88,18 @@ public class ChatActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
-        if(getIntent() != null) {
+        if (getIntent() != null) {
             roomId = getIntent().getStringExtra("roomID");
             roomTitle = getIntent().getStringExtra("roomTitle");                    // 채팅방의 이름으로 쓸 게시글 타이틀
             userTotal = getIntent().getIntExtra("userTotal", -1);        // 각 채팅마다 안 읽은 사람을 표시하기 위해 필요한 건데 채팅을 하다가 새로운 사람이 들어온 경우를
-                                                                                          // 처리못하기 때문에 메시지 리스너에서 userTotal을 계속 처리해줘야할듯
+            // 처리못하기 때문에 메시지 리스너에서 userTotal을 계속 처리해줘야할듯
         }
         uid = AES256Util.aesDecode(FirebaseAuth.getInstance().getCurrentUser().getUid());
         firestore = FirebaseFirestore.getInstance();
+        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
+                .setPersistenceEnabled(false)
+                .build();
+        firestore.setFirestoreSettings(settings);
 
         msg_input = findViewById(R.id.msg_input);
         sendBtn = findViewById(R.id.sendBtn);
@@ -144,14 +152,54 @@ public class ChatActivity extends AppCompatActivity {
 
     private void sendMessage(final String msg, String msgType, final ChatModel.FileInfo fileInfo) {
         sendBtn.setEnabled(false);
-
+        Log.d("***************", "SEND");
         Date date = new Date(System.currentTimeMillis());
         /*if(fileInfo != null) {
             messages.put("filename", fileInfo.filename);
             messages.put("filesize", fileInfo.filesize);
         }*/
 
-        final DocumentReference documentReference  = firestore.collection("rooms").document(roomId);
+        final DocumentReference documentReference = firestore.collection("rooms").document(roomId);
+        documentReference
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if (!task.isSuccessful()) return;
+
+                        WriteBatch batch = firestore.batch();
+
+                        // 내가 읽었다는걸 표시, rooms의 unreadUserCount는 내가 보내면서 읽은것으로 처리되기 때문에 건드릴필요 X
+                        List<String> readUserList = new ArrayList<>();
+                        readUserList.add(uid);
+
+                        // 메시지 리스트에 들어갈 내용 정리
+                        Message newMessage = new Message(uid, msg, date, msgType, readUserList);
+//                        String messageDocument = date.toString() + " " + AES256Util.aesEncode(uid);
+//                        batch.set(documentReference.collection("messages").document(messageDocument), newMessage);
+                        batch.set(documentReference.collection("messages").document(), newMessage);
+
+                        // 다른 사람들의 unreadUserCountMap 추가
+                        DocumentSnapshot documentSnapshot = task.getResult();
+                        // int로 저장했지만 불러올때는 long으로 불러오기때문에 이렇게 처리
+                        Map<String, Long> unreadUserCountMap = (Map<String, Long>) documentSnapshot.get("unreadMemberCountMap");
+
+                        for (String key : unreadUserCountMap.keySet()) {
+                            if (!uid.equals(key))
+                                unreadUserCountMap.put(key, unreadUserCountMap.get(key) + 1);
+                        }
+                        documentSnapshot.getReference().update("unreadMemberCountMap", unreadUserCountMap);
+
+                        batch.commit().addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                if (task.isSuccessful()) {
+                                    sendBtn.setEnabled(true);
+                                }
+                            }
+                        });
+                    }
+                });
 
         documentReference
                 .update("lastMessageContent", msg)
@@ -182,45 +230,6 @@ public class ChatActivity extends AppCompatActivity {
                         Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_SHORT).show();
                     }
                 });
-
-        documentReference
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                        if(!task.isSuccessful()) return;
-
-                        WriteBatch batch = firestore.batch();
-
-                        // 내가 읽었다는걸 표시, rooms의 unreadUserCount는 내가 보내면서 읽은것으로 처리되기 때문에 건드릴필요 X
-                        List<String> readUserList = new ArrayList<>();
-                        readUserList.add(uid);
-
-                        // 메시지 리스트에 들어갈 내용 정리
-                        Message newMessage = new Message(uid, msg, date, msgType, readUserList);
-                        String messageDocument = date.toString() + " " + AES256Util.aesEncode(uid);
-                        batch.set(documentReference.collection("messages").document(messageDocument), newMessage);
-
-                        // 다른 사람들의 unreadUserCountMap 추가
-                        DocumentSnapshot documentSnapshot = task.getResult();
-                        // int로 저장했지만 불러올때는 long으로 불러오기때문에 이렇게 처리
-                        Map<String, Long> unreadUserCountMap = (Map<String, Long>) documentSnapshot.get("unreadMemberCountMap");
-
-                        for(String key : unreadUserCountMap.keySet()) {
-                            if(!uid.equals(key)) unreadUserCountMap.put(key, unreadUserCountMap.get(key) + 1);
-                        }
-                        documentSnapshot.getReference().update("unreadMemberCountMap", unreadUserCountMap);
-
-                        batch.commit().addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                if(task.isSuccessful()) {
-                                    sendBtn.setEnabled(true);
-                                }
-                            }
-                        });
-                    }
-                });
     }
 
     // 채팅방 입장시 내가 안 읽은 메시지들 읽음 처리
@@ -233,25 +242,21 @@ public class ChatActivity extends AppCompatActivity {
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if(!task.isSuccessful()) return;
-                        int count = 0;
+                        if (!task.isSuccessful()) return;
                         QuerySnapshot querySnapshot = task.getResult();
-                        for(QueryDocumentSnapshot queryDocumentSnapshot : querySnapshot) {
+                        for (QueryDocumentSnapshot queryDocumentSnapshot : querySnapshot) {
                             Message message = (Message) queryDocumentSnapshot.toObject(Message.class);
 
                             // 메시지 읽은 사람 리스트에 본인 추가
-                            if(!message.getMessageReadUserList().contains(uid)) {
+                            if (!message.getMessageReadUserList().contains(uid)) {
                                 List<String> messageReadUserList = message.getMessageReadUserList();
                                 messageReadUserList.add(uid);
 
                                 queryDocumentSnapshot.getReference().update("messageReadUserList", messageReadUserList);
                                 // unreadUserCountMap에서 이 count 값만큼 제거
-                                count++;
                                 // TODO 여기서 해당 채팅방의 자기 unreadUserCountMap을 건드리면 될듯
                             }
                         }
-
-                        final int countUnreadtoRead = count;
 
                         firestore.collection("rooms")
                                 .document(roomId)
@@ -262,8 +267,8 @@ public class ChatActivity extends AppCompatActivity {
                                         DocumentSnapshot documentSnapshot = task.getResult();
                                         Map<String, Long> unreadUserCountMap = (Map<String, Long>) documentSnapshot.get("unreadMemberCountMap");
 
-                                        for(String key : unreadUserCountMap.keySet()) {
-                                            if(uid.equals(key)) unreadUserCountMap.put(key, unreadUserCountMap.get(key) - countUnreadtoRead);
+                                        for (String key : unreadUserCountMap.keySet()) {
+                                            if (uid.equals(key)) unreadUserCountMap.put(key, 0L);
                                         }
                                         documentSnapshot.getReference().update("unreadMemberCountMap", unreadUserCountMap);
                                     }
@@ -271,12 +276,12 @@ public class ChatActivity extends AppCompatActivity {
 
                     }
                 })
-        .addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.w("########", e.toString());
-            }
-        });
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w("########", e.toString());
+                    }
+                });
 
     }
 
@@ -305,44 +310,52 @@ public class ChatActivity extends AppCompatActivity {
                     .addSnapshotListener(new EventListener<QuerySnapshot>() {
                         @Override
                         public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-                            if(error != null) {
-                                Toast.makeText(getApplicationContext(), "쿼리 인덱스 확인하셔유!", Toast.LENGTH_SHORT).show();
+                            if (error != null) {
+                                Toast.makeText(getApplicationContext(), "check query indexing!", Toast.LENGTH_SHORT).show();
                                 return;
                             }
 
                             Message message;
                             assert value != null;
-                            for(DocumentChange change : value.getDocumentChanges()) {
+                            for (DocumentChange change : value.getDocumentChanges()) {
                                 switch (change.getType()) {
                                     case ADDED:
-                                        message = change.getDocument().toObject(Message.class);
+                                        if (change.getNewIndex() == change.getOldIndex()) {
+                                            break;
+                                        } else {
+                                            message = change.getDocument().toObject(Message.class);
 
-                                        // 새로 추가된 메시지에 자신이 없는 경우 읽은 목록에 자기를 추가한다(근데 채팅방을 보고 있을때 안 읽은 사람 수가 이러면 실시간으로 바뀌나..?)
-                                        if(message.getMessageReadUserList().indexOf(uid) == -1) {
-                                            message.getMessageReadUserList().add(uid);
-                                            change.getDocument().getReference().update("messageReadUserList", message.getMessageReadUserList());
+                                            if (message.getMessageReadUserList().indexOf(uid) == -1) {
+                                                message.getMessageReadUserList().add(uid);
+                                                change.getDocument().getReference().update("messageReadUserList", message.getMessageReadUserList());
+                                            }
+                                            messageList.add(message);
+                                            notifyItemInserted(change.getNewIndex());
+                                            setUnreadtoRead();
+                                            Log.d("***************ADD", message.getMessageSenderUid());
+                                            break;
                                         }
-                                        messageList.add(message);
-                                        notifyItemInserted(change.getNewIndex());
-                                        break;
                                     case MODIFIED:
                                         message = change.getDocument().toObject(Message.class);
                                         messageList.set(change.getOldIndex(), message);
                                         notifyItemChanged(change.getOldIndex());
+                                        setUnreadtoRead();
+                                        Log.d("***************MODIFIED", message.getMessageSenderUid());
                                         break;
                                     case REMOVED:
                                         messageList.remove(change.getOldIndex());
                                         notifyItemRemoved(change.getOldIndex());
+                                        Log.d("***************", "REMOVE");
                                         break;
                                 }
+                                recyclerView.scrollToPosition(messageList.size() - 1);
                             }
-                            recyclerView.scrollToPosition(messageList.size() - 1);
                         }
                     });
         }
 
         public void stopListening() {
-            if(messageListenerRegistration != null) {
+            if (messageListenerRegistration != null) {
                 messageListenerRegistration.remove();
                 messageListenerRegistration = null;
             }
@@ -468,13 +481,15 @@ public class ChatActivity extends AppCompatActivity {
         }
 
         @Override
-        public int getItemCount() { return messageList.size(); }
+        public int getItemCount() {
+            return messageList.size();
+        }
     }
 
     private class MessageViewHolder extends RecyclerView.ViewHolder {
         public ImageView user_photo;
         public TextView msg_item;
-//        public ImageView img_item;          // only item_chatimage_
+        //        public ImageView img_item;          // only item_chatimage_
         public TextView msg_name;
         public TextView timestamp;
         public TextView read_counter;
@@ -633,7 +648,9 @@ public class ChatActivity extends AppCompatActivity {
             }
         });
         */
-/**리사이클러 뷰 어댑터 설정*//*
+/**
+ * 리사이클러 뷰 어댑터 설정
+ *//*
 
         setAdapter();
 
