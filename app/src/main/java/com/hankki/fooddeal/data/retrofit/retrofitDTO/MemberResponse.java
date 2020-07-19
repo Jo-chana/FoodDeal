@@ -35,11 +35,8 @@ public class MemberResponse {
     public void setUserToken(String userToken) {
         this.userToken = userToken;
     }
-    public String getFirebaseToken() {
-        return firebaseToken;
-    }
 
-    public void setFirebaseToken(String firebaseToken) {
-        this.firebaseToken = firebaseToken;
-    }
+    public String getFirebaseToken() { return firebaseToken; }
+
+    public void setFirebaseToken(String firebaseToken) { this.firebaseToken = firebaseToken; }
 }
