@@ -7,7 +7,6 @@ import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.OvalShape;
 import android.os.Bundle;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -27,6 +26,7 @@ import androidx.viewpager.widget.ViewPager;
 import com.hankki.fooddeal.R;
 import com.hankki.fooddeal.data.staticdata.StaticChatRoom;
 import com.hankki.fooddeal.data.staticdata.StaticPost;
+import com.hankki.fooddeal.data.staticdata.StaticUser;
 import com.hankki.fooddeal.ui.MainActivity;
 import com.hankki.fooddeal.ux.itemtouchhelper.ChatRoomItem;
 import com.hankki.fooddeal.ux.recyclerview.CommentAdapter;
@@ -128,7 +128,8 @@ public class Community_detail extends AppCompatActivity {
                 InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(et_comment.getWindowToken(),0);
                 String comment = et_comment.getText().toString();
-                CommentItem item = new CommentItem("댓쓴이",comment,getTime());
+                StaticUser user = new StaticUser();
+                CommentItem item = new CommentItem(user.getName(),comment,getTime(),user.getProfile());
 
                 commentItems.add(commentItems.size(),item);
                 mPost.setComments(commentItems);
@@ -176,6 +177,7 @@ public class Community_detail extends AppCompatActivity {
         profile = post_common.findViewById(R.id.iv_user_profile);
         profile.setBackground(new ShapeDrawable(new OvalShape()));
         profile.setClipToOutline(true);
+        profile.setImageBitmap(mPost.getUserProfile());
 
         userId = post_common.findViewById(R.id.tv_user_id);
         userId.setText(mPost.getUserName());

@@ -23,6 +23,7 @@ import androidx.fragment.app.Fragment;
 import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.TedPermission;
 import com.hankki.fooddeal.R;
+import com.hankki.fooddeal.data.staticdata.StaticUser;
 
 import java.io.InputStream;
 import java.util.List;
@@ -37,6 +38,7 @@ public class MyPageFragment extends Fragment {
     ImageView iv_my_profile;
     TextView tv_my_name;
     Button btn_profile_revise;
+    StaticUser user = new StaticUser();
 
     View view;
 
@@ -56,6 +58,7 @@ public class MyPageFragment extends Fragment {
         iv_my_profile.setClipToOutline(true);
 
         tv_my_name = view.findViewById(R.id.tv_my_name);
+        tv_my_name.setText(user.getName());
         btn_profile_revise = view.findViewById(R.id.btn_profile_revise);
 
         arrow_my_post = view.findViewById(R.id.arrow_my_post);
@@ -126,6 +129,7 @@ public class MyPageFragment extends Fragment {
                     iv_my_profile.setImageBitmap(img);
                     iv_my_profile.setScaleType(ImageView.ScaleType.CENTER_CROP);
                     /**내 프로필 사진 DB 반영*/
+                    user.setProfile(img);
 
                     Toast.makeText(getContext(),"프로필 사진 수정 완료",Toast.LENGTH_SHORT).show();
                 } catch (Exception e) {

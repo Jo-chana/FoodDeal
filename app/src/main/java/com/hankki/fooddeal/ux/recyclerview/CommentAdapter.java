@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.hankki.fooddeal.R;
 import com.hankki.fooddeal.data.CommentItem;
+import com.hankki.fooddeal.data.staticdata.StaticUser;
 
 
 import java.util.ArrayList;
@@ -19,6 +20,7 @@ import java.util.ArrayList;
 public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentViewHolder> {
     ArrayList<CommentItem> commentItems;
     CommentViewHolder viewHolder;
+    StaticUser user = new StaticUser();
 
     public CommentAdapter(ArrayList<CommentItem> commentItems){
         this.commentItems = commentItems;
@@ -38,6 +40,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
         holder.tv_username.setText(item.getUserName());
         holder.tv_message.setText(item.getMessage());
         holder.tv_time.setText(item.getDate());
+        holder.iv_profile.setImageBitmap(user.getProfile());
     }
 
     @Override

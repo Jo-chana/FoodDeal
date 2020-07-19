@@ -17,7 +17,7 @@ public class PostItem implements Comparable<PostItem> {
     String UserLocation;
     String UserTime;
     String UserTitle;
-    Uri UserProfile;
+    Bitmap UserProfile;
     ArrayList<Bitmap> images;
     String category = "";
     int like_count = 0;
@@ -43,7 +43,7 @@ public class PostItem implements Comparable<PostItem> {
     ArrayList<CommentItem> comments;
 
     public PostItem(String username, String userpost, String userloc,
-                    String userTitle, String userTime,@Nullable int distance, @Nullable Uri profile,
+                    String userTitle, String userTime,@Nullable int distance, @Nullable Bitmap profile,
                     @Nullable ArrayList<Bitmap> images){
         UserName = username;
         UserPost = userpost;
@@ -85,7 +85,7 @@ public class PostItem implements Comparable<PostItem> {
         UserTitle = userTitle;
     }
 
-    public void setUserProfile(Uri userProfile) {
+    public void setUserProfile(Bitmap userProfile) {
         UserProfile = userProfile;
     }
 
@@ -123,7 +123,7 @@ public class PostItem implements Comparable<PostItem> {
 
     public String getUserTime(){ return UserTime; }
 
-    public Uri getUserProfile() {
+    public Bitmap getUserProfile() {
         return UserProfile;
     }
 

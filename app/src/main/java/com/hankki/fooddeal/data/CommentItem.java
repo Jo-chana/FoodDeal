@@ -1,18 +1,23 @@
 package com.hankki.fooddeal.data;
 
+import android.graphics.Bitmap;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.Nullable;
+
 public class CommentItem implements Parcelable {
     String userName;
+    Bitmap userProfile;
 
     String message;
 
     String date;
-    public CommentItem(String userName, String message,String date){
+    public CommentItem(String userName, String message,String date, @Nullable Bitmap profile){
         this.userName = userName;
         this.message = message;
         this.date = date;
+        this.userProfile = profile;
     }
 
     protected CommentItem(Parcel in) {

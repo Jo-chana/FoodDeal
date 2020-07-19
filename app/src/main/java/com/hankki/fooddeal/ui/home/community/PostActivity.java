@@ -3,8 +3,6 @@ package com.hankki.fooddeal.ui.home.community;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.cardview.widget.CardView;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
@@ -14,11 +12,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.Image;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -31,6 +26,7 @@ import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.TedPermission;
 import com.hankki.fooddeal.R;
 import com.hankki.fooddeal.data.staticdata.StaticPost;
+import com.hankki.fooddeal.data.staticdata.StaticUser;
 import com.hankki.fooddeal.ui.MainActivity;
 import com.hankki.fooddeal.data.PostItem;
 
@@ -216,9 +212,10 @@ public class PostActivity extends AppCompatActivity {
                     SimpleDateFormat sdfnow = new SimpleDateFormat("MM/dd HH:mm");
                     String timeData = sdfnow.format(date);
                     int distance = 0;
-                    PostItem item = new PostItem("익명", et_post.getText().toString(),
+                    StaticUser user = new StaticUser();
+                    PostItem item = new PostItem(user.getName(), et_post.getText().toString(),
                             "비전동", et_title.getText().toString(), timeData,
-                            distance, null, postImages);
+                            distance, user.getProfile(), postImages);
                     item.setCategory(category);
                     staticPost.addPost(page, item); // 게시글 추가
 

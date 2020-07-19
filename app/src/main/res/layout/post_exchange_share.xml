@@ -13,61 +13,63 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintHeight_percent="0.4"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent">
+    </androidx.viewpager.widget.ViewPager>
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintTop_toBottomOf="@id/vp_image"
+            app:layout_constraintBottom_toTopOf="@id/fl_bottom">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+
+                android:orientation="vertical">
+
+                <include
+                    android:id="@+id/post_common"
+                    layout="@layout/post_common" />
+
+                <TextView
+                    android:id="@+id/tv_loc"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginTop="20dp"
+                    android:text="위치"
+                    android:textColor="@color/defaultText"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tv_post_loc"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginTop="10dp"
+                    android:text="운정3동,파주시"
+                    android:textColor="@color/defaultText"
+                    android:textSize="20sp" />
+
+                <View
+                    android:id="@+id/post_map"
+                    android:layout_width="match_parent"
+                    android:layout_height="250dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginBottom="20dp"
+                    android:background="@drawable/round_edittext" />
+            </LinearLayout>
+        </ScrollView>
+
     <View
         android:id="@+id/trick"
         android:layout_width="match_parent"
         android:layout_height="1dp"
         app:layout_constraintTop_toBottomOf="@id/vp_image"/>
-
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@id/fl_bottom"
-        app:layout_constraintTop_toBottomOf="@id/trick">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-
-            android:orientation="vertical">
-
-            <include
-                android:id="@+id/post_common"
-                layout="@layout/post_common" />
-
-            <TextView
-                android:id="@+id/tv_loc"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="20dp"
-                android:layout_marginTop="20dp"
-                android:text="위치"
-                android:textColor="@color/defaultText"
-                android:textSize="20sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/tv_post_loc"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="20dp"
-                android:layout_marginTop="10dp"
-                android:text="운정3동,파주시"
-                android:textColor="@color/defaultText"
-                android:textSize="20sp" />
-
-            <View
-                android:id="@+id/post_map"
-                android:layout_width="match_parent"
-                android:layout_height="250dp"
-                android:layout_marginLeft="20dp"
-                android:layout_marginTop="20dp"
-                android:layout_marginRight="20dp"
-                android:layout_marginBottom="20dp"
-                android:background="@drawable/round_edittext" />
-        </LinearLayout>
-    </ScrollView>
 
     <View
         android:layout_width="match_parent"
