@@ -48,6 +48,7 @@ import java.util.List;
 /**
  * 채팅 화면
  */
+// TODO 사용자 추가하기 이벤트 필요
 public class ChatRoomFragment extends Fragment {
     private RecyclerView recyclerView;
     private RecyclerViewAdapter mAdapter;
@@ -154,10 +155,17 @@ public class ChatRoomFragment extends Fragment {
             } else {
                 roomViewHolder.room_title.setText(chatRoomModel.getRoomTitle());
             }
-            // 갓 생성된 채팅방이라서 메시지가 없음
+
             if(chatRoomModel.getLastMessageContent() != null) {
-                roomViewHolder.last_msg.setText(chatRoomModel.getLastMessageContent());
-            } else {
+                if(chatRoomModel.getLastMessageContent().contains("\n")) {
+                    String[] splitArray = chatRoomModel.getLastMessageContent().split("\\n");
+                    roomViewHolder.last_msg.setText(splitArray[0] + "...");
+                } else {
+                    roomViewHolder.last_msg.setText(chatRoomModel.getLastMessageContent());
+                }
+            }
+            // 갓 생성된 채팅방이라서 메시지가 없음
+            else {
                 roomViewHolder.last_msg.setText("새로운 친구와 채팅을 시작해보세요!");
             }
 

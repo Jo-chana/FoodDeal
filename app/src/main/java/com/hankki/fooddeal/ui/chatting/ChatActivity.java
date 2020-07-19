@@ -311,6 +311,7 @@ public class ChatActivity extends AppCompatActivity {
                             }
 
                             Message message;
+                            assert value != null;
                             for(DocumentChange change : value.getDocumentChanges()) {
                                 switch (change.getType()) {
                                     case ADDED:
