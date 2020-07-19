@@ -18,10 +18,20 @@ public class IntroActivity extends AppCompatActivity {
 
     private Button btn_login, btn_register;
 
+    /**디버그 모드 로그인 스킵*/
+    boolean debug = true;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_intro);
+
+        if(debug){
+            Intent debugging = new Intent(IntroActivity.this, MainActivity.class);
+            startActivity(debugging);
+            return;
+        }
+
         onClickButton();
     }
 

@@ -2,8 +2,8 @@ package com.hankki.fooddeal.ui;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
+import androidx.navigation.Navigation;
 import androidx.navigation.ui.NavigationUI;
 
 import android.content.Context;
@@ -72,13 +72,5 @@ public class MainActivity extends AppCompatActivity {
         if (System.currentTimeMillis() <= backKeyPressedTime + 2000) {
             this.finishAffinity();
         }
-    }
-
-    // 뒤로가기 버튼 클릭 시 루트 액티비티인 인트로 액티비티 종료
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        navView = null;
-        finishAffinity();
     }
 }

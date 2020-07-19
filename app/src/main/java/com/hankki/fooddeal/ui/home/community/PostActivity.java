@@ -1,6 +1,7 @@
 package com.hankki.fooddeal.ui.home.community;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -9,6 +10,7 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -186,36 +188,60 @@ public class PostActivity extends AppCompatActivity {
         btn_write.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                long now = System.currentTimeMillis();
-                Date date = new Date(now);
-                SimpleDateFormat sdfnow = new SimpleDateFormat("MM/dd HH:mm");
-                String timeData = sdfnow.format(date);
-                int distance = 0;
-                PostItem item = new PostItem("익명",et_post.getText().toString(),
-                        "비전동",et_title.getText().toString(),timeData,
-                        distance, null, postImages);
-                item.setCategory(category);
-                staticPost.addPost(page,item); // 게시글 추가
+                if(page==0&&(postImages.size()==0 || et_title.getText().toString().equals(""))){
+                    AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+                    builder.setMessage("사진과 제목은 필수 입력 항목입니다!");
+                    builder.setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            return;
+                        }
+                    });
+                    AlertDialog alertDialog = builder.create();
+                    alertDialog.show();
+                } else if(et_title.getText().toString().equals("")) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+                    builder.setMessage("제목은 필수 입력 항목입니다!");
+                    builder.setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            return;
+                        }
+                    });
+                    AlertDialog alertDialog = builder.create();
+                    alertDialog.show();
+                } else {
+                    long now = System.currentTimeMillis();
+                    Date date = new Date(now);
+                    SimpleDateFormat sdfnow = new SimpleDateFormat("MM/dd HH:mm");
+                    String timeData = sdfnow.format(date);
+                    int distance = 0;
+                    PostItem item = new PostItem("익명", et_post.getText().toString(),
+                            "비전동", et_title.getText().toString(), timeData,
+                            distance, null, postImages);
+                    item.setCategory(category);
+                    staticPost.addPost(page, item); // 게시글 추가
 
-                /**게시글 추가 후, 해당 커뮤니티에서 즉각적으로 Update*/
-                NavHostFragment navHostFragment = (NavHostFragment) ((MainActivity) MainActivity.mainContext)
-                        .getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
-                List<Fragment> fragments = navHostFragment.getChildFragmentManager().getFragments().get(0)
-                        .getChildFragmentManager().getFragments();
+                    /**게시글 추가 후, 해당 커뮤니티에서 즉각적으로 Update*/
+                    NavHostFragment navHostFragment = (NavHostFragment) ((MainActivity) MainActivity.mainContext)
+                            .getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
+                    List<Fragment> fragments = navHostFragment.getChildFragmentManager().getFragments().get(0)
+                            .getChildFragmentManager().getFragments();
 
-                Fragment fragment = fragments.get(page);
-                switch(page){
-                    case 0:
-                        ((ExchangeAndShare) fragment).setRecyclerView();
-                        break;
-                    case 1:
-                        ((RecipeShare) fragment).setRecyclerView();
-                        break;
-                    case 2:
-                        ((FreeCommunity) fragment).setRecyclerView();
-                        break;
+                    Fragment fragment = fragments.get(page);
+                    switch (page) {
+                        case 0:
+                            ((ExchangeAndShare) fragment).setRecyclerView();
+                            break;
+                        case 1:
+                            ((RecipeShare) fragment).setRecyclerView();
+                            break;
+                        case 2:
+                            ((FreeCommunity) fragment).setRecyclerView();
+                            break;
+                    }
+                    finish();
                 }
-                finish();
             }
         });
     }

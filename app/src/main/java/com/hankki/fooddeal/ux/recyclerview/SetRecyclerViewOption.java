@@ -67,6 +67,8 @@ public class SetRecyclerViewOption {
         mRecyclerView.setAdapter(postAdapter);
     }
 
+    public void update(){ postAdapter.notifyDataSetChanged(); }
+
     public void setPostItems(ArrayList<PostItem> items){
         postItems = items;
     }

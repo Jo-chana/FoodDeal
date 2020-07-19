@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
@@ -117,4 +118,12 @@ public class ExchangeAndShare extends Fragment {
         cv_postWrite.setClickable(false);
         cv_postWrite.setVisibility(View.INVISIBLE);
     }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        if(!fromMyPage)
+            setRecyclerViewOption.update();
+    }
+
 }

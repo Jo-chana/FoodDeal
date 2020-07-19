@@ -2,7 +2,6 @@ package com.hankki.fooddeal.ui.login;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Debug;
 import android.text.Editable;
@@ -19,35 +18,15 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.lifecycle.Lifecycle;
-import androidx.viewpager2.widget.ViewPager2;
 
-import com.google.android.material.tabs.TabLayout;
-import com.google.android.material.tabs.TabLayoutMediator;
 import com.hankki.fooddeal.R;
 import com.hankki.fooddeal.data.RegularCheck;
 import com.hankki.fooddeal.data.retrofit.APIClient;
 import com.hankki.fooddeal.data.retrofit.APIInterface;
-import com.hankki.fooddeal.data.retrofit.APIMethod;
 import com.hankki.fooddeal.data.retrofit.retrofitDTO.MemberResponse;
 import com.hankki.fooddeal.data.security.AES256Util;
-import com.hankki.fooddeal.ui.IntroActivity;
 import com.hankki.fooddeal.ui.MainActivity;
-import com.hankki.fooddeal.ux.viewpager.viewPagerAdapter;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.Callable;
-
-import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
-import io.reactivex.schedulers.Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;

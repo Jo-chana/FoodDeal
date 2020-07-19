@@ -14,6 +14,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -73,7 +74,7 @@ public class Community_detail extends AppCompatActivity {
         }
         mPost = staticPost.getPost(page,order);
 
-        switch (page){
+        switch (page) {
             case 0:
                 setContentView(R.layout.post_exchange_share);
                 setPostCommon();
@@ -119,6 +120,7 @@ public class Community_detail extends AppCompatActivity {
         rv_comment.setNestedScrollingEnabled(false);
 
         EditText et_comment = bottomToolbar.findViewById(R.id.et_comment);
+
         Button btn_comment = bottomToolbar.findViewById(R.id.btn_comment);
         btn_comment.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -155,6 +157,20 @@ public class Community_detail extends AppCompatActivity {
         vp_image = findViewById(R.id.vp_image);
 
         bottomToolbar = findViewById(R.id.bottom_toolbar);
+        ImageView iv_like = bottomToolbar.findViewById(R.id.iv_like);
+
+        iv_like.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                /**유저가 기존에 찜한 게시글이 아닐 경우*/
+                int like_count = mPost.getLike_count();
+                mPost.setLike_count(like_count+1);
+                /**찜 버튼 빈 하트에서 꽉찬 하트로 변경 코드 이곳에*/
+                /**마이페이지 찜 페이지에 추가*/
+                Toast.makeText(mContext,"이 게시글을 찜했습니다.",Toast.LENGTH_SHORT).show();
+            }
+        });
+
         post_common = findViewById(R.id.post_common);
 
         profile = post_common.findViewById(R.id.iv_user_profile);
@@ -210,5 +226,10 @@ public class Community_detail extends AppCompatActivity {
         SimpleDateFormat sdfnow = new SimpleDateFormat("MM/dd HH:mm");
         String timeData = sdfnow.format(date);
         return timeData;
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
     }
 }

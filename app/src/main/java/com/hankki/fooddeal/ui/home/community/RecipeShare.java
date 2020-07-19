@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
@@ -71,12 +72,18 @@ public class RecipeShare extends Fragment {
 
     public void fromMyPageOption(){
         fromMyPage = true;
-
     }
 
     public void setMyPostOption(){
         cv_post = view.findViewById(R.id.cv_post);
         cv_post.setClickable(false);
         cv_post.setVisibility(View.INVISIBLE);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if(!fromMyPage)
+            setRecyclerViewOption.update();
     }
 }
