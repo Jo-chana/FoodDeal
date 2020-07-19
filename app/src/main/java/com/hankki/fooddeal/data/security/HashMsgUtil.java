@@ -2,6 +2,7 @@ package com.hankki.fooddeal.data.security;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.List;
 
 public class HashMsgUtil {
     public static String getSHA256(String str){
@@ -20,5 +21,15 @@ public class HashMsgUtil {
             SHA = null;
         }
         return SHA;
+    }
+
+    // TODO 채팅방을 더 식별할 수 있는 구분자가 필요
+    public static String getSHARoomID(Integer roomType, List<String> userList) {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(roomType);
+
+        for(String user : userList) stringBuilder.append(user);
+
+        return getSHA256(stringBuilder.toString());
     }
 }

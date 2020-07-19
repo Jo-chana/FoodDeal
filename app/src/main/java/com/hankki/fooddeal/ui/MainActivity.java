@@ -15,7 +15,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.hankki.fooddeal.R;
-import com.hankki.fooddeal.ui.chatting.ChatDetail;
+import com.hankki.fooddeal.ui.chatting.ChatActivity;
 
 /**메인 화면. 이곳에 5가지 주요 화면들 바텀 네비게이션으로 출력*/
 public class MainActivity extends AppCompatActivity {
@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
         int chat = getIntent().getIntExtra("Chat",0);
         int index = getIntent().getIntExtra("index",-1);
         if(chat==1) {
-            Intent intent = new Intent(this, ChatDetail.class);
+            Intent intent = new Intent(this, ChatActivity.class);
             intent.putExtra("index",index);
             startActivity(intent);
         }

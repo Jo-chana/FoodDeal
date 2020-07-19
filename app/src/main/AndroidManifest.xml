@@ -20,7 +20,7 @@
             android:stopWithTask="false"/>
 
         <activity android:name=".ui.register.PhoneAuthActivity"/>
-        <activity android:name=".ui.chatting.ChatDetail"/>
+        <activity android:name=".ui.chatting.ChatActivity"/>
         <activity android:name=".ui.home.community.PostActivity" />
         <activity android:name=".ui.SplashActivity">
             <intent-filter>

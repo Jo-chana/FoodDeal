@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.hankki.fooddeal.R;
 import com.hankki.fooddeal.data.staticdata.StaticChatRoom;
-import com.hankki.fooddeal.ui.chatting.ChatDetail;
+import com.hankki.fooddeal.ui.chatting.ChatActivity;
 
 import java.util.ArrayList;
 
@@ -75,7 +75,7 @@ public class MainRecyclerAdapter extends RecyclerView.Adapter<MainRecyclerAdapte
                 /**스와이프 안되어있는 상태일 경우
                  * 채팅방 들어가기*/
                 else {
-                    Intent intent = new Intent(holder.mViewContent.getContext(), ChatDetail.class);
+                    Intent intent = new Intent(holder.mViewContent.getContext(), ChatActivity.class);
                     intent.putExtra("index",position);
                     holder.mViewContent.getContext().startActivity(intent);
                 }
