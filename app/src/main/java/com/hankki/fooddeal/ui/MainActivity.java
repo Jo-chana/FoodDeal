@@ -1,25 +1,38 @@
 package com.hankki.fooddeal.ui;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.hankki.fooddeal.R;
+import com.hankki.fooddeal.data.PreferenceManager;
+import com.hankki.fooddeal.ui.address.AddressActivity;
+import com.hankki.fooddeal.ui.address.PopupActivity;
 import com.hankki.fooddeal.ui.chatting.ChatDetail;
+import com.hankki.fooddeal.ui.home.HomeFragment;
+import com.hankki.fooddeal.ui.home.community.ExchangeAndShare;
+
+import java.util.List;
 
 /**메인 화면. 이곳에 5가지 주요 화면들 바텀 네비게이션으로 출력*/
 public class MainActivity extends AppCompatActivity {
     BottomNavigationView navView;
     public static Context mainContext;
     long backKeyPressedTime = 0;
+    Intent intent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,10 +47,17 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         }
 
-
         mainContext = this;
 
         setBottomNavigation();
+
+        intent = getIntent();
+        String result = intent.getStringExtra("Location");
+        PreferenceManager.setString(this, "Location", result);
+
+        // startActivityResult로 값만 왔다갔다 하게
+        intent = new Intent(MainActivity.this, PopupActivity.class);
+        startActivity(intent);
     }
 
     /**네비게이션 바 세팅*/
@@ -72,13 +92,5 @@ public class MainActivity extends AppCompatActivity {
         if (System.currentTimeMillis() <= backKeyPressedTime + 2000) {
             this.finishAffinity();
         }
-    }
-
-    // 뒤로가기 버튼 클릭 시 루트 액티비티인 인트로 액티비티 종료
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        navView = null;
-        finishAffinity();
     }
 }

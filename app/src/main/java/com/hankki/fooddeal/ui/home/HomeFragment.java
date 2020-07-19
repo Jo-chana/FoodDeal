@@ -1,10 +1,12 @@
 package com.hankki.fooddeal.ui.home;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -14,10 +16,13 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.hankki.fooddeal.R;
+import com.hankki.fooddeal.data.PreferenceManager;
 import com.hankki.fooddeal.ui.MainActivity;
+import com.hankki.fooddeal.ui.address.AddressActivity;
 import com.hankki.fooddeal.ui.home.community.ExchangeAndShare;
 import com.hankki.fooddeal.ui.home.community.FreeCommunity;
 import com.hankki.fooddeal.ui.home.community.RecipeShare;
+import com.hankki.fooddeal.ui.login.LoginActivity;
 import com.hankki.fooddeal.ux.viewpager.viewPagerAdapter;
 
 import java.util.List;
@@ -30,7 +35,7 @@ public class HomeFragment extends Fragment {
     viewPagerAdapter viewPagerAdapter;
     View view;
     Button btn_filter;
-
+    TextView tv_location;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState){
@@ -41,8 +46,14 @@ public class HomeFragment extends Fragment {
         setFragments();
         setViewPager();
         setTabLayout();
+        setLocation();
         filterButtonClickListener();
         return view;
+    }
+
+    public void setLocation() {
+        tv_location = view.findViewById(R.id.tv_location);
+        tv_location.setText(PreferenceManager.getString(getContext(), "Location"));
     }
 
     /**탭으로 구성할 Fragments 리스트*/
@@ -83,4 +94,5 @@ public class HomeFragment extends Fragment {
             }
         });
     }
+
 }
