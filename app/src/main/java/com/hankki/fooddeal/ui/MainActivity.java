@@ -47,19 +47,20 @@ public class MainActivity extends AppCompatActivity {
         mainContext = this;
 
         setBottomNavigation();
+
         if(FirebaseAuth.getInstance().getCurrentUser() != null) {
             firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
             String uid = firebaseUser.getUid();
             Toast.makeText(getApplicationContext(), uid, Toast.LENGTH_SHORT).show();
-        } else Toast.makeText(getApplicationContext(), "파이어베이스 사용자 없음", Toast.LENGTH_SHORT).show();
+        } else {
+            // startActivityResult로 값만 왔다갔다 하게
+            intent = new Intent(MainActivity.this, PopupActivity.class);
+            startActivity(intent);
 
-        intent = getIntent();
-        String result = intent.getStringExtra("Location");
-        PreferenceManager.setString(this, "Location", result);
+            Toast.makeText(getApplicationContext(), "파이어베이스 사용자 없음", Toast.LENGTH_SHORT).show();
+        }
 
-        // startActivityResult로 값만 왔다갔다 하게
-        intent = new Intent(MainActivity.this, PopupActivity.class);
-        startActivity(intent);
+
     }
 
     /**네비게이션 바 세팅*/

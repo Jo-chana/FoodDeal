@@ -24,6 +24,7 @@ import com.bumptech.glide.request.RequestOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.EventListener;
@@ -36,6 +37,7 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.hankki.fooddeal.R;
+import com.hankki.fooddeal.data.security.AES256Util;
 import com.hankki.fooddeal.data.security.HashMsgUtil;
 import com.hankki.fooddeal.ui.chatting.chatDTO.ChatRoomModel;
 
@@ -54,11 +56,19 @@ public class ChatRoomFragment extends Fragment {
     private RecyclerViewAdapter mAdapter;
     private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("hh:mm a");
     private String roomId;
+    private String sUID;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_chatroom, container, false);
+
+        if(FirebaseAuth.getInstance().getCurrentUser() != null) {
+            sUID = AES256Util.aesDecode(FirebaseAuth.getInstance().getCurrentUser().getUid());
+        } else {
+            sUID = "";
+        }
+
 
         Button button = view.findViewById(R.id.test);
         button.setOnClickListener(new View.OnClickListener() {
@@ -117,7 +127,7 @@ public class ChatRoomFragment extends Fragment {
             // 채팅방 리스트 업데이트
             chatRoomListenerRegistration = firestore
                     .collection("rooms")
-                    .whereArrayContains("roomUserList", "ggj0418")
+                    .whereArrayContains("roomUserList", sUID)
                     .orderBy("lastMessageTime", Query.Direction.DESCENDING)
                     .addSnapshotListener(MetadataChanges.INCLUDE, new EventListener<QuerySnapshot>() {
                         @Override

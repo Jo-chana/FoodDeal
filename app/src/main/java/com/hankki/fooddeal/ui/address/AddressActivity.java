@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.hankki.fooddeal.R;
+import com.hankki.fooddeal.data.PreferenceManager;
 import com.hankki.fooddeal.data.retrofit.APIClient;
 import com.hankki.fooddeal.data.retrofit.APIInterface;
 import com.hankki.fooddeal.ui.MainActivity;
@@ -114,8 +115,9 @@ public class AddressActivity extends AppCompatActivity {
                             @Override
                             public void onItemClick(View v, int pos) {
                                 Intent intent = new Intent(AddressActivity.this, MainActivity.class);
-                                intent.putExtra("Location", et_address.getText().toString());
+                                PreferenceManager.setString(getApplicationContext(), "Location", et_address.getText().toString());
                                 startActivity(intent);
+                                finish();
                             }
                         });
 

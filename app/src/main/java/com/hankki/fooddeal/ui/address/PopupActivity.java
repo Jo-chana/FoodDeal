@@ -1,18 +1,23 @@
 package com.hankki.fooddeal.ui.address;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.hankki.fooddeal.R;
 import com.hankki.fooddeal.data.PreferenceManager;
+import com.hankki.fooddeal.ui.login.LoginActivity;
+import com.hankki.fooddeal.ui.register.RegisterActivity;
 
 public class PopupActivity extends Activity {
     private TextView tv_result;
     private TextView tv_tour;
+    private Button loginButton, registerButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,6 +25,26 @@ public class PopupActivity extends Activity {
         //타이틀바 없애기
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_popup);
+
+        loginButton = findViewById(R.id.btn_login);
+        loginButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent toLoginFromPopupIntent = new Intent(PopupActivity.this, LoginActivity.class);
+                startActivity(toLoginFromPopupIntent);
+                finish();
+            }
+        });
+        registerButton = findViewById(R.id.btn_register);
+        registerButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent toRegisterFromPopupIntent = new Intent(PopupActivity.this, RegisterActivity.class);
+                startActivity(toRegisterFromPopupIntent);
+                finish();
+            }
+        });
+
 
         //데이터 가져오기
         String location = PreferenceManager.getString(this, "Location");
