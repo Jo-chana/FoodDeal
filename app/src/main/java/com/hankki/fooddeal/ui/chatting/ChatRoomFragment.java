@@ -70,7 +70,7 @@ public class ChatRoomFragment extends Fragment {
         }
 
 
-        Button button = view.findViewById(R.id.test);
+        /*Button button = view.findViewById(R.id.test);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -92,7 +92,7 @@ public class ChatRoomFragment extends Fragment {
                 DocumentReference newRoom = FirebaseFirestore.getInstance().collection("rooms").document(roomId);
                 createChattingRoom(newRoom, roomId, roomUserList, unreadUserCountMap);
             }
-        });
+        });*/
 
         recyclerView = view.findViewById(R.id.rv_chatroom);
         recyclerView.setLayoutManager(new LinearLayoutManager(inflater.getContext()));
