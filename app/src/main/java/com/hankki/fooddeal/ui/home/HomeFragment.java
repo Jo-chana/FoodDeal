@@ -1,5 +1,6 @@
 package com.hankki.fooddeal.ui.home;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
@@ -23,11 +24,14 @@ import com.google.android.material.tabs.TabLayoutMediator;
 import com.hankki.fooddeal.R;
 import com.hankki.fooddeal.data.PreferenceManager;
 import com.hankki.fooddeal.ui.MainActivity;
+import com.hankki.fooddeal.ui.address.AddressActivity;
 import com.hankki.fooddeal.ui.home.community.ExchangeAndShare;
 import com.hankki.fooddeal.ui.home.community.FreeCommunity;
 import com.hankki.fooddeal.ui.home.community.RecipeShare;
+import com.hankki.fooddeal.ui.login.LoginActivity;
 import com.hankki.fooddeal.ux.viewpager.viewPagerAdapter;
 
+import java.util.List;
 
 /**홈 화면*/
 public class HomeFragment extends Fragment {
@@ -36,20 +40,24 @@ public class HomeFragment extends Fragment {
     TabLayout tabLayout;
     viewPagerAdapter viewPagerAdapter;
     View view;
+
     Button btn_search;
     AppBarLayout ctl_home;
     TextView tv_location;
-
+    Button btn_filter;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState){
 
         view = inflater.inflate(R.layout.fragment_home, container, false);
         btn_search = view.findViewById(R.id.btn_search);
+        btn_filter = view.findViewById(R.id.btn_filter);
+
         setLocation();
         setFragments();
         setViewPager();
         setTabLayout();
+        filterButtonClickListener();
         return view;
     }
 
@@ -98,18 +106,19 @@ public class HomeFragment extends Fragment {
         ).attach();
     }
 
-//    public void filterButtonClickListener(){
-//        btn_filter.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                NavHostFragment navHostFragment = (NavHostFragment) ((MainActivity) MainActivity.mainContext)
-//                        .getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
-//                List<Fragment> fragments = navHostFragment.getChildFragmentManager().getFragments().get(0)
-//                        .getChildFragmentManager().getFragments();
-//                ((ExchangeAndShare) fragments.get(0)).distanceSorting();
-//                ((RecipeShare)fragments.get(1)).distanceSorting();
-//                ((FreeCommunity)fragments.get(2)).distanceSorting();
-//            }
-//        });
-//    }
+    public void filterButtonClickListener(){
+        btn_filter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                NavHostFragment navHostFragment = (NavHostFragment) ((MainActivity) MainActivity.mainContext)
+                        .getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
+                List<Fragment> fragments = navHostFragment.getChildFragmentManager().getFragments().get(0)
+                        .getChildFragmentManager().getFragments();
+                ((ExchangeAndShare) fragments.get(0)).distanceSorting();
+                ((RecipeShare)fragments.get(1)).distanceSorting();
+                ((FreeCommunity)fragments.get(2)).distanceSorting();
+            }
+        });
+    }
+
 }

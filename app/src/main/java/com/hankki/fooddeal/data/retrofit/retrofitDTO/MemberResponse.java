@@ -7,6 +7,8 @@ public class MemberResponse {
     private Integer responseCode;
     @SerializedName("responseMsg")
     private String responseMsg;
+    @SerializedName("firebaseToken")
+    private String firebaseToken;
     @SerializedName("userToken")
     private String userToken;
 
@@ -33,4 +35,8 @@ public class MemberResponse {
     public void setUserToken(String userToken) {
         this.userToken = userToken;
     }
+
+    public String getFirebaseToken() { return firebaseToken; }
+
+    public void setFirebaseToken(String firebaseToken) { this.firebaseToken = firebaseToken; }
 }

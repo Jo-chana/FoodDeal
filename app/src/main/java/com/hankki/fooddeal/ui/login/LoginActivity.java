@@ -1,6 +1,7 @@
 package com.hankki.fooddeal.ui.login;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Debug;
@@ -8,6 +9,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
@@ -17,15 +19,25 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.hankki.fooddeal.R;
+import com.hankki.fooddeal.data.PreferenceManager;
 import com.hankki.fooddeal.data.RegularCheck;
 import com.hankki.fooddeal.data.retrofit.APIClient;
 import com.hankki.fooddeal.data.retrofit.APIInterface;
 import com.hankki.fooddeal.data.retrofit.retrofitDTO.MemberResponse;
 import com.hankki.fooddeal.data.security.AES256Util;
 import com.hankki.fooddeal.ui.MainActivity;
+
+import java.util.Objects;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -36,16 +48,21 @@ import retrofit2.Response;
  * 소비자용, 사업자용 2개 탭뷰 구성
  */
 
-/**로그인 액티비티
+/**
+ * 로그인 액티비티
  * 로그인 유지 상태일 경우, 이 화면은 건너뜀.
- * 로그인 유지 정보는 앱 내에서 기억해야 하므로 Preference Manager 이용할 듯.*/
+ * 로그인 유지 정보는 앱 내에서 기억해야 하므로 Preference Manager 이용할 듯.
+ */
 /* 이현준 (2020.07.13)
 사업자 탭이 없어졌으므로 탭 부분 삭제
 */
 // TODO 패스워드 입력 텍스트를 rightDrawable 대신 Toggle로 해야지 InputMethodManager 자원 해제 가능
 public class LoginActivity extends AppCompatActivity {
+    private static final String TAG = "*************";
 
     private APIInterface apiInterface;
+
+    Activity activity;
 
     View toolbarView;
 
@@ -60,21 +77,31 @@ public class LoginActivity extends AppCompatActivity {
 
     boolean isFirstExecuted = true, isBackPressed, isPasswordVisible;
 
+    FirebaseAuth firebaseAuth;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        activity = this;
     }
 
     @SuppressLint("ClickableViewAccessibility")
     private void initFindViewById() {
+        firebaseAuth = FirebaseAuth.getInstance();
+
         apiInterface = APIClient.getClient().create(APIInterface.class);
 
         passwordTextWatcher = new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
             @Override
             public void afterTextChanged(Editable s) {
                 String inputPassword = passwordEditText.getText().toString();
@@ -151,7 +178,10 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void releaseResource() {
+        activity = null;
         apiInterface = null;
+
+        firebaseAuth = null;
 
         toolbarView = null;
 
@@ -170,7 +200,6 @@ public class LoginActivity extends AppCompatActivity {
 
     @SuppressWarnings("NullableProblems")
     private void login(String userHashID, String userHashPw) {
-        //onPreExecute
         Call<MemberResponse> loginCall = apiInterface.login(userHashID, userHashPw);
         loginCall.enqueue(new Callback<MemberResponse>() {
             @Override
@@ -178,14 +207,38 @@ public class LoginActivity extends AppCompatActivity {
                 MemberResponse memberResponse = response.body();
                 if (memberResponse != null &&
                         memberResponse.getResponseCode() == 500) {
-                    Intent toMainIntent = new Intent(LoginActivity.this, MainActivity.class);
-                    startActivity(toMainIntent);
-                } else { loginErrorHintTextView.setText(getString(R.string.activity_login_error_input)); }
+                    signInWithCustomToken(memberResponse.getFirebaseToken(), memberResponse.getUserToken());
+                } else {
+                    loginErrorHintTextView.setText(getString(R.string.activity_login_error_input));
+                }
             }
 
             @Override
-            public void onFailure(Call<MemberResponse> call, Throwable t) { t.printStackTrace(); }
+            public void onFailure(Call<MemberResponse> call, Throwable t) {
+                t.printStackTrace();
+            }
         });
+    }
+
+    // 토큰을 사용한 인증
+    private void signInWithCustomToken(String firebaseToken, String userToken) {
+        firebaseAuth.signInWithCustomToken(firebaseToken)
+                .addOnCompleteListener(activity, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            PreferenceManager.setString(getApplicationContext(), "userToken", userToken);
+                            Intent toMainIntent = new Intent(LoginActivity.this, MainActivity.class);
+                            startActivity(toMainIntent);
+                        }
+                    }
+                })
+                .addOnFailureListener(activity, new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d(TAG, Objects.requireNonNull(e.getMessage()));
+                    }
+                });
     }
 
     @Override
@@ -231,7 +284,9 @@ public class LoginActivity extends AppCompatActivity {
 
 
 
-/*    *//**탭으로 구성할 Fragments 리스트*//*
+/*    *//**
+ * 탭으로 구성할 Fragments 리스트View Pager -> ux.viewpager.viewPagerAdapter class상단 탭 바에 나타낼 Title 적용
+ *//*
     public void setFragments(){
         fragments[0] = new ConsumerFragment();
         fragments[1] = new ProducerFragment();
