@@ -64,7 +64,6 @@ public class HomeFragment extends Fragment {
 
     public void setLocation(){
         tv_location = view.findViewById(R.id.tv_location);
-        PreferenceManager.setString(getContext(),"Location","어디야?");
         tv_location.setText(PreferenceManager.getString(getContext(),"Location"));
         tv_location.setOnClickListener(new View.OnClickListener() {
             @Override
