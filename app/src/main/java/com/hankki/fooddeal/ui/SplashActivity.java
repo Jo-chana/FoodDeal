@@ -1,10 +1,13 @@
 package com.hankki.fooddeal.ui;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.location.Address;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 
@@ -23,6 +26,7 @@ import com.hankki.fooddeal.data.retrofit.retrofitDTO.MemberResponse;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import com.hankki.fooddeal.ui.address.AddressActivity;
 
 /**스플래쉬 화면*/
 public class SplashActivity extends AppCompatActivity {
@@ -44,6 +48,7 @@ public class SplashActivity extends AppCompatActivity {
         /**스플래쉬 핸들러 바꾸어야 함.
          * 메인으로 넘어가기 전 로그인 유지 상태인지, 아닌지 판단하여
          * 인트로 액티비티 또는 홈 액티비티로 이동*/
+
         /* 이현준
         로그인 화면에서 로그인 성공 시, 서버에서 JWT 토큰을 세션 유지용도로 내려줌. 
         이것을 SharedPreferences에 저장한 뒤, 어플 종료시 혹은 마이페이지에서 자동 로그인 해제 시 삭제

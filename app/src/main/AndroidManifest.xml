@@ -35,6 +35,9 @@
         <activity android:name=".ui.home.community.Community_detail" />
         <activity android:name=".ui.login.LoginActivity" />
         <activity android:name=".ui.register.RegisterActivity"/>
+        <activity android:name=".ui.address.AddressActivity" />
+        <activity android:name=".ui.address.PopupActivity"
+            android:theme="@android:style/Theme.Dialog"/>
     </application>
 
 </manifest>

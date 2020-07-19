@@ -1,20 +1,32 @@
 package com.hankki.fooddeal.ui;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.hankki.fooddeal.R;
+import com.hankki.fooddeal.data.PreferenceManager;
+import com.hankki.fooddeal.ui.address.AddressActivity;
+import com.hankki.fooddeal.ui.address.PopupActivity;
+import com.hankki.fooddeal.ui.home.HomeFragment;
+import com.hankki.fooddeal.ui.home.community.ExchangeAndShare;
+
+import java.util.List;
 import com.hankki.fooddeal.ui.chatting.ChatActivity;
 
 /**메인 화면. 이곳에 5가지 주요 화면들 바텀 네비게이션으로 출력*/
@@ -25,19 +37,12 @@ public class MainActivity extends AppCompatActivity {
     boolean isBackPressed;
 
     FirebaseUser firebaseUser;
+    Intent intent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        int chat = getIntent().getIntExtra("Chat",0);
-        int index = getIntent().getIntExtra("index",-1);
-        if(chat==1) {
-            Intent intent = new Intent(this, ChatActivity.class);
-            intent.putExtra("index",index);
-            startActivity(intent);
-        }
 
         mainContext = this;
 
@@ -47,6 +52,14 @@ public class MainActivity extends AppCompatActivity {
             String uid = firebaseUser.getUid();
             Toast.makeText(getApplicationContext(), uid, Toast.LENGTH_SHORT).show();
         } else Toast.makeText(getApplicationContext(), "파이어베이스 사용자 없음", Toast.LENGTH_SHORT).show();
+
+        intent = getIntent();
+        String result = intent.getStringExtra("Location");
+        PreferenceManager.setString(this, "Location", result);
+
+        // startActivityResult로 값만 왔다갔다 하게
+        intent = new Intent(MainActivity.this, PopupActivity.class);
+        startActivity(intent);
     }
 
     /**네비게이션 바 세팅*/
@@ -88,6 +101,7 @@ public class MainActivity extends AppCompatActivity {
         // 현재 표시된 Toast 취소
         if (System.currentTimeMillis() <= backKeyPressedTime + 2000) {
             isBackPressed = true;
+            navView = null;
             this.finishAffinity();
         }
     }

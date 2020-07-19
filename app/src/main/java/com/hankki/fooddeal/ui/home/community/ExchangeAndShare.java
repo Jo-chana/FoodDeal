@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -23,6 +24,7 @@ public class ExchangeAndShare extends Fragment {
     ActionButton fab;
     StaticPost staticPost = new StaticPost();
     SetRecyclerViewOption setRecyclerViewOption;
+
 
     public ExchangeAndShare(){}
 
@@ -65,4 +67,5 @@ public class ExchangeAndShare extends Fragment {
     public void distanceSorting(){
         setRecyclerViewOption.sortPostItems();
     }
+
 }
