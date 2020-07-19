@@ -15,7 +15,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.hankki.fooddeal.R;
 import com.hankki.fooddeal.data.staticdata.StaticPost;
 import com.hankki.fooddeal.ux.recyclerview.SetRecyclerViewOption;
-import com.scalified.fab.ActionButton;
 
 public class FreeCommunity extends Fragment {
     RecyclerView recyclerView;

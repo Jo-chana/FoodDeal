@@ -18,9 +18,6 @@ import com.google.android.material.appbar.AppBarLayout;
 import com.hankki.fooddeal.R;
 import com.hankki.fooddeal.data.CommentItem;
 import com.hankki.fooddeal.data.PostItem;
-import com.hankki.fooddeal.ui.MainActivity;
-import com.hankki.fooddeal.ui.home.HomeFragment;
-import com.scalified.fab.ActionButton;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -29,7 +26,6 @@ import java.util.Collections;
 public class SetRecyclerViewOption {
     RecyclerView mRecyclerView;
     PostAdapter postAdapter;
-    ActionButton fab = null;
     View view;
     Context context;
     Bundle bundle;
@@ -50,8 +46,6 @@ public class SetRecyclerViewOption {
 
     public void build(int page){
         setmRecyclerView(page);
-        if(fab != null)
-            setFloatingActionButton();
         if(cv!=null)
             setCardViewAnimation();
     }
@@ -98,22 +92,6 @@ public class SetRecyclerViewOption {
             result.add(i,item);
         }
         return result;
-    }
-
-    /**플로팅 액션 버튼 Fade Out & Fade In*/
-    public void setFloatingActionButton(){
-        if(!(mRecyclerView.canScrollVertically(-1)))
-            fab.show();
-        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                if (dy > 0 && fab.getVisibility() == View.VISIBLE) {
-                    fab.hide();
-                } else if (dy < 0 && fab.getVisibility() != View.VISIBLE) {
-                    fab.show();
-                }
-            }
-        });
     }
 
     public void setCardViewAnimation() {

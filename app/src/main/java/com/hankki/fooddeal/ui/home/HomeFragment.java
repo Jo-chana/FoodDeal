@@ -15,6 +15,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.appbar.AppBarLayout;
@@ -57,7 +58,7 @@ public class HomeFragment extends Fragment {
         setFragments();
         setViewPager();
         setTabLayout();
-        filterButtonClickListener();
+//        filterButtonClickListener();
         return view;
     }
 
@@ -106,19 +107,19 @@ public class HomeFragment extends Fragment {
         ).attach();
     }
 
-    public void filterButtonClickListener(){
-        btn_filter.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                NavHostFragment navHostFragment = (NavHostFragment) ((MainActivity) MainActivity.mainContext)
-                        .getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
-                List<Fragment> fragments = navHostFragment.getChildFragmentManager().getFragments().get(0)
-                        .getChildFragmentManager().getFragments();
-                ((ExchangeAndShare) fragments.get(0)).distanceSorting();
-                ((RecipeShare)fragments.get(1)).distanceSorting();
-                ((FreeCommunity)fragments.get(2)).distanceSorting();
-            }
-        });
-    }
+//    public void filterButtonClickListener(){
+//        btn_filter.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                NavHostFragment navHostFragment = (NavHostFragment) ((MainActivity) MainActivity.mainContext)
+//                        .getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
+//                List<Fragment> fragments = navHostFragment.getChildFragmentManager().getFragments().get(0)
+//                        .getChildFragmentManager().getFragments();
+//                ((ExchangeAndShare) fragments.get(0)).distanceSorting();
+//                ((RecipeShare)fragments.get(1)).distanceSorting();
+//                ((FreeCommunity)fragments.get(2)).distanceSorting();
+//            }
+//        });
+//    }
 
 }
