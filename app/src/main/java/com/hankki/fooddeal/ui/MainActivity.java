@@ -26,15 +26,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        int chat = getIntent().getIntExtra("Chat",0);
-        int index = getIntent().getIntExtra("index",-1);
-        if(chat==1) {
-            Intent intent = new Intent(this, ChatDetail.class);
-            intent.putExtra("index",index);
-            startActivity(intent);
-        }
-
-
         mainContext = this;
 
         setBottomNavigation();
@@ -50,7 +41,6 @@ public class MainActivity extends AppCompatActivity {
 
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupWithNavController(navView, navController);
-
     }
 
     @Override

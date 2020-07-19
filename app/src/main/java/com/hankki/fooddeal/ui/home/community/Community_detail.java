@@ -157,6 +157,7 @@ public class Community_detail extends AppCompatActivity {
     public void setPostCommon(){
         vp_image = findViewById(R.id.vp_image);
 
+        topToolbar = findViewById(R.id.top_toolbar);
         bottomToolbar = findViewById(R.id.bottom_toolbar);
         ImageView iv_like = bottomToolbar.findViewById(R.id.iv_like);
 
@@ -201,7 +202,7 @@ public class Community_detail extends AppCompatActivity {
         if(postImages==null) {
             main.removeView(vp_image);
             View view = findViewById(R.id.trick);
-            view.getLayoutParams().height=30;
+            view.getLayoutParams().height=120;
             return;
         } else if (postImages.size()==0){
             main.removeView(vp_image);
