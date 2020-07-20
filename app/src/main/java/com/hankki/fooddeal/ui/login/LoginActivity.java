@@ -35,6 +35,7 @@ import com.hankki.fooddeal.data.retrofit.APIClient;
 import com.hankki.fooddeal.data.retrofit.APIInterface;
 import com.hankki.fooddeal.data.retrofit.retrofitDTO.MemberResponse;
 import com.hankki.fooddeal.data.security.AES256Util;
+import com.hankki.fooddeal.data.security.HashMsgUtil;
 import com.hankki.fooddeal.ui.MainActivity;
 
 import java.util.Objects;
@@ -129,7 +130,7 @@ public class LoginActivity extends AppCompatActivity {
                 String inputID = idEditText.getText().toString();
                 String inputPassword = passwordEditText.getText().toString();
 
-                login(AES256Util.aesEncode(inputID), AES256Util.aesEncode(inputPassword));
+                login(AES256Util.aesEncode(inputID), HashMsgUtil.getSHA256(inputPassword));
             }
         });
 

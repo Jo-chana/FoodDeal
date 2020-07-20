@@ -89,7 +89,7 @@ public class RegisterActivity extends AppCompatActivity {
                     passwordHintTextView.setTextColor(Color.BLUE);
                     passwordHintTextView.setText("올바른 비밀번호 형식입니다");
                     isRegularPassword = true;
-                    userPassword = AES256Util.aesEncode(inputPassword);
+                    userPassword = HashMsgUtil.getSHA256(inputPassword);
                 }
                 else {
                     passwordHintTextView.setTextColor(Color.RED);

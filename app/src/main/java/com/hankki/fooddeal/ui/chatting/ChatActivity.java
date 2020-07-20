@@ -332,7 +332,6 @@ public class ChatActivity extends AppCompatActivity {
                                             messageList.add(message);
                                             notifyItemInserted(change.getNewIndex());
                                             setUnreadtoRead();
-                                            Log.d("***************ADD", message.getMessageSenderUid());
                                             break;
                                         }
                                     case MODIFIED:
@@ -340,12 +339,10 @@ public class ChatActivity extends AppCompatActivity {
                                         messageList.set(change.getOldIndex(), message);
                                         notifyItemChanged(change.getOldIndex());
                                         setUnreadtoRead();
-                                        Log.d("***************MODIFIED", message.getMessageSenderUid());
                                         break;
                                     case REMOVED:
                                         messageList.remove(change.getOldIndex());
                                         notifyItemRemoved(change.getOldIndex());
-                                        Log.d("***************", "REMOVE");
                                         break;
                                 }
                                 recyclerView.scrollToPosition(messageList.size() - 1);

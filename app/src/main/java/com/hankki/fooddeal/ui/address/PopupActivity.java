@@ -12,6 +12,7 @@ import android.widget.TextView;
 import com.hankki.fooddeal.R;
 import com.hankki.fooddeal.data.PreferenceManager;
 import com.hankki.fooddeal.ui.login.LoginActivity;
+import com.hankki.fooddeal.ui.register.PhoneAuthActivity;
 import com.hankki.fooddeal.ui.register.RegisterActivity;
 
 public class PopupActivity extends Activity {
@@ -39,7 +40,7 @@ public class PopupActivity extends Activity {
         registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent toRegisterFromPopupIntent = new Intent(PopupActivity.this, RegisterActivity.class);
+                Intent toRegisterFromPopupIntent = new Intent(PopupActivity.this, PhoneAuthActivity.class);
                 startActivity(toRegisterFromPopupIntent);
                 finish();
             }
