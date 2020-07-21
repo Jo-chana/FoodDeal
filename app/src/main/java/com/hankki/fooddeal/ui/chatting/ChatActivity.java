@@ -152,7 +152,7 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     private void sendMessage(final String msg, String msgType, final ChatModel.FileInfo fileInfo) {
-        sendBtn.setEnabled(false);
+//        sendBtn.setEnabled(false);
         Log.d("***************", "SEND");
         Date date = new Date(System.currentTimeMillis());
         /*if(fileInfo != null) {
@@ -226,7 +226,7 @@ public class ChatActivity extends AppCompatActivity {
                                     @Override
                                     public void onComplete(@NonNull Task<Void> task) {
                                         if (task.isSuccessful()) {
-                                            sendBtn.setEnabled(true);
+//                                            sendBtn.setEnabled(true);
                                         }
                                     }
                                 })
