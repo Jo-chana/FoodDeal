@@ -58,6 +58,8 @@ public class ChatRoomFragment extends Fragment {
     private String roomId;
     private String sUID;
 
+    private FirebaseFirestore firestore;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
@@ -69,6 +71,11 @@ public class ChatRoomFragment extends Fragment {
             sUID = "";
         }
 
+        firestore = FirebaseFirestore.getInstance();
+        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
+                .setPersistenceEnabled(false)
+                .build();
+        firestore.setFirestoreSettings(settings);
 
         /*Button button = view.findViewById(R.id.test);
         button.setOnClickListener(new View.OnClickListener() {
@@ -108,18 +115,12 @@ public class ChatRoomFragment extends Fragment {
 
     class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         final private RequestOptions requestOptions = new RequestOptions().transforms(new CenterCrop(), new RoundedCorners(90));
-        private FirebaseFirestore firestore;
         // 제대로 된 삭제를 위한 로컬 캐싱 제거
-        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
-                .setPersistenceEnabled(false)
-                .build();
+
         private ListenerRegistration chatRoomListenerRegistration;
         private List<ChatRoomModel> roomList = new ArrayList<>();
 
         RecyclerViewAdapter() {
-            firestore = FirebaseFirestore.getInstance();
-            firestore.setFirestoreSettings(settings);
-
             // 채팅방 리스트 업데이트
             chatRoomListenerRegistration = firestore
                     .collection("rooms")

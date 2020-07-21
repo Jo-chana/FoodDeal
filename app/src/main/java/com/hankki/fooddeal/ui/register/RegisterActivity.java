@@ -19,8 +19,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.hankki.fooddeal.R;
 import com.hankki.fooddeal.data.RegularCheck;
 import com.hankki.fooddeal.data.retrofit.APIClient;
@@ -30,6 +34,7 @@ import com.hankki.fooddeal.data.security.AES256Util;
 import com.hankki.fooddeal.data.security.HashMsgUtil;
 import com.hankki.fooddeal.ui.IntroActivity;
 import com.hankki.fooddeal.ui.MainActivity;
+import com.hankki.fooddeal.ui.login.LoginActivity;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -266,8 +271,7 @@ public class RegisterActivity extends AppCompatActivity {
                 MemberResponse memberResponse = response.body();
                 if (memberResponse != null &&
                         memberResponse.getResponseCode() == 600) {
-                    Intent toMainIntent = new Intent(RegisterActivity.this, MainActivity.class);
-                    startActivity(toMainIntent);
+                    setUserProfiles(id);
 
                     body.clear();
                 } else { Toast.makeText(getApplicationContext(), "서버와의 연결이 불안정합니다", Toast.LENGTH_SHORT).show(); }
@@ -309,6 +313,32 @@ public class RegisterActivity extends AppCompatActivity {
                 t.printStackTrace();
             }
         });
+    }
+
+    private void setUserProfiles(String uid) {
+        FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
+
+        final HashMap<String, Object> userProfileMap = new HashMap<>();
+        userProfileMap.put("userNickname", "");
+        userProfileMap.put("userPhotoUri", "");
+
+        firebaseFirestore
+                .collection("users")
+                .document(uid)
+                .set(userProfileMap)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Intent toMainIntent = new Intent(RegisterActivity.this, LoginActivity.class);
+                        startActivity(toMainIntent);
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_LONG).show();
+                    }
+                });
     }
 
     // 자원 할당
