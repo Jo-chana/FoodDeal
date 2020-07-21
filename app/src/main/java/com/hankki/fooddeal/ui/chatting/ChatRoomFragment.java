@@ -72,10 +72,10 @@ public class ChatRoomFragment extends Fragment {
         }
 
         firestore = FirebaseFirestore.getInstance();
-        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
-                .setPersistenceEnabled(false)
-                .build();
-        firestore.setFirestoreSettings(settings);
+//        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
+//                .setPersistenceEnabled(false)
+//                .build();
+//        firestore.setFirestoreSettings(settings);
 
         /*Button button = view.findViewById(R.id.test);
         button.setOnClickListener(new View.OnClickListener() {

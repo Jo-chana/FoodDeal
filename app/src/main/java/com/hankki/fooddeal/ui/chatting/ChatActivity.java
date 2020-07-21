@@ -29,6 +29,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
+import com.google.android.gms.tasks.OnCanceledListener;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -96,10 +97,10 @@ public class ChatActivity extends AppCompatActivity {
         }
         uid = AES256Util.aesDecode(FirebaseAuth.getInstance().getCurrentUser().getUid());
         firestore = FirebaseFirestore.getInstance();
-        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
-                .setPersistenceEnabled(false)
-                .build();
-        firestore.setFirestoreSettings(settings);
+//        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
+//                .setPersistenceEnabled(false)
+//                .build();
+//        firestore.setFirestoreSettings(settings);
 
         msg_input = findViewById(R.id.msg_input);
         sendBtn = findViewById(R.id.sendBtn);
@@ -161,6 +162,36 @@ public class ChatActivity extends AppCompatActivity {
 
         final DocumentReference documentReference = firestore.collection("rooms").document(roomId);
         documentReference
+                .update("lastMessageContent", msg)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d("######", "Last Message Content Update Success");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+        documentReference
+                .update("lastMessageTime", date)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d("######", "Last Message Time Update Success");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+        documentReference
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                     @Override
@@ -190,44 +221,27 @@ public class ChatActivity extends AppCompatActivity {
                         }
                         documentSnapshot.getReference().update("unreadMemberCountMap", unreadUserCountMap);
 
-                        batch.commit().addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                if (task.isSuccessful()) {
-                                    sendBtn.setEnabled(true);
-                                }
-                            }
-                        });
-                    }
-                });
-
-        documentReference
-                .update("lastMessageContent", msg)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d("######", "Last Message Content Update Success");
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_SHORT).show();
-                    }
-                });
-
-        documentReference
-                .update("lastMessageTime", date)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d("######", "Last Message Time Update Success");
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_SHORT).show();
+                        batch.commit()
+                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        if (task.isSuccessful()) {
+                                            sendBtn.setEnabled(true);
+                                        }
+                                    }
+                                })
+                                .addOnCanceledListener(new OnCanceledListener() {
+                                    @Override
+                                    public void onCanceled() {
+                                        Toast.makeText(getApplicationContext(), "캔슬", Toast.LENGTH_LONG).show();
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_LONG).show();
+                                    }
+                                });
                     }
                 });
     }

@@ -17,6 +17,8 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.hankki.fooddeal.R;
 import com.hankki.fooddeal.data.ForcedTerminationService;
 import com.hankki.fooddeal.data.PreferenceManager;
@@ -60,7 +62,10 @@ public class SplashActivity extends AppCompatActivity {
         자동 로그인 설정 후 어플리케이션 재실행 시, 스플래시에서 SharedPreferences에 토큰이 있는지 판단해서 있으면 바로 홈 액티비티 없으면 인트로 액티비티
         */
         firebaseAuth = FirebaseAuth.getInstance();
-
+        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
+                .setPersistenceEnabled(false)
+                .build();
+        FirebaseFirestore.getInstance().setFirestoreSettings(settings);
         /*
         이현준
         자동 로그인 구현

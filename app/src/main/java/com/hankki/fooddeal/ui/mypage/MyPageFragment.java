@@ -91,7 +91,7 @@ public class MyPageFragment extends Fragment {
         iv_my_profile.setClipToOutline(true);
 
         tv_my_name = view.findViewById(R.id.tv_my_name);
-        tv_my_name.setText(user.getName());
+//        tv_my_name.setText(user.getName());
         btn_profile_revise = view.findViewById(R.id.btn_profile_revise);
 
         arrow_my_post = view.findViewById(R.id.arrow_my_post);
@@ -124,7 +124,8 @@ public class MyPageFragment extends Fragment {
             }
         });
 
-        setUserProfilePhoto();
+        // 사용자 닉네임도 필요할듯?
+        setUserProfile();
     }
 
     public void tedPermission(){
@@ -231,7 +232,7 @@ public class MyPageFragment extends Fragment {
                 });
     }
 
-    private void setUserProfilePhoto() {
+    private void setUserProfile() {
         Glide
                 .with(getContext())
                 .load(R.drawable.user)
@@ -252,6 +253,10 @@ public class MyPageFragment extends Fragment {
                                         .load(documentSnapshot.get("userPhotoUri"))
                                         .into(iv_my_profile);
                             }
+                            if(!documentSnapshot.get("userNickname").equals(""))
+                                tv_my_name.setText(documentSnapshot.get("userNickname").toString());
+                            else
+                                tv_my_name.setText(documentSnapshot.get("userNickname").toString());
                         }
                     }
                 });
