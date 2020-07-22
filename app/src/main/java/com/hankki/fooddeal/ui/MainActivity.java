@@ -1,33 +1,21 @@
 package com.hankki.fooddeal.ui;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-import androidx.navigation.fragment.NavHostFragment;
-import androidx.navigation.ui.AppBarConfiguration;
-import androidx.navigation.ui.NavigationUI;
-
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
-import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+import androidx.navigation.ui.AppBarConfiguration;
+import androidx.navigation.ui.NavigationUI;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.hankki.fooddeal.R;
 import com.hankki.fooddeal.data.PreferenceManager;
-import com.hankki.fooddeal.ui.address.AddressActivity;
-import com.hankki.fooddeal.ui.address.PopupActivity;
-import com.hankki.fooddeal.ui.home.HomeFragment;
-import com.hankki.fooddeal.ui.home.community.ExchangeAndShare;
-
-import java.util.List;
-import com.hankki.fooddeal.ui.chatting.ChatActivity;
 
 /**메인 화면. 이곳에 5가지 주요 화면들 바텀 네비게이션으로 출력*/
 public class MainActivity extends AppCompatActivity {
@@ -35,6 +23,7 @@ public class MainActivity extends AppCompatActivity {
     public static Context mainContext;
     long backKeyPressedTime = 0;
     boolean isBackPressed;
+    boolean isPopup;
 
     FirebaseUser firebaseUser;
     Intent intent;
@@ -45,13 +34,16 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         mainContext = this;
+        isPopup = PreferenceManager.getBoolean(this,"Popup");
 
         setBottomNavigation();
 
-        if(FirebaseAuth.getInstance().getCurrentUser() != null) {
+        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
             firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
             String uid = firebaseUser.getUid();
             Toast.makeText(getApplicationContext(), uid, Toast.LENGTH_SHORT).show();
+        } else if (isPopup == false) {
+
         } else {
             // startActivityResult로 값만 왔다갔다 하게
             intent = new Intent(MainActivity.this, PopupActivity.class);

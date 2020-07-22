@@ -1,4 +1,4 @@
-package com.hankki.fooddeal.ui.address;
+package com.hankki.fooddeal.ui;
 
 import android.app.Activity;
 import android.content.Intent;

@@ -2,7 +2,7 @@ package com.hankki.fooddeal.data;
 
 
 import android.graphics.Bitmap;
-import android.net.Uri;
+
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
@@ -21,6 +21,7 @@ public class PostItem implements Comparable<PostItem> {
     ArrayList<Bitmap> images;
     String category = "";
     int like_count = 0;
+
 
     public void setLike_count(int like_count) {
         this.like_count = like_count;
@@ -44,7 +45,7 @@ public class PostItem implements Comparable<PostItem> {
 
     public PostItem(String username, String userpost, String userloc,
                     String userTitle, String userTime,@Nullable int distance, @Nullable Bitmap profile,
-                    @Nullable ArrayList<Bitmap> images){
+                    @Nullable ArrayList<Bitmap> images, double x, double y){
         UserName = username;
         UserPost = userpost;
         UserTitle = userTitle;
@@ -143,4 +144,5 @@ public class PostItem implements Comparable<PostItem> {
     public int compareTo(PostItem o) {
         return this.getDistance() - o.getDistance();
     }
+
 }

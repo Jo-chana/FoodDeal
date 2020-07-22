@@ -1,11 +1,5 @@
 package com.hankki.fooddeal.ui.home.community;
 
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-import androidx.navigation.fragment.NavHostFragment;
-
 import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -22,13 +16,19 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.navigation.fragment.NavHostFragment;
+
 import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.TedPermission;
 import com.hankki.fooddeal.R;
+import com.hankki.fooddeal.data.PostItem;
 import com.hankki.fooddeal.data.staticdata.StaticPost;
 import com.hankki.fooddeal.data.staticdata.StaticUser;
 import com.hankki.fooddeal.ui.MainActivity;
-import com.hankki.fooddeal.data.PostItem;
 
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
@@ -61,11 +61,10 @@ public class PostActivity extends AppCompatActivity {
 
     Context mContext;
 
-
     //테스트
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)  {
         super.onCreate(savedInstanceState);
         mContext = this;
         setContentView(R.layout.activity_post);
@@ -215,7 +214,7 @@ public class PostActivity extends AppCompatActivity {
                     StaticUser user = new StaticUser();
                     PostItem item = new PostItem(user.getName(), et_post.getText().toString(),
                             "비전동", et_title.getText().toString(), timeData,
-                            distance, user.getProfile(), postImages);
+                            distance, user.getProfile(), postImages, 127.1502261, 37.4749207);
                     item.setCategory(category);
                     staticPost.addPost(page, item); // 게시글 추가
 
@@ -322,7 +321,6 @@ public class PostActivity extends AppCompatActivity {
         setImageWrite();
     }
 
-
     public void tedPermission(){
         PermissionListener permissionListener = new PermissionListener() {
             @Override
@@ -346,4 +344,5 @@ public class PostActivity extends AppCompatActivity {
                 .setPermissions(Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 .check();
     }
+
 }

@@ -3,23 +3,18 @@ package com.hankki.fooddeal.ui.home;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.PopupMenu;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.fragment.NavHostFragment;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.appbar.AppBarLayout;
-import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.hankki.fooddeal.R;
@@ -29,10 +24,8 @@ import com.hankki.fooddeal.ui.address.AddressActivity;
 import com.hankki.fooddeal.ui.home.community.ExchangeAndShare;
 import com.hankki.fooddeal.ui.home.community.FreeCommunity;
 import com.hankki.fooddeal.ui.home.community.RecipeShare;
-import com.hankki.fooddeal.ui.login.LoginActivity;
+import com.hankki.fooddeal.ui.map.MapActivity;
 import com.hankki.fooddeal.ux.viewpager.viewPagerAdapter;
-
-import java.util.List;
 
 /**홈 화면*/
 public class HomeFragment extends Fragment {
@@ -46,6 +39,8 @@ public class HomeFragment extends Fragment {
     AppBarLayout ctl_home;
     TextView tv_location;
     Button btn_filter;
+    Button btn_location;
+    Button btn_map;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState){
@@ -53,13 +48,26 @@ public class HomeFragment extends Fragment {
         view = inflater.inflate(R.layout.fragment_home, container, false);
         btn_search = view.findViewById(R.id.btn_search);
         btn_filter = view.findViewById(R.id.btn_filter);
+        btn_location = view.findViewById(R.id.btn_location);
+        btn_map = view.findViewById(R.id.btn_map);
 
         setLocation();
         setFragments();
         setViewPager();
         setTabLayout();
+        setMapButtonOnClickLisetener();
 //        filterButtonClickListener();
         return view;
+    }
+
+    public void setMapButtonOnClickLisetener() {
+        btn_map.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), MapActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     public void setLocation(){
@@ -73,6 +81,10 @@ public class HomeFragment extends Fragment {
                 p.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
+                        Intent intent = new Intent(getActivity(), AddressActivity.class);
+                        PreferenceManager.setBoolean(getContext(), "Popup", false);
+                        startActivity(intent);
+
                         return false;
                     }
                 });
