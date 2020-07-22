@@ -86,15 +86,6 @@ public class MyPageFragment extends Fragment {
     }
 
     public void setViewComponents(){
-        btn_logout = view.findViewById(R.id.deleteShared);
-        btn_logout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                PreferenceManager.removeKey(getContext(),"userToken");
-                FirebaseAuth.getInstance().signOut();
-            }
-        });
-
         iv_my_profile = view.findViewById(R.id.iv_my_profile);
         iv_my_profile.setBackground(new ShapeDrawable(new OvalShape()));
         iv_my_profile.setClipToOutline(true);
