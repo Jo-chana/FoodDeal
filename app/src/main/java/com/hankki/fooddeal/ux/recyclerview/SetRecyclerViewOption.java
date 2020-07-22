@@ -31,6 +31,7 @@ public class SetRecyclerViewOption {
     Bundle bundle;
     ArrayList<PostItem> postItems;
     CardView cv = null;
+    String tag = "";
     int layout;
     int direction = RecyclerView.VERTICAL;
 
@@ -57,6 +58,7 @@ public class SetRecyclerViewOption {
     public void setmRecyclerView(int page){
         postAdapter = new PostAdapter(context,makePostItems(),layout);
         postAdapter.setPage(page);
+        postAdapter.setTag(tag);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(context, direction,false));
         mRecyclerView.setAdapter(postAdapter);
     }
@@ -65,6 +67,10 @@ public class SetRecyclerViewOption {
 
     public void setPostItems(ArrayList<PostItem> items){
         postItems = items;
+    }
+
+    public void setTag(String tag){
+        this.tag = tag;
     }
 
     public void sortPostItems(){

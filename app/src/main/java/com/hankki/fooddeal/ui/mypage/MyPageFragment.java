@@ -1,7 +1,11 @@
 package com.hankki.fooddeal.ui.mypage;
 
 import android.Manifest;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.ShapeDrawable;
@@ -19,6 +23,9 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.IntentCompat;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
@@ -39,6 +46,8 @@ import com.gun0912.tedpermission.TedPermission;
 import com.hankki.fooddeal.R;
 import com.hankki.fooddeal.data.PreferenceManager;
 import com.hankki.fooddeal.data.staticdata.StaticUser;
+import com.hankki.fooddeal.ui.MainActivity;
+import com.hankki.fooddeal.ui.PopupActivity;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -124,6 +133,14 @@ public class MyPageFragment extends Fragment {
             }
         });
 
+        arrow_setting.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), MySettingActivity.class);
+                startActivity(intent);
+            }
+        });
+
         // 사용자 닉네임도 필요할듯?
         setUserProfile();
     }
@@ -175,7 +192,6 @@ public class MyPageFragment extends Fragment {
 
                     iv_my_profile.setImageBitmap(img);
                     iv_my_profile.setScaleType(ImageView.ScaleType.CENTER_CROP);
-//                    Toast.makeText(getContext(),"프로필 사진 수정 완료",Toast.LENGTH_SHORT).show();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

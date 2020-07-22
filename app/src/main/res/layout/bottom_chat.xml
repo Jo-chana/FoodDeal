@@ -3,10 +3,10 @@
     android:layout_width="match_parent"
     android:layout_height="70dp"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    
-    <ImageView
+
+    <CheckBox
         android:id="@+id/iv_like"
-        android:background="@drawable/round_edittext"
+        android:button="@drawable/like_button"
         android:layout_width="25dp"
         android:layout_height="25dp"
         app:layout_constraintTop_toTopOf="parent"

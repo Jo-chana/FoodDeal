@@ -5,6 +5,8 @@ import android.graphics.Bitmap;
 
 import androidx.annotation.Nullable;
 
+import com.hankki.fooddeal.data.staticdata.StaticUser;
+
 import java.util.ArrayList;
 
 /**Post Item
@@ -12,23 +14,27 @@ import java.util.ArrayList;
  * Recycler View 구성하는 Item Frame*/
 public class PostItem implements Comparable<PostItem> {
     /**DB 데이터에 맞춰서 필드 추가*/
-    String UserName;
-    String UserPost;
+    String UserName; // 글쓴이 이름
+    String boardContent;
     String UserLocation;
-    String UserTime;
-    String UserTitle;
+    String regionFirst;
+    String regionSecond;
+    String regionThird;
+    String insertDate;
+    String boardTitle;
     Bitmap UserProfile;
     ArrayList<Bitmap> images;
     String category = "";
-    int like_count = 0;
+    int likeCount = 0;
+    int boardSeq;
+    int userSeq;
 
-
-    public void setLike_count(int like_count) {
-        this.like_count = like_count;
+    public void setLikeCount(int likeCount) {
+        this.likeCount = likeCount;
     }
 
-    public int getLike_count() {
-        return like_count;
+    public int getLikeCount() {
+        return likeCount;
     }
 
     public void setCategory(String category) {
@@ -47,12 +53,28 @@ public class PostItem implements Comparable<PostItem> {
                     String userTitle, String userTime,@Nullable int distance, @Nullable Bitmap profile,
                     @Nullable ArrayList<Bitmap> images, double x, double y){
         UserName = username;
-        UserPost = userpost;
-        UserTitle = userTitle;
+        boardContent = userpost;
+        this.boardTitle = boardTitle;
         UserLocation = userloc;
-        UserTime = userTime;
+        this.insertDate = insertDate;
         Distance = distance;
         UserProfile = profile;
+        this.images = images;
+        comments = new ArrayList<>();
+        if(comments==null){
+            comments = new ArrayList<>();
+        }
+    }
+
+    public PostItem(String userpost, String boardTitle, String insertDate,
+                    @Nullable int distance, @Nullable ArrayList<Bitmap> images){
+        UserName = StaticUser.getName();
+        boardContent = userpost;
+        this.boardTitle = boardTitle;
+        UserLocation = StaticUser.getLocation();
+        this.insertDate = insertDate;
+        Distance = distance;
+        UserProfile = StaticUser.getProfile();
         this.images = images;
         comments = new ArrayList<>();
         if(comments==null){
@@ -63,10 +85,10 @@ public class PostItem implements Comparable<PostItem> {
     /**테스트용*/
     public PostItem(){
         UserName = "글쓴이";
-        UserTitle = "아무말 하자";
-        UserPost = "아무말\n\n아무말 대잔치";
+        boardTitle = "아무말 하자";
+        boardContent = "아무말\n\n아무말 대잔치";
         UserLocation = "광진구 화양동";
-        UserTime = "";
+        insertDate = "";
         UserProfile = null;
     }
 
@@ -74,16 +96,16 @@ public class PostItem implements Comparable<PostItem> {
         UserName = userName;
     }
 
-    public void setUserPost(String userPost) {
-        UserPost = userPost;
+    public void setBoardContent(String boardContent) {
+        this.boardContent = boardContent;
     }
 
     public void setUserLocation(String userLocation) {
         UserLocation = userLocation;
     }
 
-    public void setUserTitle(String userTitle) {
-        UserTitle = userTitle;
+    public void setBoardTitle(String boardTitle) {
+        this.boardTitle = boardTitle;
     }
 
     public void setUserProfile(Bitmap userProfile) {
@@ -106,12 +128,12 @@ public class PostItem implements Comparable<PostItem> {
         return UserName;
     }
 
-    public String getUserPost() {
-        return UserPost;
+    public String getBoardContent() {
+        return boardContent;
     }
 
-    public String getUserTitle(){
-        return UserTitle;
+    public String getBoardTitle(){
+        return boardTitle;
     }
 
     public String getUserLocation() {
@@ -122,7 +144,7 @@ public class PostItem implements Comparable<PostItem> {
         return Distance;
     }
 
-    public String getUserTime(){ return UserTime; }
+    public String getInsertDate(){ return insertDate; }
 
     public Bitmap getUserProfile() {
         return UserProfile;

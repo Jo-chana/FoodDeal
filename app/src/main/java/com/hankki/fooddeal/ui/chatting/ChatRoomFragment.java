@@ -84,11 +84,15 @@ public class ChatRoomFragment extends Fragment {
                 String uid = "ggj0418";
                 List<String> roomUserList = new ArrayList<>();
                 roomUserList.add(uid);
-                roomUserList.add("cr00870");
+                roomUserList.add("dlguwn13");
+                roomUserList.add("gyronnn103");
+                roomUserList.add("cloud1300");
 
                 HashMap<String, Integer> unreadUserCountMap = new HashMap<>();
                 unreadUserCountMap.put(uid, 0);
-                unreadUserCountMap.put("cr00870", 0);
+                unreadUserCountMap.put("dlguwn13", 0);
+                unreadUserCountMap.put("gyronnn103", 0);
+                unreadUserCountMap.put("cloud1300", 0);
 
                 roomId = HashMsgUtil.getSHARoomID(3, roomUserList);
 
@@ -115,7 +119,6 @@ public class ChatRoomFragment extends Fragment {
 
     class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         final private RequestOptions requestOptions = new RequestOptions().transforms(new CenterCrop(), new RoundedCorners(90));
-        // 제대로 된 삭제를 위한 로컬 캐싱 제거
 
         private ListenerRegistration chatRoomListenerRegistration;
         private List<ChatRoomModel> roomList = new ArrayList<>();

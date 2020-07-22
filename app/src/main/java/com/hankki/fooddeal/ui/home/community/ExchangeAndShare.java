@@ -3,9 +3,13 @@ package com.hankki.fooddeal.ui.home.community;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.PopupMenu;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -13,8 +17,11 @@ import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.hankki.fooddeal.R;
 import com.hankki.fooddeal.data.staticdata.StaticPost;
+import com.hankki.fooddeal.data.staticdata.StaticUser;
+import com.hankki.fooddeal.ui.MainActivity;
 import com.hankki.fooddeal.ux.recyclerview.SetRecyclerViewOption;
 
 
@@ -25,9 +32,12 @@ public class ExchangeAndShare extends Fragment {
     CardView cv_postWrite, cv_showExchange, cv_showShare;
     FrameLayout fl_exchange, fl_share;
     StaticPost staticPost = new StaticPost();
+    Button btn_filter;
     SetRecyclerViewOption setRecyclerViewOption;
     String category = "식재교환";
-    boolean fromMyPage = false;
+
+    /**@Enum pageFrom {Main, My, Dib}*/
+    String pageFrom = "Main";
 
     public ExchangeAndShare(){}
 
@@ -35,20 +45,26 @@ public class ExchangeAndShare extends Fragment {
                              ViewGroup container, Bundle savedInstanceState){
 
         view = inflater.inflate(R.layout.fragment_exchange, container, false);
-        if(!fromMyPage) {
+        if(pageFrom.equals("Main")) {
             setPostLists();
             setShowLists();
             setRecyclerView();
             setPostWrite();
         } else {
             setMyPostOption();
+            setShowLists();
         }
+        filterButtonClickListener();
         return view;
     }
 
     public void setRecyclerView(){
         recyclerView = view.findViewById(R.id.rv_exchange);
         cv_postWrite = view.findViewById(R.id.cv_post);
+        if(FirebaseAuth.getInstance().getCurrentUser()==null) {
+            cv_postWrite.setClickable(false);
+            cv_postWrite.setVisibility(View.INVISIBLE);
+        }
         setRecyclerViewOption = new SetRecyclerViewOption(recyclerView, cv_postWrite,view,getContext(),R.layout.community_item);
 
         /**메인일 때*/
@@ -109,20 +125,59 @@ public class ExchangeAndShare extends Fragment {
         setRecyclerViewOption.sortPostItems();
     }
 
-    public void fromMyPageOption(){
-        fromMyPage = true;
+    public void fromMyPageOption(String tag){
+        pageFrom = tag;
     }
 
     public void setMyPostOption(){
         cv_postWrite = view.findViewById(R.id.cv_post);
         cv_postWrite.setClickable(false);
         cv_postWrite.setVisibility(View.INVISIBLE);
+
+        recyclerView = view.findViewById(R.id.rv_exchange);
+        setRecyclerViewOption = new SetRecyclerViewOption(recyclerView, null,view,getContext(),R.layout.community_item);
+        if(pageFrom.equals("My"))
+            setRecyclerViewOption.setPostItems(StaticUser.getPagedPosts(StaticUser.getMyPosts(),0));
+        else if (pageFrom.equals("Dib"))
+            setRecyclerViewOption.setPostItems(StaticUser.getPagedPosts(StaticUser.getLikedPosts(),0));
+        setRecyclerViewOption.setTag(pageFrom);
+        setRecyclerViewOption.build(0);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        return super.onOptionsItemSelected(item);
+    }
+
+    public void filterButtonClickListener(){
+        btn_filter = view.findViewById(R.id.btn_filter);
+        btn_filter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                PopupMenu p = new PopupMenu(getContext(),v);
+                ((MainActivity)MainActivity.mainContext).getMenuInflater().inflate(R.menu.menu_filter_posts,p.getMenu());
+                p.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        String title = item.getTitle().toString();
+                        if(title.equals("시간순 정렬")){
+                            Toast.makeText(getContext(),"최근의 게시글을 먼저 보여줍니다", Toast.LENGTH_SHORT).show();
+                        } else if (title.equals("거리순 정렬")){
+                            Toast.makeText(getContext(), "가까운 곳의 게시글을 먼저 보여줍니다", Toast.LENGTH_SHORT).show();
+                            distanceSorting();
+                        }
+                        return true;
+                    }
+                });
+                p.show();
+            }
+        });
     }
 
     @Override
     public void onResume(){
         super.onResume();
-        if(!fromMyPage)
+        if(pageFrom.equals("Main"))
             setRecyclerViewOption.update();
     }
 

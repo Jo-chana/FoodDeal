@@ -1,35 +1,43 @@
 package com.hankki.fooddeal.ui.home.community;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
+import androidx.fragment.app.Fragment;
+import androidx.navigation.fragment.NavHostFragment;
+
 import android.Manifest;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.media.ExifInterface;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-import androidx.navigation.fragment.NavHostFragment;
 
 import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.TedPermission;
 import com.hankki.fooddeal.R;
-import com.hankki.fooddeal.data.PostItem;
 import com.hankki.fooddeal.data.staticdata.StaticPost;
 import com.hankki.fooddeal.data.staticdata.StaticUser;
 import com.hankki.fooddeal.ui.MainActivity;
+import com.hankki.fooddeal.data.PostItem;
+import com.hankki.fooddeal.ux.dialog.CustomDialog;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -48,7 +56,10 @@ public class PostActivity extends AppCompatActivity {
     View toolbarView;
     ImageView backButton;
     StaticPost staticPost = new StaticPost();
-    int page, index;
+    int page, order;
+    String pageFromTag;
+
+    CustomDialog customDialog;
 
     String category = ""; // 테스트용/ 교환인지 나눔인지
 
@@ -61,17 +72,18 @@ public class PostActivity extends AppCompatActivity {
 
     Context mContext;
 
+
     //테스트
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)  {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mContext = this;
         setContentView(R.layout.activity_post);
         intent = getIntent();
         tag = "exchange";
         page = intent.getIntExtra("page",-1);
-        index = intent.getIntExtra("index",-1);
+        order = intent.getIntExtra("index",-1);
         category = intent.getStringExtra("category");
         setIdComponents();
     }
@@ -87,7 +99,6 @@ public class PostActivity extends AppCompatActivity {
         ll_choice = findViewById(R.id.ll_choice);
         toolbarView = findViewById(R.id.post_toolbar);
         toolbarTextView = toolbarView.findViewById(R.id.toolbar_title);
-        toolbarTextView.setText("글쓰기");
         backButton = toolbarView.findViewById(R.id.back_button);
 
         backButton.setOnClickListener(new View.OnClickListener() {
@@ -111,9 +122,11 @@ public class PostActivity extends AppCompatActivity {
         }
         textViews[0].setText("0/4");
 
-        if (intent.getStringExtra("mode").equals("revise"))
+        if (intent.getStringExtra("mode").equals("revise")) {
+            toolbarTextView.setText("수정하기");
             setPostRevise();
-        else {
+        } else {
+            toolbarTextView.setText("글쓰기");
             setImageWrite();
             setPostWrite();
         }
@@ -173,7 +186,25 @@ public class PostActivity extends AppCompatActivity {
                 @Override
                 /**이미지 삽입*/
                 public void onClick(View v) {
-                    tedPermission();
+                    PopupMenu p = new PopupMenu(mContext, v);
+                    p.getMenuInflater().inflate(R.menu.post_photo_menu, p.getMenu());
+                    p.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                        @Override
+                        public boolean onMenuItemClick(MenuItem item) {
+                            switch(item.getItemId()){
+                                case R.id.gallery:
+                                    tedPermission();
+                                    return true;
+                                case R.id.camera:
+                                    dispatchTakePictureIntent();
+                                    return true;
+                                case R.id.cancel:
+                                    return true;
+                            }
+                            return false;
+                        }
+                    });
+                    p.show();
                 }
             });
         }
@@ -184,38 +215,45 @@ public class PostActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if(page==0&&(postImages.size()==0 || et_title.getText().toString().equals(""))){
-                    AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-                    builder.setMessage("사진과 제목은 필수 입력 항목입니다!");
-                    builder.setPositiveButton("확인", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            return;
-                        }
-                    });
-                    AlertDialog alertDialog = builder.create();
-                    alertDialog.show();
+                    customDialog = new CustomDialog(mContext,"사진과 제목은 필수 입력 사항입니다!");
+                    customDialog.setCanceledOnTouchOutside(false);
+                    customDialog.show();
+//                    AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+//                    builder.setMessage("사진과 제목은 필수 입력 항목입니다!");
+//                    builder.setPositiveButton("확인", new DialogInterface.OnClickListener() {
+//                        @Override
+//                        public void onClick(DialogInterface dialog, int which) {
+//                            return;
+//                        }
+//                    });
+//                    AlertDialog alertDialog = builder.create();
+//                    alertDialog.show();
                 } else if(et_title.getText().toString().equals("")) {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-                    builder.setMessage("제목은 필수 입력 항목입니다!");
-                    builder.setPositiveButton("확인", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            return;
-                        }
-                    });
-                    AlertDialog alertDialog = builder.create();
-                    alertDialog.show();
+                    customDialog = new CustomDialog(mContext,"제목은 필수 입력 사항입니다!");
+                    customDialog.setCanceledOnTouchOutside(false);
+                    customDialog.show();
+//                    AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+//                    builder.setMessage("제목은 필수 입력 항목입니다!");
+//                    builder.setPositiveButton("확인", new DialogInterface.OnClickListener() {
+//                        @Override
+//                        public void onClick(DialogInterface dialog, int which) {
+//                            return;
+//                        }
+//                    });
+//                    AlertDialog alertDialog = builder.create();
+//                    alertDialog.show();
                 } else {
                     long now = System.currentTimeMillis();
                     Date date = new Date(now);
-                    SimpleDateFormat sdfnow = new SimpleDateFormat("MM/dd HH:mm");
+                    SimpleDateFormat sdfnow = new SimpleDateFormat("HH:mm");
                     String timeData = sdfnow.format(date);
                     int distance = 0;
-                    StaticUser user = new StaticUser();
-                    PostItem item = new PostItem(user.getName(), et_post.getText().toString(),
-                            "비전동", et_title.getText().toString(), timeData,
-                            distance, user.getProfile(), postImages, 127.1502261, 37.4749207);
+                    PostItem item = new PostItem(et_post.getText().toString(),
+                            et_title.getText().toString(), timeData,
+                            distance, postImages);
                     item.setCategory(category);
+
+                    StaticUser.getPagedPosts(StaticUser.getMyPosts(),page).add(item); // 내가 쓴 게시글 추가
                     staticPost.addPost(page, item); // 게시글 추가
 
                     /**게시글 추가 후, 해당 커뮤니티에서 즉각적으로 Update*/
@@ -243,36 +281,63 @@ public class PostActivity extends AppCompatActivity {
     }
 
     public void setPostRevise(){
-        PostItem item = staticPost.getPost(page,index);
+        PostItem mPost;
+        pageFromTag = intent.getStringExtra("PageFromTag");
+        switch (pageFromTag){
+            case "My":
+                mPost = StaticUser.myPosts.get(page).get(order);
+                break;
+            case "Dib":
+                mPost = StaticUser.likedPosts.get(page).get(order);
+                break;
+            case "Main":
+            default:
+                mPost = staticPost.getPost(page,order);
+                break;
+        }
+
         btn_write.setText("수정하기");
-        et_title.setText(item.getUserTitle());
-        et_post.setText(item.getUserPost());
+        et_title.setText(mPost.getBoardTitle());
+        et_post.setText(mPost.getBoardContent());
         btn_write.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                item.setUserTitle(et_title.getText().toString());
-                item.setUserPost(et_post.getText().toString());
+                mPost.setBoardTitle(et_title.getText().toString());
+                mPost.setBoardContent(et_post.getText().toString());
 
-                staticPost.updatePost(page,index,item);
-
-
-                NavHostFragment navHostFragment = (NavHostFragment) ((MainActivity) MainActivity.mainContext)
-                        .getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
-                List<Fragment> fragments = navHostFragment.getChildFragmentManager().getFragments().get(0)
-                        .getChildFragmentManager().getFragments();
-
-                Fragment fragment = fragments.get(page);
-                switch(page){
-                    case 0:
-                        ((ExchangeAndShare) fragment).setRecyclerView();
+                switch (pageFromTag) {
+                    case "My":
+                        StaticUser.myPosts.get(page).set(order, mPost);
                         break;
-                    case 1:
-                        ((RecipeShare) fragment).setRecyclerView();
+                    case "Dib":
+                        StaticUser.likedPosts.get(page).set(order, mPost);
                         break;
-                    case 2:
-                        ((FreeCommunity) fragment).setRecyclerView();
+                    case "Main":
+                    default:
+                        staticPost.updatePost(page, order, mPost);
                         break;
+                }
+
+
+                if (pageFromTag.equals("Main")) {
+                    NavHostFragment navHostFragment = (NavHostFragment) ((MainActivity) MainActivity.mainContext)
+                            .getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
+                    List<Fragment> fragments = navHostFragment.getChildFragmentManager().getFragments().get(0)
+                            .getChildFragmentManager().getFragments();
+
+                    Fragment fragment = fragments.get(page);
+                    switch (page) {
+                        case 0:
+                            ((ExchangeAndShare) fragment).setRecyclerView();
+                            break;
+                        case 1:
+                            ((RecipeShare) fragment).setRecyclerView();
+                            break;
+                        case 2:
+                            ((FreeCommunity) fragment).setRecyclerView();
+                            break;
+                    }
                 }
                 finish();
             }
@@ -282,9 +347,10 @@ public class PostActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 0) {
-            if (resultCode == RESULT_OK) {
-                try {
+        try{
+            if (requestCode == 0) {
+                if (resultCode == RESULT_OK) {
+
                     InputStream in = getContentResolver().openInputStream(data.getData());
 
                     Bitmap img = BitmapFactory.decodeStream(in);
@@ -294,12 +360,47 @@ public class PostActivity extends AppCompatActivity {
                     onImageAttach();
 
                     Toast.makeText(this,"사진 업로드 완료",Toast.LENGTH_SHORT).show();
-                } catch (Exception e) {
-                    e.printStackTrace();
+
+                } else if (resultCode == RESULT_CANCELED) {
+                    Toast.makeText(this, "사진 선택 취소", Toast.LENGTH_LONG).show();
                 }
-            } else if (resultCode == RESULT_CANCELED) {
-                Toast.makeText(this, "사진 선택 취소", Toast.LENGTH_LONG).show();
             }
+
+            if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK){
+                File file = new File(currentPhotoPath);
+                Bitmap img = MediaStore.Images.Media.getBitmap(getContentResolver(),Uri.fromFile(file));
+                if(img != null){
+                    ExifInterface ei = new ExifInterface(currentPhotoPath);
+                    int orientation = ei.getAttributeInt(ExifInterface.TAG_ORIENTATION,
+                            ExifInterface.ORIENTATION_UNDEFINED);
+
+                    Bitmap rotatedBitmap = null;
+                    switch(orientation) { /**이미지 원본에 맞게 회전변환*/
+
+                        case ExifInterface.ORIENTATION_ROTATE_90:
+                            rotatedBitmap = rotateImage(img, 90);
+                            break;
+
+                        case ExifInterface.ORIENTATION_ROTATE_180:
+                            rotatedBitmap = rotateImage(img, 180);
+                            break;
+
+                        case ExifInterface.ORIENTATION_ROTATE_270:
+                            rotatedBitmap = rotateImage(img, 270);
+                            break;
+
+                        case ExifInterface.ORIENTATION_NORMAL:
+                        default:
+                            rotatedBitmap = img;
+                    }
+                    postImages.add(rotatedBitmap);
+                    onImageAttach();
+                    Toast.makeText(mContext,"사진 촬영 업로드 완료",Toast.LENGTH_SHORT).show();
+//                    galleryAddPic(file);
+                }
+            }
+        } catch (Exception e){
+            e.printStackTrace();
         }
     }
 
@@ -321,6 +422,7 @@ public class PostActivity extends AppCompatActivity {
         setImageWrite();
     }
 
+
     public void tedPermission(){
         PermissionListener permissionListener = new PermissionListener() {
             @Override
@@ -339,10 +441,84 @@ public class PostActivity extends AppCompatActivity {
 
         TedPermission.with(this)
                 .setPermissionListener(permissionListener)
-                .setRationaleMessage("[설정] > [권한] 에서 권한을 허용할 수 있습니다")
-                .setDeniedMessage("사진을 업로드하기 위하여 권한이 필요합니다.")
+                .setRationaleMessage("사진을 업로드하기 위하여 권한이 필요합니다.")
+                .setDeniedMessage("[설정] > [권한] 에서 권한을 허용할 수 있습니다")
                 .setPermissions(Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 .check();
     }
 
+    static final int REQUEST_IMAGE_CAPTURE = 1;
+
+    private void dispatchTakePictureIntent() {
+        PermissionListener permissionListener = new PermissionListener() {
+            @Override
+            public void onPermissionGranted() {
+                Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+                    File photoFile = null;
+                    try {
+                        photoFile = createImageFile();
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
+                    /**Continue only if the File was successfully created*/
+                    if (photoFile != null) {
+                        Uri photoURI = FileProvider.getUriForFile(mContext,
+                                "com.hankki.fooddeal.FileProvider",
+                                photoFile);
+
+                        takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                        startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+                    }
+                }
+            }
+
+            @Override
+            public void onPermissionDenied(List<String> deniedPermissions) {
+                Toast.makeText(mContext,"권한이 거부되어 있어요",Toast.LENGTH_SHORT).show();
+            }
+        };
+
+        TedPermission.with(this)
+                .setPermissionListener(permissionListener)
+                .setRationaleMessage("사진을 촬영하기 위하여 권한이 필요합니다.")
+                .setDeniedMessage("[설정] > [권한] 에서 권한을 허용할 수 있습니다")
+                .setPermissions(Manifest.permission.CAMERA,Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                .check();
+    }
+
+    /**카메로 촬영한 영상 이미지 처리
+     * 기존 Bitmap 으로 가져온 이미지는 해상도 낮음
+     * -> 원본 파일 접근 및 처리 함수 추가*/
+    String currentPhotoPath;
+
+    private File createImageFile() throws IOException {
+        // Create an image file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                imageFileName,  /*   prefix   */
+                ".jpg",   /*   suffix   */
+                storageDir      /*  directory */
+        );
+
+        // Save a file: path for use with ACTION_VIEW intents
+        currentPhotoPath = image.getAbsolutePath();
+        return image;
+    }
+
+    public static Bitmap rotateImage(Bitmap source, float angle) {
+        Matrix matrix = new Matrix();
+        matrix.postRotate(angle);
+        return Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(),
+                matrix, true);
+    }
+
+    private void galleryAddPic(File file) { /**사진 저장*/
+        Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        Uri contentUri = Uri.fromFile(file);
+        mediaScanIntent.setData(contentUri);
+        this.sendBroadcast(mediaScanIntent);
+    }
 }

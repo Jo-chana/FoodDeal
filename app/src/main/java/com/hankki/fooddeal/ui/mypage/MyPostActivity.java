@@ -27,6 +27,7 @@ public class MyPostActivity extends AppCompatActivity {
     View toolbarView;
     TextView toolbarTextView;
     Intent intent;
+    String tag;
 
 
     @Override
@@ -48,18 +49,20 @@ public class MyPostActivity extends AppCompatActivity {
         String mode = intent.getStringExtra("Mode");
         if(mode.equals("my_post")) {
             toolbarTextView.setText("내가 쓴 글");
+            tag = "My";
         } else if (mode.equals("like")){
             toolbarTextView.setText("찜");
+            tag = "Dib";
         }
     }
 
     public void setFragments(){
         fragments[0] = new ExchangeAndShare();
-        ((ExchangeAndShare)fragments[0]).fromMyPageOption();
+        ((ExchangeAndShare)fragments[0]).fromMyPageOption(tag);
         fragments[1] = new RecipeShare();
-        ((RecipeShare)fragments[1]).fromMyPageOption();
+        ((RecipeShare)fragments[1]).fromMyPageOption(tag);
         fragments[2] = new FreeCommunity();
-        ((FreeCommunity)fragments[2]).fromMyPageOption();
+        ((FreeCommunity)fragments[2]).fromMyPageOption(tag);
     }
 
     public void setViewPager(){

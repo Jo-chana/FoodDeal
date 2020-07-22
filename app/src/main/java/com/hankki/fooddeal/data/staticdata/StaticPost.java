@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class StaticPost {
-    static HashMap<Integer, ArrayList<PostItem>> postList;
+    public static HashMap<Integer, ArrayList<PostItem>> postList;
 
     public StaticPost(){
         if (postList == null){

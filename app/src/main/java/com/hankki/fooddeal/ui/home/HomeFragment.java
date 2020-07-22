@@ -1,5 +1,6 @@
 package com.hankki.fooddeal.ui.home;
 
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -26,7 +27,6 @@ import com.hankki.fooddeal.ui.home.community.FreeCommunity;
 import com.hankki.fooddeal.ui.home.community.RecipeShare;
 import com.hankki.fooddeal.ui.map.MapActivity;
 import com.hankki.fooddeal.ux.viewpager.viewPagerAdapter;
-
 /**홈 화면*/
 public class HomeFragment extends Fragment {
     ViewPager2 viewpager;

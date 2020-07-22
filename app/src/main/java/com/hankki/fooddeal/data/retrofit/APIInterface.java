@@ -1,5 +1,6 @@
 package com.hankki.fooddeal.data.retrofit;
 
+import com.hankki.fooddeal.data.retrofit.retrofitDTO.BoardListResponse;
 import com.hankki.fooddeal.data.retrofit.retrofitDTO.MemberResponse;
 
 import java.util.HashMap;
@@ -39,12 +40,19 @@ public interface APIInterface {
     })
     @GET("v2/local/search/address")
     Call<ResponseBody> getAddress(@Query("query") String address);
-
-
     @Headers({
             "Content-Type: application/json",
             "Authorization: KakaoAK 5584ccb6bce16722991e3e4d5a0b0dbe"
     })
     @GET("v2/local/geo/coord2regioncode")
     Call<ResponseBody> getCurrentAddress(@Query("x") Double x, @Query("y") Double y);
+
+
+    @Headers("Content-Type: application/json")
+    @POST("board/write")
+    Call<MemberResponse> write(@Body HashMap<String, String> body);
+
+    @Headers("Content-Type: application/json")
+    @POST("board/address/search")
+    Call<BoardListResponse> search(@Body HashMap<String, String> body);
 }
