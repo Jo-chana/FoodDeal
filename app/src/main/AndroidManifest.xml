@@ -6,6 +6,8 @@
     <uses-permission android:name="android.permission.SEND_SMS" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
 
     <application
         android:allowBackup="true"
@@ -31,15 +33,21 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity android:name=".ui.IntroActivity" />
         <activity android:name=".ui.MainActivity" />
         <activity android:name=".ui.home.community.Community_detail" />
         <activity android:name=".ui.login.LoginActivity" />
         <activity android:name=".ui.register.RegisterActivity"/>
         <activity android:name=".ui.address.AddressActivity" />
-        <activity android:name=".ui.address.PopupActivity"
+        <activity android:name=".ui.PopupActivity"
             android:theme="@android:style/Theme.Dialog"/>
+
+        <activity android:name=".ui.map.MapActivity" />
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyCFEIRFOY3kEbnRi0kMnKHEQn-w09-_d38"/>
+
     </application>
 
 </manifest>
