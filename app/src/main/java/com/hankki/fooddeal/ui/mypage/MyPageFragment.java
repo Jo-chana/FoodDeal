@@ -34,7 +34,7 @@ import com.hankki.fooddeal.R;
 import com.hankki.fooddeal.data.PreferenceManager;
 import com.hankki.fooddeal.data.staticdata.StaticUser;
 import com.hankki.fooddeal.ui.MainActivity;
-import com.hankki.fooddeal.ui.address.PopupActivity;
+import com.hankki.fooddeal.ui.PopupActivity;
 
 import java.io.InputStream;
 import java.util.List;
