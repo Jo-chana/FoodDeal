@@ -69,15 +69,17 @@
                 android:textColor="@color/defaultText"
                 android:textSize="20sp" />
 
-            <View
-                android:id="@+id/post_map"
+            <fragment
+                android:id="@+id/map_post"
                 android:layout_width="match_parent"
                 android:layout_height="250dp"
                 android:layout_marginLeft="20dp"
                 android:layout_marginTop="20dp"
                 android:layout_marginRight="20dp"
                 android:layout_marginBottom="20dp"
-                android:background="@drawable/round_edittext" />
+                android:background="@drawable/round_edittext"
+                tools:context=".MapActivty"
+                android:name="com.google.android.gms.maps.SupportMapFragment" />
         </LinearLayout>
     </ScrollView>
 

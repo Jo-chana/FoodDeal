@@ -50,8 +50,8 @@ public class PostItem implements Comparable<PostItem> {
     ArrayList<CommentItem> comments;
 
     public PostItem(String username, String userpost, String userloc,
-                    String boardTitle, String insertDate, @Nullable int distance, @Nullable Bitmap profile,
-                    @Nullable ArrayList<Bitmap> images){
+                    String userTitle, String userTime,@Nullable int distance, @Nullable Bitmap profile,
+                    @Nullable ArrayList<Bitmap> images, double x, double y){
         UserName = username;
         boardContent = userpost;
         this.boardTitle = boardTitle;
@@ -166,4 +166,5 @@ public class PostItem implements Comparable<PostItem> {
     public int compareTo(PostItem o) {
         return this.getDistance() - o.getDistance();
     }
+
 }
