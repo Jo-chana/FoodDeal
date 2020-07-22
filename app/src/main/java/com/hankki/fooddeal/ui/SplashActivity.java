@@ -26,6 +26,8 @@ import com.hankki.fooddeal.data.retrofit.retrofitDTO.MemberResponse;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
+import com.hankki.fooddeal.data.staticdata.StaticUser;
 import com.hankki.fooddeal.ui.address.AddressActivity;
 
 /**스플래쉬 화면*/
@@ -41,6 +43,12 @@ public class SplashActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
+
+        if(StaticUser.debug){
+            Intent debugIntent = new Intent(SplashActivity.this, MainActivity.class);
+            startActivity(debugIntent);
+            return;
+        }
 
         // 강제종료 알림 서비스
         startService(new Intent(this, ForcedTerminationService.class));
@@ -91,8 +99,6 @@ public class SplashActivity extends AppCompatActivity {
                 }
             }, 1000);
         }
-
-
     }
 
     // 토큰을 사용한 인증

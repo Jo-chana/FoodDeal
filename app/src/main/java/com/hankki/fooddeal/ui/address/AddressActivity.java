@@ -17,6 +17,7 @@ import com.hankki.fooddeal.R;
 import com.hankki.fooddeal.data.PreferenceManager;
 import com.hankki.fooddeal.data.retrofit.APIClient;
 import com.hankki.fooddeal.data.retrofit.APIInterface;
+import com.hankki.fooddeal.data.staticdata.StaticUser;
 import com.hankki.fooddeal.ui.MainActivity;
 import com.hankki.fooddeal.ux.recyclerview.AddressAdapter;
 
@@ -116,6 +117,7 @@ public class AddressActivity extends AppCompatActivity {
                             public void onItemClick(View v, int pos) {
                                 Intent intent = new Intent(AddressActivity.this, MainActivity.class);
                                 PreferenceManager.setString(getApplicationContext(), "Location", et_address.getText().toString());
+                                StaticUser.setLocation(et_address.getText().toString());
                                 startActivity(intent);
                                 finish();
                             }

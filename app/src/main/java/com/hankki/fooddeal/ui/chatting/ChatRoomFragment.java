@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -40,6 +41,9 @@ import com.hankki.fooddeal.R;
 import com.hankki.fooddeal.data.security.AES256Util;
 import com.hankki.fooddeal.data.security.HashMsgUtil;
 import com.hankki.fooddeal.ui.chatting.chatDTO.ChatRoomModel;
+import com.hankki.fooddeal.ux.itemtouchhelper.ItemTouchHelperCallback;
+import com.hankki.fooddeal.ux.itemtouchhelper.ItemTouchHelperExtension;
+import com.hankki.fooddeal.ux.itemtouchhelper.MainRecyclerAdapter;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -57,6 +61,7 @@ public class ChatRoomFragment extends Fragment {
     private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("hh:mm a");
     private String roomId;
     private String sUID;
+
 
     @Nullable
     @Override
@@ -194,21 +199,24 @@ public class ChatRoomFragment extends Fragment {
 
             //noinspection ConstantConditions
             if(chatRoomModel.getUnreadMemberCountMap().get("ggj0418") > 0) {
-                roomViewHolder.unread_count.setText(chatRoomModel.getUnreadMemberCountMap().get("ggj0418"));
+                roomViewHolder.unread_count.setText(chatRoomModel.getUnreadMemberCountMap().get(sUID).toString());
                 roomViewHolder.unread_count.setVisibility(View.VISIBLE);
             } else {
                 roomViewHolder.unread_count.setVisibility(View.INVISIBLE);
             }
 
+
+
             roomViewHolder.itemView.setOnClickListener(new View.OnClickListener(){
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(v.getContext(), ChatActivity.class);
-                    intent.putExtra("roomID", chatRoomModel.getRoomId());
-                    intent.putExtra("roomTitle", chatRoomModel.getRoomTitle());
-                    intent.putExtra("userTotal", chatRoomModel.getRoomUserList().size());
-                    startActivity(intent);
-                }
+                        Intent intent = new Intent(v.getContext(), ChatActivity.class);
+                        intent.putExtra("roomID", chatRoomModel.getRoomId());
+                        intent.putExtra("roomTitle", chatRoomModel.getRoomTitle());
+                        intent.putExtra("userTotal", chatRoomModel.getRoomUserList().size());
+                        startActivity(intent);
+                    }
+
             });
         }
 

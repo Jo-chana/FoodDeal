@@ -13,6 +13,14 @@
         android:layout_height="0dp"
         app:layout_constraintHeight_percent="0.4"
         app:layout_constraintTop_toTopOf="parent"/>
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tl_dots"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:tabBackground="@drawable/tab_selector"
+        app:tabGravity="center"
+        app:tabIndicatorHeight="0dp"
+        app:layout_constraintBottom_toBottomOf="@id/vp_image"/>
     <View
         android:id="@+id/trick"
         android:layout_width="match_parent"

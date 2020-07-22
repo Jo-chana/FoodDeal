@@ -52,13 +52,11 @@ public class HomeFragment extends Fragment {
 
         view = inflater.inflate(R.layout.fragment_home, container, false);
         btn_search = view.findViewById(R.id.btn_search);
-        btn_filter = view.findViewById(R.id.btn_filter);
 
         setLocation();
         setFragments();
         setViewPager();
         setTabLayout();
-//        filterButtonClickListener();
         return view;
     }
 
@@ -106,19 +104,5 @@ public class HomeFragment extends Fragment {
         ).attach();
     }
 
-//    public void filterButtonClickListener(){
-//        btn_filter.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                NavHostFragment navHostFragment = (NavHostFragment) ((MainActivity) MainActivity.mainContext)
-//                        .getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
-//                List<Fragment> fragments = navHostFragment.getChildFragmentManager().getFragments().get(0)
-//                        .getChildFragmentManager().getFragments();
-//                ((ExchangeAndShare) fragments.get(0)).distanceSorting();
-//                ((RecipeShare)fragments.get(1)).distanceSorting();
-//                ((FreeCommunity)fragments.get(2)).distanceSorting();
-//            }
-//        });
-//    }
-
 }
+

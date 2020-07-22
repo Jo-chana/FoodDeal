@@ -7,12 +7,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.hankki.fooddeal.data.PostItem;
 import com.hankki.fooddeal.ui.home.community.Community_detail;
-import com.hankki.fooddeal.ui.home.community.PostActivity;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,11 +23,16 @@ public class PostAdapter extends RecyclerView.Adapter<PostViewHolder> {
     private int layout;
     PostViewHolder postViewHolder;
     int page;
+    String tag; // Main, My, Dib
 
     public PostAdapter(Context context, ArrayList<PostItem> itemList, int layout){
         mContext = context;
         postItems = itemList;
         this.layout = layout; // inflate 할 layout 받아와야 함.
+    }
+
+    public void setTag(String tag){
+        this.tag = tag;
     }
 
     @NonNull
@@ -54,6 +57,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostViewHolder> {
                 Intent intent = new Intent(holder.mView.getContext(), Community_detail.class);
                 intent.putExtra("page",page);
                 intent.putExtra("index",position);
+                intent.putExtra("Tag",tag);
                 holder.mView.getContext().startActivity(intent);
             }
         });
@@ -76,9 +80,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostViewHolder> {
     }
 
     public void setCommunityItem(PostViewHolder holder, PostItem item){
-        holder.mTitle.setText(item.getUserTitle()); // 수정해야 함! 테스트용
+        holder.mTitle.setText(item.getBoardTitle()); // 수정해야 함! 테스트용
         holder.mUserLocation.setText(String.valueOf(item.getDistance())+"m");
-        holder.mTime.setText(item.getUserTime());
+        holder.mTime.setText(item.getInsertDate());
         if(item.getImages() != null){
             if(item.getImages().size() > 0){
                 holder.mImage.setImageBitmap(item.getImages().get(0));
@@ -89,14 +93,14 @@ public class PostAdapter extends RecyclerView.Adapter<PostViewHolder> {
             /**찜 아이콘을 지우고, 댓글 부분은 찜으로 대체*/
             holder.iv_like.setImageBitmap(null);
             holder.tv_like.setText(null);
-            if(item.getLike_count()==0){
+            if(item.getLikeCount()==0){
                 holder.iv_comment.setImageBitmap(null);
                 holder.tv_comment.setText(null);
             } else {
-                holder.tv_comment.setText(String.valueOf(item.getLike_count()));
+                holder.tv_comment.setText(String.valueOf(item.getLikeCount()));
             }
         } else { // 레시피 자유
-            int like = item.getLike_count();
+            int like = item.getLikeCount();
             int comment = item.getComments().size();
             if(like==0&&comment==0){ // 둘다 0
                 holder.iv_like.setImageBitmap(null);

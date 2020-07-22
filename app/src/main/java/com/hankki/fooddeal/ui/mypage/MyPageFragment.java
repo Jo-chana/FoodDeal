@@ -1,7 +1,11 @@
 package com.hankki.fooddeal.ui.mypage;
 
 import android.Manifest;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.ShapeDrawable;
@@ -18,6 +22,9 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.IntentCompat;
 import androidx.fragment.app.Fragment;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -26,6 +33,8 @@ import com.gun0912.tedpermission.TedPermission;
 import com.hankki.fooddeal.R;
 import com.hankki.fooddeal.data.PreferenceManager;
 import com.hankki.fooddeal.data.staticdata.StaticUser;
+import com.hankki.fooddeal.ui.MainActivity;
+import com.hankki.fooddeal.ui.address.PopupActivity;
 
 import java.io.InputStream;
 import java.util.List;
@@ -40,7 +49,6 @@ public class MyPageFragment extends Fragment {
     ImageView iv_my_profile;
     TextView tv_my_name;
     Button btn_profile_revise, btn_logout;
-    StaticUser user = new StaticUser();
 
     View view;
 
@@ -49,27 +57,33 @@ public class MyPageFragment extends Fragment {
 
         view = inflater.inflate(R.layout.fragment_mypage, container, false);
 
-        setViewComponents();
-
+        if(FirebaseAuth.getInstance().getCurrentUser()==null){
+            setGuestViewComponents();
+        } else {
+            setViewComponents();
+        }
         return view;
+    }
+    public void setGuestViewComponents(){
+        iv_my_profile = view.findViewById(R.id.iv_my_profile);
+        iv_my_profile.setBackground(new ShapeDrawable(new OvalShape()));
+        iv_my_profile.setClipToOutline(true);
+        btn_profile_revise = view.findViewById(R.id.btn_profile_revise);
+        btn_profile_revise.setClickable(false);
+        ConstraintLayout ctl_option = view.findViewById(R.id.ctl_option);
+        ctl_option.removeAllViews();
+        Intent popupIntent = new Intent(getContext(), PopupActivity.class);
+        startActivity(popupIntent);
     }
 
     public void setViewComponents(){
-        btn_logout = view.findViewById(R.id.deleteShared);
-        btn_logout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                PreferenceManager.removeKey(getContext(),"userToken");
-                FirebaseAuth.getInstance().signOut();
-            }
-        });
 
         iv_my_profile = view.findViewById(R.id.iv_my_profile);
         iv_my_profile.setBackground(new ShapeDrawable(new OvalShape()));
         iv_my_profile.setClipToOutline(true);
 
         tv_my_name = view.findViewById(R.id.tv_my_name);
-        tv_my_name.setText(user.getName());
+        tv_my_name.setText(StaticUser.getName());
         btn_profile_revise = view.findViewById(R.id.btn_profile_revise);
 
         arrow_my_post = view.findViewById(R.id.arrow_my_post);
@@ -98,6 +112,14 @@ public class MyPageFragment extends Fragment {
             public void onClick(View v) {
                 Intent intent = new Intent(getContext(),MyPostActivity.class);
                 intent.putExtra("Mode","like");
+                startActivity(intent);
+            }
+        });
+
+        arrow_setting.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), MySettingActivity.class);
                 startActivity(intent);
             }
         });
@@ -140,7 +162,7 @@ public class MyPageFragment extends Fragment {
                     iv_my_profile.setImageBitmap(img);
                     iv_my_profile.setScaleType(ImageView.ScaleType.CENTER_CROP);
                     /**내 프로필 사진 DB 반영*/
-                    user.setProfile(img);
+                    StaticUser.setProfile(img);
 
                     Toast.makeText(getContext(),"프로필 사진 수정 완료",Toast.LENGTH_SHORT).show();
                 } catch (Exception e) {
@@ -151,4 +173,5 @@ public class MyPageFragment extends Fragment {
             }
         }
     }
+
 }
