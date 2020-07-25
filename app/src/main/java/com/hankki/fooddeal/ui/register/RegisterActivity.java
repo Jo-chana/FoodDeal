@@ -375,7 +375,7 @@ public class RegisterActivity extends AppCompatActivity {
                         // 우편번호
                         registerAddressEditText_1.setText(address[0]);
                         // 상세 주소
-                        registerAddressEditText_2.setText(address[1]);
+                        registerAddressEditText_2.setText(address[1].replace(region[5], ""));
                     }
 
                 }
