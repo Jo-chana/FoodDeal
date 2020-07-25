@@ -78,22 +78,14 @@ public class SplashActivity extends AppCompatActivity {
     // 토큰을 사용한 인증
     private void signInWithCustomToken(String firebaseToken, String userToken) {
         firebaseAuth.signInWithCustomToken(firebaseToken)
-                .addOnCompleteListener(activity, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            Intent toMainIntent = new Intent(SplashActivity.this, MainActivity.class);
-                            startActivity(toMainIntent);
-                            finish();
-                        }
+                .addOnCompleteListener(activity, task -> {
+                    if (task.isSuccessful()) {
+                        Intent toMainIntent = new Intent(SplashActivity.this, MainActivity.class);
+                        startActivity(toMainIntent);
+                        finish();
                     }
                 })
-                .addOnFailureListener(activity, new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        e.printStackTrace();
-                    }
-                });
+                .addOnFailureListener(activity, e -> e.printStackTrace());
     }
 
     @Override
@@ -101,6 +93,19 @@ public class SplashActivity extends AppCompatActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         SplashActivityPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
 
+
+        intent = new Intent(SplashActivity.this, IntroActivity.class);
+        Handler handler = new Handler();
+        handler.postDelayed(() -> {
+            startActivity(intent);
+            finish();
+        }, 1000);
+
+        return;
+    }
+
+    @NeedsPermission({Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION})
+    void showLocation() {
         /*
         이현준
         자동 로그인 구현
@@ -128,29 +133,11 @@ public class SplashActivity extends AppCompatActivity {
             /** SharedPreference 기본틀, key 값이나 변수타입은 추후 수정*/
             intent = new Intent(SplashActivity.this, IntroActivity.class);
             Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    startActivity(intent);
-                    finish();
-                }
-            }, 1000);
-        }
-
-        return;
-    }
-
-    @NeedsPermission({Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION})
-    void showLocation() {
-        intent = new Intent(SplashActivity.this, IntroActivity.class);
-        Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
+            handler.postDelayed(() -> {
                 startActivity(intent);
                 finish();
-            }
-        }, 1000);
+            }, 1000);
+        }
     }
 
     @OnShowRationale({Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION})
