@@ -181,7 +181,7 @@ public class ChatRoomFragment extends Fragment {
 
             roomViewHolder.last_time.setText(simpleDateFormat.format(chatRoomModel.getLastMessageTime()));
 
-            Glide.with(getActivity()).load(R.drawable.user)
+            Glide.with(getActivity()).load(R.drawable.ic_user)
                     .apply(requestOptions)
                     .into(roomViewHolder.room_image);
 

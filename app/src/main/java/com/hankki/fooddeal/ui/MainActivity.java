@@ -42,9 +42,11 @@ public class MainActivity extends AppCompatActivity {
             firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
             String uid = firebaseUser.getUid();
             Toast.makeText(getApplicationContext(), uid, Toast.LENGTH_SHORT).show();
-        } else if (isPopup == false) {
+        }
+        /*else if (isPopup == false) {
 
-        } else {
+        }*/
+        else {
             // startActivityResult로 값만 왔다갔다 하게
             intent = new Intent(MainActivity.this, PopupActivity.class);
             startActivity(intent);
