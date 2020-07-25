@@ -367,7 +367,7 @@ public class BoardController {
         return myBoardList;
     }
 
-    public static ArrayList<PostItem> getExchangeShareBoardWriteList(Context context){
+    public static ArrayList<PostItem> getExchangeShareBoardWriteList(Context context, String category){
         ArrayList<PostItem> myBoardList = new ArrayList<>();
         Call<BoardListResponse> responseCall = apiInterface.getBoardWriteList(PreferenceManager.getString(context,"userToken"));
         try {
@@ -384,8 +384,7 @@ public class BoardController {
                                 PostItem item = new PostItem();
                                 item.onBindBoardApi(boardResponse);
                                 if(!item.getDelYN().equals("Y")){
-                                    if(item.getCategory().equals("INGREDIENT EXCHANGE") ||
-                                    item.getCategory().equals("INGREDIENT SHARE"))
+                                    if(item.getCategory().equals(category))
                                         items.add(item);
                                 }
                             }
@@ -505,7 +504,7 @@ public class BoardController {
         return likeBoardList;
     }
 
-    public static ArrayList<PostItem> getExchangeShareBoardLikeList(Context context){
+    public static ArrayList<PostItem> getExchangeShareBoardLikeList(Context context, String category){
         ArrayList<PostItem> likeBoardList = new ArrayList<>();
         Call<BoardListResponse> responseCall = apiInterface.getBoardLikeList(PreferenceManager.getString(context,"userToken"));
         try {
@@ -522,8 +521,7 @@ public class BoardController {
                                 PostItem item = new PostItem();
                                 item.onBindBoardApi(boardResponse);
                                 if(!item.getDelYN().equals("Y")){
-                                    if(item.getCategory().equals("INGREDIENT EXCHANGE") ||
-                                    item.getCategory().equals("INGREDIENT SHARE"))
+                                    if(item.getCategory().equals(category))
                                         items.add(item);
                                 }
                             }

@@ -93,7 +93,10 @@ public class ExchangeAndShare extends Fragment {
                 fl_share.setBackgroundResource(R.drawable.cardview_selector);
                 tv_share_chip.setTextColor(getResources().getColor(R.color.original_black));
                 /**교환 게시글 필터링*/
-                setRecyclerView();
+                if(pageFrom.equals("Main"))
+                    setRecyclerView();
+                else
+                    setMyPostOption();
             }
         });
 
@@ -106,7 +109,10 @@ public class ExchangeAndShare extends Fragment {
                 fl_share.setBackgroundResource(R.drawable.cardview_unselector);
                 tv_share_chip.setTextColor(getResources().getColor(R.color.original_white));
                 /**나눔 게시글 필터링*/
-                setRecyclerView();
+                if(pageFrom.equals("Main"))
+                    setRecyclerView();
+                else
+                    setMyPostOption();
             }
         });
     }
@@ -142,10 +148,10 @@ public class ExchangeAndShare extends Fragment {
         recyclerView = view.findViewById(R.id.rv_exchange);
         setRecyclerViewOption = new SetRecyclerViewOption(recyclerView, null,view,getContext(),R.layout.community_item);
         if(pageFrom.equals("My")) {
-            setRecyclerViewOption.setPostItems(BoardController.getExchangeShareBoardWriteList(getContext()));
+            setRecyclerViewOption.setPostItems(BoardController.getExchangeShareBoardWriteList(getContext(),category));
         }
         else if (pageFrom.equals("Dib"))
-            setRecyclerViewOption.setPostItems(BoardController.getExchangeShareBoardLikeList(getContext()));
+            setRecyclerViewOption.setPostItems(BoardController.getExchangeShareBoardLikeList(getContext(),category));
         setRecyclerViewOption.setTag(pageFrom);
         setRecyclerViewOption.build(0);
     }
