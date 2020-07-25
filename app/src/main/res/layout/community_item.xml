@@ -7,7 +7,7 @@
     android:layout_height="wrap_content">
 
     <ImageView
-        android:background="@drawable/image_default"
+        android:background="@drawable/round_edittext"
         android:id="@+id/iv_post_image"
         android:layout_width="100dp"
         android:layout_height="100dp"
@@ -37,7 +37,7 @@
         android:id="@+id/tv_userlocation"
         android:text="위치정보"
         android:textSize="15sp"
-        android:textColor="@color/defaultText"
+        android:textColor="@color/original_black"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintLeft_toLeftOf="@id/tv_title"
@@ -46,7 +46,7 @@
     <TextView
         android:id="@+id/tv_dot"
         android:text=" ･ "
-        android:textColor="@color/defaultText"
+        android:textColor="@color/original_black"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="@id/tv_userlocation"
@@ -56,7 +56,7 @@
         android:id="@+id/tv_time"
         android:text="업로드 시간"
         android:textSize="15sp"
-        android:textColor="@color/defaultText"
+        android:textColor="@color/original_black"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="@id/tv_userlocation"
@@ -72,7 +72,6 @@
 
     <ImageView
         android:id="@+id/iv_heart"
-        android:background="@drawable/round_edittext"
         android:layout_width="25dp"
         android:layout_height="25dp"
         app:layout_constraintBottom_toBottomOf="@id/iv_post_image"
@@ -81,9 +80,9 @@
 
     <TextView
         android:id="@+id/tv_likecount"
-        android:text="7"
+        android:text=""
         android:textSize="17sp"
-        android:textColor="@color/defaultText"
+        android:textColor="@color/original_black"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintRight_toLeftOf="@id/iv_comment"
@@ -93,7 +92,6 @@
 
     <ImageView
         android:id="@+id/iv_comment"
-        android:background="@drawable/round_edittext"
         android:layout_width="25dp"
         android:layout_height="25dp"
         app:layout_constraintBottom_toBottomOf="@id/iv_post_image"
@@ -103,9 +101,9 @@
 
     <TextView
         android:id="@+id/tv_commentcount"
-        android:text="1"
+        android:text=""
         android:textSize="17sp"
-        android:textColor="@color/defaultText"
+        android:textColor="@color/original_black"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintRight_toRightOf="parent"

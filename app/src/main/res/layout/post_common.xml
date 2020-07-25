@@ -19,7 +19,7 @@
         android:text="아이디"
         android:textSize="20sp"
         android:textStyle="bold"
-        android:textColor="@color/defaultText"
+        android:textColor="@color/original_black"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintLeft_toRightOf="@id/iv_user_profile"
@@ -29,7 +29,7 @@
     <TextView
         android:id="@+id/tv_user_location"
         android:text="어디야?"
-        android:textColor="@color/defaultText"
+        android:textColor="@color/original_black"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintLeft_toLeftOf="@id/tv_user_id"
@@ -56,7 +56,7 @@
     <TextView
         android:id="@+id/tv_post"
         android:text="맛있는 귤!"
-        android:textColor="@color/defaultText"
+        android:textColor="@color/original_black"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -64,7 +64,7 @@
         android:layout_marginTop="20dp"/>
     <TextView
         android:id="@+id/tv_post_like"
-        android:text="찜 1 ･ 조회 1"
+        android:text=""
         android:textColor="#c4c4c4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

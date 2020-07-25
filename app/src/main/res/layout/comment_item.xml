@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:id="@+id/comment_item"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -17,7 +19,7 @@
         android:id="@+id/tv_comment_user_name"
         android:text="아이디"
         android:textSize="15sp"
-        android:textColor="@color/defaultText"
+        android:textColor="@color/original_black"
         android:textStyle="bold"
         android:lines="1"
         android:maxLength="10"
@@ -32,7 +34,7 @@
         android:id="@+id/tv_comment_message"
         android:text="댓글내용"
         android:textSize="15sp"
-        android:textColor="@color/defaultText"
+        android:textColor="@color/original_black"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
@@ -71,5 +73,14 @@
         app:layout_constraintTop_toTopOf="@id/tv_reply"
         app:layout_constraintBottom_toBottomOf="@id/tv_reply"
         app:layout_constraintLeft_toLeftOf="@id/tv_reply"/>
+
+    <LinearLayout
+        android:id="@+id/ll_comment_comment"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toLeftOf="@id/tv_comment_user_name"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_btn_reply"
+        android:orientation="vertical"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

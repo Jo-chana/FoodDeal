@@ -23,7 +23,7 @@
             android:id="@+id/tv_alert"
             android:text="제목은 필수 입력사항 입니다!"
             android:textStyle="bold"
-            android:textColor="@color/defaultText"
+            android:textColor="@color/original_black"
             android:textSize="15sp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

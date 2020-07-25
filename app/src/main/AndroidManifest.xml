@@ -46,7 +46,7 @@
         <activity android:name=".ui.register.RegisterActivity"/>
         <activity android:name=".ui.address.AddressActivity" />
         <activity
-            android:name=".ui.address.PopupActivity"
+            android:name=".ui.PopupActivity"
             android:theme="@android:style/Theme.Dialog" />
 
         <provider

@@ -55,7 +55,7 @@
                 android:layout_marginLeft="20dp"
                 android:layout_marginTop="20dp"
                 android:text="위치"
-                android:textColor="@color/defaultText"
+                android:textColor="@color/original_black"
                 android:textSize="20sp"
                 android:textStyle="bold" />
 
@@ -66,7 +66,7 @@
                 android:layout_marginLeft="20dp"
                 android:layout_marginTop="10dp"
                 android:text="운정3동,파주시"
-                android:textColor="@color/defaultText"
+                android:textColor="@color/original_black"
                 android:textSize="20sp" />
 
             <fragment

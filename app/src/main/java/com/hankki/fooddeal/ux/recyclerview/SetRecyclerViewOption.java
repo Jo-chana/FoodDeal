@@ -9,14 +9,11 @@ import android.view.animation.Transformation;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
-import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.appbar.AppBarLayout;
 import com.hankki.fooddeal.R;
-import com.hankki.fooddeal.data.CommentItem;
 import com.hankki.fooddeal.data.PostItem;
 
 import java.util.ArrayList;
@@ -28,7 +25,6 @@ public class SetRecyclerViewOption {
     PostAdapter postAdapter;
     View view;
     Context context;
-    Bundle bundle;
     ArrayList<PostItem> postItems;
     CardView cv = null;
     String tag = "";
@@ -46,17 +42,13 @@ public class SetRecyclerViewOption {
 
 
     public void build(int page){
-        setmRecyclerView(page);
+        setMRecyclerView(page);
         if(cv!=null)
             setCardViewAnimation();
     }
-    public void setDirectionHorizontal(){
-        direction = RecyclerView.HORIZONTAL;
-    }
 
-
-    public void setmRecyclerView(int page){
-        postAdapter = new PostAdapter(context,makePostItems(),layout);
+    public void setMRecyclerView(int page){
+        postAdapter = new PostAdapter(context,postItems,layout);
         postAdapter.setPage(page);
         postAdapter.setTag(tag);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(context, direction,false));
@@ -77,27 +69,6 @@ public class SetRecyclerViewOption {
             Collections.sort(postItems);
             postAdapter.setPostItems(postItems);
             postAdapter.notifyDataSetChanged();
-    }
-
-    /**임시 게시글 아이템*/
-    public ArrayList<PostItem> makePostItems(){
-        if(postItems != null)
-            return postItems;
-
-        ArrayList<PostItem> result = new ArrayList<>();
-        for(int i=0;i<20;i++){
-            PostItem item = new PostItem();
-
-            if(bundle!=null) {
-                if (bundle.getParcelableArrayList(String.valueOf(i)) != null) {
-                    ArrayList<CommentItem> comments = bundle.getParcelableArrayList(String.valueOf(i));
-                    item.setComments(comments);
-                }
-            }
-            item.setUserName("익명 "+i);
-            result.add(i,item);
-        }
-        return result;
     }
 
     public void setCardViewAnimation() {

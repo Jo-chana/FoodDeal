@@ -44,10 +44,7 @@ public class IntroActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_intro);
-        if(StaticUser.debug){
-            Intent debugging = new Intent(IntroActivity.this, MainActivity.class);
-            startActivity(debugging);
-        }
+
         onClickButton();
     }
 

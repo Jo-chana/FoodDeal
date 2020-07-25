@@ -2,6 +2,7 @@ package com.hankki.fooddeal.ux.recyclerview;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -9,6 +10,7 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.hankki.fooddeal.R;
 import com.hankki.fooddeal.data.PostItem;
 import com.hankki.fooddeal.ui.home.community.Community_detail;
 
@@ -23,7 +25,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostViewHolder> {
     private int layout;
     PostViewHolder postViewHolder;
     int page;
-    String tag; // Main, My, Dib
+    String tag = "Main"; // Main, My, Dib
 
     public PostAdapter(Context context, ArrayList<PostItem> itemList, int layout){
         mContext = context;
@@ -56,8 +58,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostViewHolder> {
             public void onClick(View v) {
                 Intent intent = new Intent(holder.mView.getContext(), Community_detail.class);
                 intent.putExtra("page",page);
-                intent.putExtra("index",position);
                 intent.putExtra("Tag",tag);
+                intent.putExtra("item",item);
                 holder.mView.getContext().startActivity(intent);
             }
         });
@@ -97,27 +99,35 @@ public class PostAdapter extends RecyclerView.Adapter<PostViewHolder> {
                 holder.iv_comment.setImageBitmap(null);
                 holder.tv_comment.setText(null);
             } else {
+                holder.iv_comment.setImageResource(R.drawable.ic_icon_heart_off);
                 holder.tv_comment.setText(String.valueOf(item.getLikeCount()));
             }
         } else { // 레시피 자유
             int like = item.getLikeCount();
-            int comment = item.getComments().size();
-            if(like==0&&comment==0){ // 둘다 0
-                holder.iv_like.setImageBitmap(null);
-                holder.tv_like.setText(null);
-                holder.iv_comment.setImageBitmap(null);
-                holder.tv_comment.setText(null);
-            } else if (like==0){ // like 만 0
-                holder.iv_like.setImageBitmap(null);
-                holder.tv_like.setText(null);
-                holder.tv_comment.setText(String.valueOf(comment));
-            } else if (comment==0){ // comment 만 0
-                holder.iv_like.setImageBitmap(null);
-                holder.tv_like.setText(null);
-                holder.tv_comment.setText(String.valueOf(like));
-            } else { // 둘다 양수
-                holder.tv_comment.setText(String.valueOf(comment));
-                holder.tv_like.setText(String.valueOf(like));
+            if(item.getCommentCount() > 0) {
+                int comment = item.getCommentCount();
+
+                if (like == 0 && comment == 0) { // 둘다 0
+                    holder.iv_like.setImageBitmap(null);
+                    holder.tv_like.setText(null);
+                    holder.iv_comment.setImageBitmap(null);
+                    holder.tv_comment.setText(null);
+                } else if (like == 0) { // like 만 0
+                    holder.iv_like.setImageBitmap(null);
+                    holder.tv_like.setText(null);
+                    holder.iv_comment.setImageResource(R.drawable.ic_icon_chat);
+                    holder.tv_comment.setText(String.valueOf(comment));
+                } else if (comment == 0) { // comment 만 0
+                    holder.iv_like.setImageBitmap(null);
+                    holder.tv_like.setText(null);
+                    holder.iv_comment.setImageResource(R.drawable.ic_icon_heart_off);
+                    holder.tv_comment.setText(String.valueOf(like));
+                } else { // 둘다 양수
+                    holder.iv_comment.setImageResource(R.drawable.ic_icon_chat);
+                    holder.tv_comment.setText(String.valueOf(comment));
+                    holder.iv_like.setImageResource(R.drawable.ic_icon_heart_off);
+                    holder.tv_like.setText(String.valueOf(like));
+                }
             }
         }
     }

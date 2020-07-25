@@ -30,10 +30,10 @@ import android.widget.Toast;
 import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.TedPermission;
 import com.hankki.fooddeal.R;
-import com.hankki.fooddeal.data.staticdata.StaticPost;
-import com.hankki.fooddeal.data.staticdata.StaticUser;
-import com.hankki.fooddeal.ui.MainActivity;
+import com.hankki.fooddeal.data.PreferenceManager;
+import com.hankki.fooddeal.data.retrofit.BoardController;
 import com.hankki.fooddeal.data.PostItem;
+import com.hankki.fooddeal.ui.MainActivity;
 import com.hankki.fooddeal.ux.dialog.CustomDialog;
 
 import java.io.File;
@@ -55,7 +55,6 @@ public class PostActivity extends AppCompatActivity {
     TextView select_exchange, select_share, toolbarTextView;
     View toolbarView;
     ImageView backButton;
-    StaticPost staticPost = new StaticPost();
     int page, order;
     String pageFromTag;
 
@@ -85,6 +84,7 @@ public class PostActivity extends AppCompatActivity {
         page = intent.getIntExtra("page",-1);
         order = intent.getIntExtra("index",-1);
         category = intent.getStringExtra("category");
+
         setIdComponents();
     }
 
@@ -138,7 +138,7 @@ public class PostActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     select_exchange.setBackgroundResource(R.drawable.textview_selector);
-                    select_exchange.setTextColor(getResources().getColor(R.color.colorAccent));
+                    select_exchange.setTextColor(getResources().getColor(R.color.original_primary));
                     select_share.setBackgroundResource(R.drawable.textview_unselector);
                     select_share.setTextColor(getResources().getColor(R.color.outFocus));
                     tag = "exchange";
@@ -148,7 +148,7 @@ public class PostActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     select_share.setBackgroundResource(R.drawable.textview_selector);
-                    select_share.setTextColor(getResources().getColor(R.color.colorAccent));
+                    select_share.setTextColor(getResources().getColor(R.color.original_primary));
                     select_exchange.setBackgroundResource(R.drawable.textview_unselector);
                     select_exchange.setTextColor(getResources().getColor(R.color.outFocus));
                     tag = "share";
@@ -218,61 +218,46 @@ public class PostActivity extends AppCompatActivity {
                     customDialog = new CustomDialog(mContext,"사진과 제목은 필수 입력 사항입니다!");
                     customDialog.setCanceledOnTouchOutside(false);
                     customDialog.show();
-//                    AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-//                    builder.setMessage("사진과 제목은 필수 입력 항목입니다!");
-//                    builder.setPositiveButton("확인", new DialogInterface.OnClickListener() {
-//                        @Override
-//                        public void onClick(DialogInterface dialog, int which) {
-//                            return;
-//                        }
-//                    });
-//                    AlertDialog alertDialog = builder.create();
-//                    alertDialog.show();
+
                 } else if(et_title.getText().toString().equals("")) {
                     customDialog = new CustomDialog(mContext,"제목은 필수 입력 사항입니다!");
                     customDialog.setCanceledOnTouchOutside(false);
                     customDialog.show();
-//                    AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-//                    builder.setMessage("제목은 필수 입력 항목입니다!");
-//                    builder.setPositiveButton("확인", new DialogInterface.OnClickListener() {
-//                        @Override
-//                        public void onClick(DialogInterface dialog, int which) {
-//                            return;
-//                        }
-//                    });
-//                    AlertDialog alertDialog = builder.create();
-//                    alertDialog.show();
+
                 } else {
-                    long now = System.currentTimeMillis();
-                    Date date = new Date(now);
-                    SimpleDateFormat sdfnow = new SimpleDateFormat("HH:mm");
-                    String timeData = sdfnow.format(date);
-                    int distance = 0;
-                    PostItem item = new PostItem(et_post.getText().toString(),
-                            et_title.getText().toString(), timeData,
-                            distance, postImages);
+                    PostItem item = new PostItem();
+                    item.setInsertDate(BoardController.getTime());
+                    item.setBoardContent(et_post.getText().toString());
+                    item.setBoardTitle(et_title.getText().toString());
                     item.setCategory(category);
 
-                    StaticUser.getPagedPosts(StaticUser.getMyPosts(),page).add(item); // 내가 쓴 게시글 추가
-                    staticPost.addPost(page, item); // 게시글 추가
+                    /**테스트*/
+                    PreferenceManager.setString(mContext,"Latitude","ERAFHDVI3FDJJ");
+                    PreferenceManager.setString(mContext,"Longitude","EFHDIVVIE9");
 
-                    /**게시글 추가 후, 해당 커뮤니티에서 즉각적으로 Update*/
-                    NavHostFragment navHostFragment = (NavHostFragment) ((MainActivity) MainActivity.mainContext)
-                            .getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
-                    List<Fragment> fragments = navHostFragment.getChildFragmentManager().getFragments().get(0)
-                            .getChildFragmentManager().getFragments();
+                    if(BoardController.boardWrite(mContext,item)){
+                        Toast.makeText(mContext, "게시글을 작성하였습니다", Toast.LENGTH_SHORT).show();
+                        /**게시글 추가 후, 해당 커뮤니티에서 즉각적으로 Update*/
+                        NavHostFragment navHostFragment = (NavHostFragment) ((MainActivity) MainActivity.mainContext)
+                                .getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
+                        List<Fragment> fragments = navHostFragment.getChildFragmentManager().getFragments().get(0)
+                                .getChildFragmentManager().getFragments();
 
-                    Fragment fragment = fragments.get(page);
-                    switch (page) {
-                        case 0:
-                            ((ExchangeAndShare) fragment).setRecyclerView();
-                            break;
-                        case 1:
-                            ((RecipeShare) fragment).setRecyclerView();
-                            break;
-                        case 2:
-                            ((FreeCommunity) fragment).setRecyclerView();
-                            break;
+                        Fragment fragment = fragments.get(page);
+                        switch (page) {
+                            case 0:
+                                ((ExchangeAndShare) fragment).setRecyclerView();
+                                break;
+                            case 1:
+                                ((RecipeShare) fragment).setRecyclerView();
+                                break;
+                            case 2:
+                                ((FreeCommunity) fragment).setRecyclerView();
+                                break;
+                        }
+
+                    } else {
+                        Toast.makeText(mContext,"실패!",Toast.LENGTH_SHORT).show();
                     }
                     finish();
                 }
@@ -281,20 +266,7 @@ public class PostActivity extends AppCompatActivity {
     }
 
     public void setPostRevise(){
-        PostItem mPost;
-        pageFromTag = intent.getStringExtra("PageFromTag");
-        switch (pageFromTag){
-            case "My":
-                mPost = StaticUser.myPosts.get(page).get(order);
-                break;
-            case "Dib":
-                mPost = StaticUser.likedPosts.get(page).get(order);
-                break;
-            case "Main":
-            default:
-                mPost = staticPost.getPost(page,order);
-                break;
-        }
+        PostItem mPost = intent.getParcelableExtra("item");
 
         btn_write.setText("수정하기");
         et_title.setText(mPost.getBoardTitle());
@@ -302,42 +274,37 @@ public class PostActivity extends AppCompatActivity {
         btn_write.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 mPost.setBoardTitle(et_title.getText().toString());
                 mPost.setBoardContent(et_post.getText().toString());
 
-                switch (pageFromTag) {
-                    case "My":
-                        StaticUser.myPosts.get(page).set(order, mPost);
-                        break;
-                    case "Dib":
-                        StaticUser.likedPosts.get(page).set(order, mPost);
-                        break;
-                    case "Main":
-                    default:
-                        staticPost.updatePost(page, order, mPost);
-                        break;
-                }
+                if(BoardController.boardRevise(mContext, mPost)){
+                    Toast.makeText(mContext, "수정을 완료하였습니다", Toast.LENGTH_SHORT).show();
+                    /**게시글 수정 후, 해당 커뮤니티에서 즉각적으로 Update*/
+                    try {
+                        NavHostFragment navHostFragment = (NavHostFragment) ((MainActivity) MainActivity.mainContext)
+                                .getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
+                        List<Fragment> fragments = navHostFragment.getChildFragmentManager().getFragments().get(0)
+                                .getChildFragmentManager().getFragments();
 
-
-                if (pageFromTag.equals("Main")) {
-                    NavHostFragment navHostFragment = (NavHostFragment) ((MainActivity) MainActivity.mainContext)
-                            .getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
-                    List<Fragment> fragments = navHostFragment.getChildFragmentManager().getFragments().get(0)
-                            .getChildFragmentManager().getFragments();
-
-                    Fragment fragment = fragments.get(page);
-                    switch (page) {
-                        case 0:
-                            ((ExchangeAndShare) fragment).setRecyclerView();
-                            break;
-                        case 1:
-                            ((RecipeShare) fragment).setRecyclerView();
-                            break;
-                        case 2:
-                            ((FreeCommunity) fragment).setRecyclerView();
-                            break;
+                        Fragment fragment = fragments.get(page);
+                        switch (page) {
+                            case 0:
+                                ((ExchangeAndShare) fragment).setRecyclerView();
+                                break;
+                            case 1:
+                                ((RecipeShare) fragment).setRecyclerView();
+                                break;
+                            case 2:
+                                ((FreeCommunity) fragment).setRecyclerView();
+                                break;
+                        }
+                    } catch (Exception e){
+                        /**내가 쓴 글 페이지에서 수정할 경우
+                         * 위의 코드는 Out of Index Error
+                         * @TODO 새로고침 코드로 대체 등 해결방법 강구*/
                     }
+                } else {
+                    Toast.makeText(mContext, "실패!", Toast.LENGTH_SHORT).show();
                 }
                 finish();
             }

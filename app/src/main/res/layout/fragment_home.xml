@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="#FFFFFF">
+    android:background="@color/original_white">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -12,7 +12,7 @@
         android:orientation="vertical">
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/ctl_home"
-        android:backgroundTint="#ffffff"
+        android:backgroundTint="@color/original_white"
         android:layout_width="match_parent"
         android:layout_height="130dp">
 
@@ -34,26 +34,26 @@
 
             <Button
                 android:id="@+id/btn_location"
-                android:background="@drawable/round_edittext"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:background="@drawable/ic_icon_drop_off"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
                 android:layout_centerVertical="true"
                 android:layout_toRightOf="@id/tv_location"/>
 
             <Button
                 android:id="@+id/btn_search"
-                android:background="@drawable/round_edittext"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:background="@drawable/ic_icon_search"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
                 android:layout_centerVertical="true"
                 android:layout_toLeftOf="@id/btn_map"
                 android:layout_marginRight="10dp"/>
 
             <Button
                 android:id="@+id/btn_map"
-                android:background="@drawable/round_edittext"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:background="@drawable/ic_icon_map"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
                 android:layout_centerVertical="true"
                 android:layout_alignParentRight="true"
                 android:layout_marginRight="20dp"/>

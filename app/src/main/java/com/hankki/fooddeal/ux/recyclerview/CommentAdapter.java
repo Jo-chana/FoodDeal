@@ -5,6 +5,7 @@ import android.graphics.drawable.shapes.OvalShape;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -37,10 +38,17 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
     public void onBindViewHolder(@NonNull CommentViewHolder holder, int position) {
         CommentItem item = commentItems.get(position);
         holder.tv_username.setText(item.getUserName());
-        holder.tv_message.setText(item.getMessage());
-        holder.tv_time.setText(item.getDate());
+        holder.tv_message.setText(item.getCommentContent());
+        holder.tv_time.setText(item.getInsertDate());
         holder.iv_profile.setImageBitmap(StaticUser.getProfile());
         holder.iv_profile.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        ArrayList<CommentItem> commentList = item.getCommentCommentList();
+        if(commentList!=null && commentList.size()>0){
+            for(CommentItem comment : commentList){
+
+            }
+        }
+
     }
 
     @Override
@@ -54,6 +62,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
         TextView tv_time;
         TextView tv_reply, tv_btn_reply;
         ImageView iv_profile;
+        LinearLayout ll_comment;
 
         public CommentViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -65,6 +74,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
             iv_profile = itemView.findViewById(R.id.iv_comment_user_profile);
             iv_profile.setBackground(new ShapeDrawable(new OvalShape()));
             iv_profile.setClipToOutline(true);
+            ll_comment = itemView.findViewById(R.id.ll_comment_comment);
         }
     }
 }

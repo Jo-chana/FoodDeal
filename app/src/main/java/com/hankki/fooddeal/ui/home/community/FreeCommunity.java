@@ -7,23 +7,26 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.hankki.fooddeal.R;
-import com.hankki.fooddeal.data.staticdata.StaticPost;
+import com.hankki.fooddeal.data.PostItem;
+import com.hankki.fooddeal.data.retrofit.BoardController;
 import com.hankki.fooddeal.data.staticdata.StaticUser;
 import com.hankki.fooddeal.ux.recyclerview.SetRecyclerViewOption;
+
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 
 public class FreeCommunity extends Fragment {
     RecyclerView recyclerView;
     CardView cv_post;
     View view;
     SetRecyclerViewOption setRecyclerViewOption;
-    StaticPost staticPost = new StaticPost();
+    String category = "FREE";
 
     /**@Enum pageFrom {Main, My, Dib}*/
     String pageFrom = "Main";
@@ -35,7 +38,6 @@ public class FreeCommunity extends Fragment {
 
         view = inflater.inflate(R.layout.fragment_free, container, false);
         if(pageFrom.equals("Main")) {
-            setPostLists();
             setRecyclerView();
             setPostWrite();
         } else {
@@ -53,12 +55,9 @@ public class FreeCommunity extends Fragment {
         }
         setRecyclerViewOption = new SetRecyclerViewOption(
                 recyclerView, cv_post, view, getContext(), R.layout.community_item );
-        setRecyclerViewOption.setPostItems(staticPost.getPostList(2));
+        setRecyclerViewOption.setPostItems(BoardController.getBoardList(getContext(),category));
+        setRecyclerViewOption.setTag("Main");
         setRecyclerViewOption.build(2);
-    }
-
-    public void setPostLists(){
-        staticPost.FreeDefault();
     }
 
     public void setPostWrite(){
@@ -69,6 +68,7 @@ public class FreeCommunity extends Fragment {
                 Intent intent = new Intent(getContext(),PostActivity.class);
                 intent.putExtra("mode","write");
                 intent.putExtra("page",2);
+                intent.putExtra("category","FREE");
                 startActivity(intent);
             }
         });
@@ -87,10 +87,11 @@ public class FreeCommunity extends Fragment {
 
         recyclerView = view.findViewById(R.id.rv_free);
         setRecyclerViewOption = new SetRecyclerViewOption(recyclerView, null,view,getContext(),R.layout.community_item);
-        if(pageFrom.equals("My"))
-            setRecyclerViewOption.setPostItems(StaticUser.getPagedPosts(StaticUser.getMyPosts(),2));
+        if(pageFrom.equals("My")) {
+            setRecyclerViewOption.setPostItems(BoardController.getFreeBoardWriteList(getContext()));
+        }
         else if (pageFrom.equals("Dib"))
-            setRecyclerViewOption.setPostItems(StaticUser.getPagedPosts(StaticUser.getLikedPosts(),2));
+            setRecyclerViewOption.setPostItems(BoardController.getFreeBoardLikeList(getContext()));
         setRecyclerViewOption.setTag(pageFrom);
         setRecyclerViewOption.build(2);
     }

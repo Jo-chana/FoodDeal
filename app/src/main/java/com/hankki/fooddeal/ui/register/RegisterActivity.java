@@ -32,14 +32,9 @@ import com.hankki.fooddeal.data.retrofit.APIInterface;
 import com.hankki.fooddeal.data.retrofit.retrofitDTO.MemberResponse;
 import com.hankki.fooddeal.data.security.AES256Util;
 import com.hankki.fooddeal.data.security.HashMsgUtil;
-import com.hankki.fooddeal.ui.IntroActivity;
-import com.hankki.fooddeal.ui.MainActivity;
 import com.hankki.fooddeal.ui.login.LoginActivity;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -169,7 +164,7 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if(hasFocus) {
-                    idHintTextView.setTextColor(getResources().getColor(R.color.defaultText));
+                    idHintTextView.setTextColor(getResources().getColor(R.color.original_black));
                     idHintTextView.setText(getString(R.string.activity_register_id_hint));
                     idHintTextView.startAnimation(animAppearHint);
                 } else { idHintTextView.setText(""); }
@@ -209,7 +204,7 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if(hasFocus) {
-                    passwordHintTextView.setTextColor(getResources().getColor(R.color.defaultText));
+                    passwordHintTextView.setTextColor(getResources().getColor(R.color.original_black));
                     passwordHintTextView.setText(getString(R.string.activity_register_password_hint));
                     passwordHintTextView.startAnimation(animAppearHint);
                 } else { passwordHintTextView.setText(""); }
@@ -222,7 +217,7 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if(hasFocus) {
-                    emailHintTextView.setTextColor(getColor(R.color.defaultText));
+                    emailHintTextView.setTextColor(getColor(R.color.original_black));
                     emailHintTextView.setText(getString(R.string.activity_register_email_hint));
                     emailHintTextView.startAnimation(animAppearHint);
                 } else { emailHintTextView.setText(""); }

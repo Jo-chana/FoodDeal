@@ -1,6 +1,7 @@
 package com.hankki.fooddeal.data.retrofit;
 
 import com.hankki.fooddeal.data.retrofit.retrofitDTO.BoardListResponse;
+import com.hankki.fooddeal.data.retrofit.retrofitDTO.CommentListResponse;
 import com.hankki.fooddeal.data.retrofit.retrofitDTO.MemberResponse;
 
 import java.util.HashMap;
@@ -8,8 +9,10 @@ import java.util.HashMap;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.Headers;
+import retrofit2.http.PATCH;
 import retrofit2.http.POST;
 import retrofit2.http.Query;
 
@@ -50,9 +53,56 @@ public interface APIInterface {
 
     @Headers("Content-Type: application/json")
     @POST("board/write")
-    Call<MemberResponse> write(@Body HashMap<String, String> body);
+    Call<MemberResponse> boardWrite(@Body HashMap<String, String> body);
 
     @Headers("Content-Type: application/json")
     @POST("board/address/search")
-    Call<BoardListResponse> search(@Body HashMap<String, String> body);
+    Call<BoardListResponse> boardSearch(@Body HashMap<String, String> body);
+
+    @Headers("Content-Type: application/json")
+    @PATCH("board/revise")
+    Call<MemberResponse> boardRevise(@Body HashMap<String, String> body);
+
+    @Headers("Content-Type: application/json")
+    @POST("board/comment/write")
+    Call<MemberResponse> commentWrite(@Body HashMap<String, String> body);
+
+    @Headers("Content-Type: application/json")
+    @PATCH("board/comment/revise")
+    Call<MemberResponse> commentRevise(@Body HashMap<String, String> body);
+
+    @Headers("Content-Type: application/json")
+    @GET("board/list")
+    Call<BoardListResponse> getBoardList(@Query("REGION_1DEPTH_NAME") String regionFirst,
+                                         @Query("REGION_2DEPTH_NAME") String regionSecond,
+                                         @Query("REGION_3DEPTH_NAME") String regionThird,
+                                         @Query("BOARD_CODE_SORT")String boardCode);
+
+    @Headers("Content-Type: application/json")
+    @GET("board/comment/list")
+    Call<CommentListResponse> getBoardCommentList(@Query("BOARD_SEQ")int boardSeq);
+
+    @Headers("Content-Type: application/json")
+    @DELETE("board/delete")
+    Call<MemberResponse> boardDelete(@Body HashMap<String,String> body);
+
+    @Headers("Content-Type: application/json")
+    @DELETE("board/comment/delete")
+    Call<MemberResponse> boardCommentDelete(@Body HashMap<String, String> body);
+
+    @Headers("Content-Type: application/json")
+    @POST("board/like/plus")
+    Call<MemberResponse> boardLikePlus(@Body HashMap<String, String> body);
+
+    @Headers("Content-Type: application/json")
+    @PATCH("board/like/minus")
+    Call<MemberResponse> boardLikeMinus(@Body HashMap<String, String> body);
+
+    @Headers("Content-Type: application/json")
+    @GET("board/writeList")
+    Call<BoardListResponse> getBoardWriteList(@Query("USER_TOKEN")String userToken);
+
+    @Headers("Content-Type: application/json")
+    @GET("board/like/list")
+    Call<BoardListResponse> getBoardLikeList(@Query("USER_TOKEN")String userToken);
 }

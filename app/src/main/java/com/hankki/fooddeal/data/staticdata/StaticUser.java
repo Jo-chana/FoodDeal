@@ -4,10 +4,8 @@ import android.graphics.Bitmap;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.hankki.fooddeal.data.PostItem;
-import com.hankki.fooddeal.data.PreferenceManager;
 import com.hankki.fooddeal.data.security.AES256Util;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -20,7 +18,7 @@ public class StaticUser {
     public static HashMap<Integer, ArrayList<PostItem>> myPosts = new HashMap<>();
     public static HashMap<Integer, ArrayList<PostItem>> likedPosts = new HashMap<>();
 
-    public static boolean debug = true;
+    public static boolean debug = false;
 
     public static String getLocation() {
         return location;

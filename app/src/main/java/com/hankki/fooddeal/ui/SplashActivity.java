@@ -1,16 +1,12 @@
 package com.hankki.fooddeal.ui;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.location.Address;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -31,11 +27,8 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 import com.hankki.fooddeal.data.staticdata.StaticUser;
-import com.hankki.fooddeal.ui.address.AddressActivity;
+import com.hankki.fooddeal.ui.home.community.PostActivity;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
 
 /**스플래쉬 화면*/
 public class SplashActivity extends AppCompatActivity {
@@ -46,16 +39,12 @@ public class SplashActivity extends AppCompatActivity {
     */
     private FirebaseAuth firebaseAuth;
     private Activity activity = this;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
-        if(StaticUser.debug){
-            Intent debugIntent = new Intent(SplashActivity.this, MainActivity.class);
-            startActivity(debugIntent);
-            return;
-        }
 
         // 강제종료 알림 서비스
         startService(new Intent(this, ForcedTerminationService.class));

@@ -16,9 +16,9 @@
     
     <Button
         android:id="@+id/btn_chatting"
-        android:background="@drawable/post_button"
+        android:background="@color/original_primary"
         android:text="채팅하기"
-        android:textColor="#ffffff"
+        android:textColor="@color/original_white"
         android:textSize="20sp"
         android:textStyle="bold"
         android:layout_width="0dp"

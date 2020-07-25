@@ -13,8 +13,10 @@ public class BoardListResponse {
     private int responseCode;
     @SerializedName("responseMsg")
     private String responseMsg;
-    @SerializedName("address")
-    private List<BoardResponse> address = new ArrayList<>();
+    @SerializedName("boardList")
+    private List<BoardResponse> boardList = new ArrayList<>();
+    @SerializedName("likeList")
+    private List<BoardResponse> likeList = new ArrayList<>();
 
     public int getResponseCode() {
         return responseCode;
@@ -24,8 +26,12 @@ public class BoardListResponse {
         return responseMsg;
     }
 
-    public List<BoardResponse> getAddress() {
-        return address;
+    public List<BoardResponse> getBoardList() {
+        return boardList;
+    }
+
+    public List<BoardResponse> getLikeList() {
+        return likeList;
     }
 
     public void setResponseCode(int responseCode) {
@@ -36,11 +42,15 @@ public class BoardListResponse {
         this.responseMsg = responseMsg;
     }
 
-    public void setAddress(List<BoardResponse> address) {
-        this.address = address;
+    public void setBoardList(List<BoardResponse> boardList) {
+        this.boardList = boardList;
     }
 
-    class BoardResponse {
+    public void setLikeList(List<BoardResponse> likeList) {
+        this.likeList = likeList;
+    }
+
+    public class BoardResponse {
         @SerializedName("BOARD_SEQ")
         private int boardSeq;
         @SerializedName("BOARD_CODE_SEQ")
@@ -68,6 +78,8 @@ public class BoardListResponse {
         private int likeCount;
         @SerializedName("DEL_YN")
         private String delYn;
+        @SerializedName("COMMENT_COUNT")
+        private int commentCount;
 
 
         public void setBoardSeq(int boardSeq) {
@@ -122,6 +134,10 @@ public class BoardListResponse {
             this.delYn = delYn;
         }
 
+        public void setCommentCount(int commentCount) {
+            this.commentCount = commentCount;
+        }
+
         public int getBoardSeq() {
             return boardSeq;
         }
@@ -173,6 +189,10 @@ public class BoardListResponse {
 
         public String getDelYn() {
             return delYn;
+        }
+
+        public int getCommentCount() {
+            return commentCount;
         }
     }
 

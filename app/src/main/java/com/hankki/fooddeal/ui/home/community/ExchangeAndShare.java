@@ -9,20 +9,23 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.PopupMenu;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.hankki.fooddeal.R;
-import com.hankki.fooddeal.data.staticdata.StaticPost;
+import com.hankki.fooddeal.data.PostItem;
+import com.hankki.fooddeal.data.retrofit.BoardController;
 import com.hankki.fooddeal.data.staticdata.StaticUser;
 import com.hankki.fooddeal.ui.MainActivity;
 import com.hankki.fooddeal.ux.recyclerview.SetRecyclerViewOption;
+
+import java.util.ArrayList;
 
 
 public class ExchangeAndShare extends Fragment {
@@ -31,10 +34,10 @@ public class ExchangeAndShare extends Fragment {
     RecyclerView recyclerView;
     CardView cv_postWrite, cv_showExchange, cv_showShare;
     FrameLayout fl_exchange, fl_share;
-    StaticPost staticPost = new StaticPost();
     Button btn_filter;
     SetRecyclerViewOption setRecyclerViewOption;
-    String category = "식재교환";
+    String category = "INGREDIENT EXCHANGE";
+    TextView tv_exchange_chip, tv_share_chip;
 
     /**@Enum pageFrom {Main, My, Dib}*/
     String pageFrom = "Main";
@@ -46,7 +49,6 @@ public class ExchangeAndShare extends Fragment {
 
         view = inflater.inflate(R.layout.fragment_exchange, container, false);
         if(pageFrom.equals("Main")) {
-            setPostLists();
             setShowLists();
             setRecyclerView();
             setPostWrite();
@@ -67,17 +69,9 @@ public class ExchangeAndShare extends Fragment {
         }
         setRecyclerViewOption = new SetRecyclerViewOption(recyclerView, cv_postWrite,view,getContext(),R.layout.community_item);
 
-        /**메인일 때*/
-        setRecyclerViewOption.setPostItems(staticPost.getPostList(0));
-        /**내가 쓴 글일 때*/
-
-        /**찜한 글일 때*/
-
+        setRecyclerViewOption.setPostItems(BoardController.getBoardList(getContext(),category));
+        setRecyclerViewOption.setTag("Main");
         setRecyclerViewOption.build(0);
-    }
-
-    public void setPostLists(){
-        staticPost.ExchangeAndShareDefault();
     }
 
     public void setShowLists(){
@@ -85,22 +79,28 @@ public class ExchangeAndShare extends Fragment {
         cv_showShare = view.findViewById(R.id.cv_share);
         fl_exchange = view.findViewById(R.id.fl_exchange);
         fl_share = view.findViewById(R.id.fl_share);
+        tv_exchange_chip = view.findViewById(R.id.tv_exchange_chip);
+        tv_share_chip = view.findViewById(R.id.tv_share_chip);
         /**교환 게시글 보이기*/
         cv_showExchange.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                category = "식재교환";
+                category = "INGREDIENT EXCHANGE";
                 fl_exchange.setBackgroundResource(R.drawable.cardview_unselector);
+                tv_exchange_chip.setTextColor(getResources().getColor(R.color.original_white));
                 fl_share.setBackgroundResource(R.drawable.cardview_selector);
+                tv_share_chip.setTextColor(getResources().getColor(R.color.original_black));
                 /**교환 게시글 필터링*/
             }
         });
         cv_showShare.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                category = "식재나눔";
+                category = "INGREDIENT SHARE";
                 fl_exchange.setBackgroundResource(R.drawable.cardview_selector);
+                tv_exchange_chip.setTextColor(getResources().getColor(R.color.original_black));
                 fl_share.setBackgroundResource(R.drawable.cardview_unselector);
+                tv_share_chip.setTextColor(getResources().getColor(R.color.original_white));
                 /**나눔 게시글 필터링*/
             }
         });
@@ -136,10 +136,11 @@ public class ExchangeAndShare extends Fragment {
 
         recyclerView = view.findViewById(R.id.rv_exchange);
         setRecyclerViewOption = new SetRecyclerViewOption(recyclerView, null,view,getContext(),R.layout.community_item);
-        if(pageFrom.equals("My"))
-            setRecyclerViewOption.setPostItems(StaticUser.getPagedPosts(StaticUser.getMyPosts(),0));
+        if(pageFrom.equals("My")) {
+            setRecyclerViewOption.setPostItems(BoardController.getExchangeShareBoardWriteList(getContext()));
+        }
         else if (pageFrom.equals("Dib"))
-            setRecyclerViewOption.setPostItems(StaticUser.getPagedPosts(StaticUser.getLikedPosts(),0));
+            setRecyclerViewOption.setPostItems(BoardController.getExchangeShareBoardLikeList(getContext()));
         setRecyclerViewOption.setTag(pageFrom);
         setRecyclerViewOption.build(0);
     }

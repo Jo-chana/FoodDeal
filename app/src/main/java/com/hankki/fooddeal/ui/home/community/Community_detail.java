@@ -1,7 +1,7 @@
 package com.hankki.fooddeal.ui.home.community;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.ShapeDrawable;
@@ -14,6 +14,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -23,6 +24,8 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.widget.NestedScrollView;
+import androidx.fragment.app.Fragment;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
@@ -30,18 +33,18 @@ import androidx.viewpager.widget.ViewPager;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.hankki.fooddeal.R;
+import com.hankki.fooddeal.data.retrofit.BoardController;
 import com.hankki.fooddeal.data.staticdata.StaticChatRoom;
-import com.hankki.fooddeal.data.staticdata.StaticPost;
 import com.hankki.fooddeal.data.staticdata.StaticUser;
+import com.hankki.fooddeal.ui.MainActivity;
 import com.hankki.fooddeal.ux.itemtouchhelper.ChatRoomItem;
 import com.hankki.fooddeal.ux.recyclerview.CommentAdapter;
 import com.hankki.fooddeal.data.CommentItem;
 import com.hankki.fooddeal.data.PostItem;
 import com.hankki.fooddeal.ux.viewpager.GalleryAdapter;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.List;
 
 public class Community_detail extends AppCompatActivity {
     ViewPager vp_image; // 이미지 뷰페이저
@@ -56,7 +59,6 @@ public class Community_detail extends AppCompatActivity {
 
     ArrayList<CommentItem> commentItems; // 댓글 리스트
     PostItem mPost;
-    StaticPost staticPost = new StaticPost();
 
     CommentAdapter mAdapter;
     Context mContext;
@@ -65,8 +67,7 @@ public class Community_detail extends AppCompatActivity {
 
     ArrayList<Bitmap> postImages;
 
-    int order;
-    int page;
+    int page; // 교환나눔, 레시피, 자유
     String tag;
 
     @Override
@@ -76,11 +77,9 @@ public class Community_detail extends AppCompatActivity {
         if(getIntent()!=null) {
             Intent intent = getIntent();
             page = intent.getIntExtra("page", -1); //교환나눔, 레시피, 자유
-            order = intent.getIntExtra("index", -1); //몇 번째 게시글인가?
             tag = intent.getStringExtra("Tag");
+            mPost = intent.getParcelableExtra("item");
         }
-
-        setPostOption();
 
         switch (page) {
             case 0:
@@ -96,52 +95,49 @@ public class Community_detail extends AppCompatActivity {
                 setRecipeFreePostDetail();
                 break;
         }
-        if(StaticUser.getPagedPosts(StaticUser.getMyPosts(),page).contains(mPost)){
+
+        if(BoardController.getBoardWriteList(mContext).get(0).getUserSeq() == mPost.getUserSeq()){
             setMyPostBottomToolbar();
         }
+
         if(FirebaseAuth.getInstance().getCurrentUser()==null)
             setGuestBottomToolbarOption();
     }
 
-    public void setPostOption(){
-        switch (tag){
-            case "My":
-                mPost = StaticUser.getPagedPosts(StaticUser.getMyPosts(),page).get(order);
-                break;
-            case "Dib":
-                mPost = StaticUser.getPagedPosts(StaticUser.getLikedPosts(),page).get(order);
-                break;
-            case "Main":
-            default:
-                mPost = staticPost.getPost(page,order);
-                break;
-        }
-    }
-
+    @SuppressLint("SetTextI18n")
     public void setExchangeSharePostDetail(){
-        /**지도 설정*/
+        /*지도 설정*/
         mapLocation = findViewById(R.id.tv_post_loc);
-        postInfo.setText(mPost.getCategory()+" ･ "+mPost.getInsertDate());
+        String category;
+        switch (mPost.getCategory()){
+            case "INGREDIENT EXCHANGE":
+                category = "식재교환";
+                break;
+            case "INGREDIENT SHARE":
+                category = "식재나눔";
+                break;
+            default:
+                category = mPost.getCategory();
+        }
+        postInfo.setText(category+" ･ "+mPost.getInsertDate());
 
         Button btn_chat = bottomToolbar.findViewById(R.id.btn_chatting);
-        btn_chat.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ChatRoomItem item = new ChatRoomItem(mPost.getBoardTitle(), page);
-                item.setInformation("새로운 채팅방이 개설되었습니다. 이야기를 나눠보세요!");
-                StaticChatRoom staticChatRoom = new StaticChatRoom();
-                int index = staticChatRoom.getChatItems().size();
-                staticChatRoom.addChatItem(item);
-                Intent intent = new Intent();
-                intent.putExtra("Chat",1);
-                intent.putExtra("index",index);
-                startActivity(intent);
-            }
+        btn_chat.setOnClickListener(v -> {
+            ChatRoomItem item = new ChatRoomItem(mPost.getBoardTitle(), page);
+            item.setInformation("새로운 채팅방이 개설되었습니다. 이야기를 나눠보세요!");
+            StaticChatRoom staticChatRoom = new StaticChatRoom();
+            int index = staticChatRoom.getChatItems().size();
+            staticChatRoom.addChatItem(item);
+            Intent intent = new Intent();
+            intent.putExtra("Chat",1);
+            intent.putExtra("index",index);
+            startActivity(intent);
         });
     }
 
     public void setRecipeFreePostDetail(){
-        /**댓글 설정*/
+        /*댓글 설정*/
+        commentItems = BoardController.getBoardCommentList(mPost);
         rv_comment = findViewById(R.id.rv_comment);
         postInfo.setText(mPost.getInsertDate());
         scrollView = findViewById(R.id.scroll);
@@ -149,43 +145,42 @@ public class Community_detail extends AppCompatActivity {
 
         EditText et_comment = bottomToolbar.findViewById(R.id.et_comment);
         Button btn_comment = bottomToolbar.findViewById(R.id.btn_comment);
-        btn_comment.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String comment = et_comment.getText().toString();
-                if(comment.equals(""))
-                    return;
+        btn_comment.setOnClickListener(v -> {
+            String comment = et_comment.getText().toString();
+            if(comment.equals(""))
+                return;
 
-                InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-                imm.hideSoftInputFromWindow(et_comment.getWindowToken(),0);
+            InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+            assert imm != null;
+            imm.hideSoftInputFromWindow(et_comment.getWindowToken(),0);
 
-                CommentItem item = new CommentItem(StaticUser.getName(),comment,getTime(),StaticUser.getProfile());
+//                CommentItem item = new CommentItem(StaticUser.getName(),comment,getTime(),StaticUser.getProfile());
+            CommentItem item = new CommentItem();
+            item.setBoardSeq(mPost.getBoardSeq());
+            item.setCommentContent(comment);
+            item.setInsertDate(BoardController.getTime());
 
+            if(BoardController.commentWrite(mContext, item)){
                 commentItems.add(commentItems.size(),item);
-                mPost.setComments(commentItems);
-                staticPost.updatePost(page,order,mPost);
                 mAdapter.notifyDataSetChanged();
                 et_comment.setText(null);
+            } else {
+                Toast.makeText(mContext,"실패!",Toast.LENGTH_SHORT).show();
             }
         });
         setCommentList();
 
-        scrollView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
-            @Override
-            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
-                if (bottom < oldBottom){
-                    v.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            scrollView.fullScroll(ScrollView.FOCUS_DOWN);
-                            et_comment.requestFocus();
-                        }
-                    }, 100);
-                }
+        scrollView.addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
+            if (bottom < oldBottom){
+                v.postDelayed(() -> {
+                    scrollView.fullScroll(ScrollView.FOCUS_DOWN);
+                    et_comment.requestFocus();
+                }, 100);
             }
         });
     }
 
+    @SuppressLint("SetTextI18n")
     public void setPostCommon(){
         vp_image = findViewById(R.id.vp_image);
         tl_dots = findViewById(R.id.tl_dots);
@@ -193,28 +188,28 @@ public class Community_detail extends AppCompatActivity {
         topToolbar = findViewById(R.id.top_toolbar);
         bottomToolbar = findViewById(R.id.bottom_toolbar);
         CheckBox iv_like = bottomToolbar.findViewById(R.id.iv_like);
-        /**내가 이미 찜한 게시글이면, iv_like 는 체크 상태 코드 추가
-         * if (mPost.isLiked == true) { iv_like.setChecked(true) }*/
-        if(StaticUser.getPagedPosts(StaticUser.getLikedPosts(),page).contains(mPost))
+        /*내가 이미 찜한 게시글이면, iv_like 는 체크 상태 코드 추가
+          if (mPost.isLiked == true) { iv_like.setChecked(true) }*/
+        if(BoardController.isLikedBoard(mContext, mPost)){
             iv_like.setChecked(true);
+        }
 
 
-        iv_like.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int like_count = mPost.getLikeCount();
-                /**유저가 기존에 찜한 게시글이 아닐 경우*/
-                if(!(iv_like.isChecked())){
-                    mPost.setLikeCount(like_count - 1);
-                    Toast.makeText(mContext,"게시글 찜을 취소했습니다.",Toast.LENGTH_SHORT).show();
-                    StaticUser.getPagedPosts(StaticUser.getLikedPosts(),page).remove(mPost);
+        iv_like.setOnClickListener(v -> {
+            /*유저가 기존에 찜한 게시글이 아닐 경우*/
+            if(!(iv_like.isChecked())){
+                if(BoardController.boardLikeMinus(mContext, mPost)){
+                    iv_like.setChecked(false);
+                    Toast.makeText(mContext, "게시글 찜을 취소했습니다.", Toast.LENGTH_SHORT).show();
                 } else {
+                    Toast.makeText(mContext, "실패!", Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                if(BoardController.boardLikePlus(mContext,mPost)) {
                     iv_like.setChecked(true);
-                    /**찜 버튼 빈 하트에서 꽉찬 하트로 변경 코드 이곳에*/
-                    /**마이페이지 찜 페이지에 추가*/
-                    mPost.setLikeCount(like_count + 1);
                     Toast.makeText(mContext, "이 게시글을 찜했습니다.", Toast.LENGTH_SHORT).show();
-                    StaticUser.getPagedPosts(StaticUser.getLikedPosts(),page).add(mPost);
+                } else {
+                    Toast.makeText(mContext, "실패!", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -227,18 +222,20 @@ public class Community_detail extends AppCompatActivity {
         profile.setImageBitmap(mPost.getUserProfile());
 
         userId = post_common.findViewById(R.id.tv_user_id);
-        userId.setText(mPost.getUserName());
+        userId.setText(String.valueOf(mPost.getUserSeq()));
 
         userLocation = post_common.findViewById(R.id.tv_user_location);
-        userLocation.setText(mPost.getUserLocation());
+        userLocation.setText(mPost.getRegionSecond()+" "+mPost.getRegionFirst());
 
         postInfo = post_common.findViewById(R.id.tv_post_info);
         postText = post_common.findViewById(R.id.tv_post);
         postText.setText(mPost.getBoardContent());
 
         postLike = post_common.findViewById(R.id.tv_post_like);
+        if(mPost.getLikeCount()>0){
+            postLike.setText(String.valueOf(mPost.getLikeCount())+" 명이 찜했어요");
+        }
 
-        commentItems = mPost.getComments();
         postImages = mPost.getImages();
         setImageViewPager();
     }
@@ -249,41 +246,27 @@ public class Community_detail extends AppCompatActivity {
         View myPostBottomToolbar = View.inflate(this,R.layout.bottom_mypost, null);
         fl_bottom.addView(myPostBottomToolbar);
 
-        TextView tv_revise = myPostBottomToolbar.findViewById(R.id.tv_revise);
-        TextView tv_delete = myPostBottomToolbar.findViewById(R.id.tv_delete);
+        LinearLayout ll_revise = myPostBottomToolbar.findViewById(R.id.ll_revise);
+        LinearLayout ll_delete = myPostBottomToolbar.findViewById(R.id.ll_delete);
 
-        tv_revise.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent reviseIntent = new Intent(mContext,PostActivity.class);
-                reviseIntent.putExtra("mode","revise");
-                reviseIntent.putExtra("page",page);
-                reviseIntent.putExtra("index",order);
-                reviseIntent.putExtra("PageFromTag",tag);
-                startActivity(reviseIntent);
-                finish();
-            }
+        ll_revise.setOnClickListener(v -> {
+            Intent reviseIntent = new Intent(mContext,PostActivity.class);
+            reviseIntent.putExtra("mode","revise");
+            reviseIntent.putExtra("page",page);
+            reviseIntent.putExtra("item",mPost);
+            startActivity(reviseIntent);
+            finish();
         });
-        tv_delete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(mContext);
-                builder.setMessage("글을 삭제 하시겠습니까?");
-                builder.setPositiveButton("확인", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        StaticUser.getPagedPosts(StaticUser.getMyPosts(),page).remove(mPost);
-                        finish();
-                    }
-                }).setNegativeButton("취소", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        return;
-                    }
-                });
-                AlertDialog alertDialog = builder.create();
-                alertDialog.show();
-            }
+        ll_delete.setOnClickListener(v -> {
+            AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+            builder.setMessage("글을 삭제 하시겠습니까?");
+            builder.setPositiveButton("확인", (dialog, which) -> {
+                StaticUser.getPagedPosts(StaticUser.getMyPosts(),page).remove(mPost);
+                finish();
+            }).setNegativeButton("취소", (dialog, which) -> {
+            });
+            AlertDialog alertDialog = builder.create();
+            alertDialog.show();
         });
 
     }
@@ -322,16 +305,29 @@ public class Community_detail extends AppCompatActivity {
         rv_comment.setAdapter(mAdapter);
     }
 
-    public String getTime(){
-        long now = System.currentTimeMillis();
-        Date date = new Date(now);
-        SimpleDateFormat sdfnow = new SimpleDateFormat("MM/dd HH:mm");
-        String timeData = sdfnow.format(date);
-        return timeData;
-    }
-
     @Override
     public void onBackPressed() {
+        if(tag.equals("Main")) {
+            /*게시글 리스트로 돌아갈 경우 변경사항 즉각 Update*/
+            NavHostFragment navHostFragment = (NavHostFragment) ((MainActivity) MainActivity.mainContext)
+                    .getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
+            assert navHostFragment != null;
+            List<Fragment> fragments = navHostFragment.getChildFragmentManager().getFragments().get(0)
+                    .getChildFragmentManager().getFragments();
+
+            Fragment fragment = fragments.get(page);
+            switch (page) {
+                case 0:
+                    ((ExchangeAndShare) fragment).setRecyclerView();
+                    break;
+                case 1:
+                    ((RecipeShare) fragment).setRecyclerView();
+                    break;
+                case 2:
+                    ((FreeCommunity) fragment).setRecyclerView();
+                    break;
+            }
+        }
         super.onBackPressed();
     }
 }
