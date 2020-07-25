@@ -14,6 +14,7 @@ import com.hankki.fooddeal.data.retrofit.APIClient;
 import com.hankki.fooddeal.data.retrofit.APIInterface;
 import com.hankki.fooddeal.ui.address.GPSTracker;
 import com.hankki.fooddeal.ui.login.LoginActivity;
+import com.hankki.fooddeal.ui.register.PhoneAuthActivity;
 import com.hankki.fooddeal.ui.register.RegisterActivity;
 
 import org.json.JSONArray;
@@ -133,7 +134,7 @@ public class IntroActivity extends AppCompatActivity {
         btn_register.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent register = new Intent(IntroActivity.this, RegisterActivity.class);
+                Intent register = new Intent(IntroActivity.this, PhoneAuthActivity.class);
                 startActivity(register);
             }
         });
