@@ -140,6 +140,7 @@ public class BoardController {
 
                             if(item.getDelYn().equals("N")){
                                 int parentSeq = item.getParentCommentSeq();
+                                /**@TODO 수정 요망*/
                                 if(parentSeq==0) {
                                     items.add(item);
                                 } else {

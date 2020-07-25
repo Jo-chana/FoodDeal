@@ -6,16 +6,10 @@ import android.graphics.Bitmap;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import androidx.annotation.Nullable;
-
-import com.google.firebase.auth.FirebaseAuth;
 import com.hankki.fooddeal.data.retrofit.retrofitDTO.BoardListResponse;
-import com.hankki.fooddeal.data.staticdata.StaticUser;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-
-import javax.annotation.ParametersAreNonnullByDefault;
 
 /**Post Item
  * 게시글, 채팅, 쿠폰 등
@@ -32,6 +26,8 @@ public class PostItem implements Comparable<PostItem>, Parcelable {
     Bitmap userProfile = null;
     String userLatitude;
     String userLongitude;
+    String userToken;
+    String userHashId;
     ArrayList<Bitmap> images = new ArrayList<>();
     String category = "";
     int likeCount = 0;
@@ -164,6 +160,10 @@ public class PostItem implements Comparable<PostItem>, Parcelable {
         return userSeq;
     }
 
+    public String getUserHashId() {
+        return userHashId;
+    }
+
     public String getDelYN() {
         return delYN;
     }
@@ -213,9 +213,9 @@ public class PostItem implements Comparable<PostItem>, Parcelable {
         boardSeq = boardResponse.getBoardSeq();
         boardTitle = boardResponse.getBoardTitle();
         boardContent = boardResponse.getBoardContent();
-        userSeq = boardResponse.getUserSeq();
         userLatitude = boardResponse.getUserLat();
         userLongitude = boardResponse.getUserLat();
+        userHashId = boardResponse.getUserHashId();
         regionFirst = boardResponse.getRegionFirst();
         regionSecond = boardResponse.getRegionSecond();
         regionThird = boardResponse.getRegionThird();

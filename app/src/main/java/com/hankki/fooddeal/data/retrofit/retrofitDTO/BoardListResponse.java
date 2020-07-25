@@ -68,6 +68,8 @@ public class BoardListResponse {
         private String userLat;
         @SerializedName("USER_LON")
         private String userLon;
+        @SerializedName("USER_HASH_ID")
+        private String userHashId;
         @SerializedName("REGION_1DEPTH_NAME")
         private String regionFirst;
         @SerializedName("REGION_2DEPTH_NAME")
@@ -138,6 +140,10 @@ public class BoardListResponse {
             this.commentCount = commentCount;
         }
 
+        public void setUserHashId(String userHashId) {
+            this.userHashId = userHashId;
+        }
+
         public int getBoardSeq() {
             return boardSeq;
         }
@@ -169,6 +175,10 @@ public class BoardListResponse {
 
         public String getUserLon() {
             return userLon;
+        }
+
+        public String getUserHashId() {
+            return userHashId;
         }
 
         public String getRegionFirst() {

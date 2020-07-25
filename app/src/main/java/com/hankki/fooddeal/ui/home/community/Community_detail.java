@@ -190,7 +190,7 @@ public class Community_detail extends AppCompatActivity {
         CheckBox iv_like = bottomToolbar.findViewById(R.id.iv_like);
         /*내가 이미 찜한 게시글이면, iv_like 는 체크 상태 코드 추가
           if (mPost.isLiked == true) { iv_like.setChecked(true) }*/
-        if(BoardController.isLikedBoard(mContext, mPost)){
+        if(mPost.getUserHashId().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())){
             iv_like.setChecked(true);
         }
 
