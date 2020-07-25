@@ -246,8 +246,8 @@ public class PostActivity extends AppCompatActivity {
                     item.setCategory(category);
 
                     /**테스트*/
-                    PreferenceManager.setString(mContext,"Latitude","ERAFHDVI3FDJJ");
-                    PreferenceManager.setString(mContext,"Longitude","EFHDIVVIE9");
+                    PreferenceManager.setString(mContext,"Latitude","37.4758562");
+                    PreferenceManager.setString(mContext,"Longitude","127.1482274");
 
                     if(BoardController.boardWrite(mContext,item)){
                         Toast.makeText(mContext, "게시글을 작성하였습니다", Toast.LENGTH_SHORT).show();
