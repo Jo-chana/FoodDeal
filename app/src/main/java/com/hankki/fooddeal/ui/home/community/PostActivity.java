@@ -81,7 +81,7 @@ public class PostActivity extends AppCompatActivity {
     int[] imageTexts = new int[]{R.id.tv_image_num,R.id.tv_image_num2, R.id.tv_image_num3, R.id.tv_image_num4};
     ImageView[] imageViews = new ImageView[4];
     TextView[] textViews = new TextView[4];
-    String tag;
+
 
     Context mContext;
 
@@ -94,7 +94,6 @@ public class PostActivity extends AppCompatActivity {
         mContext = this;
         setContentView(R.layout.activity_post);
         intent = getIntent();
-        tag = "exchange";
         page = intent.getIntExtra("page",-1);
         order = intent.getIntExtra("index",-1);
         category = intent.getStringExtra("category");
@@ -148,26 +147,38 @@ public class PostActivity extends AppCompatActivity {
 
 
     public void setExchangeAndShareComponents(){
-            select_exchange.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    select_exchange.setBackgroundResource(R.drawable.textview_selector);
-                    select_exchange.setTextColor(getResources().getColor(R.color.original_primary));
-                    select_share.setBackgroundResource(R.drawable.textview_unselector);
-                    select_share.setTextColor(getResources().getColor(R.color.outFocus));
-                    tag = "exchange";
-                }
-            });
-            select_share.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    select_share.setBackgroundResource(R.drawable.textview_selector);
-                    select_share.setTextColor(getResources().getColor(R.color.original_primary));
-                    select_exchange.setBackgroundResource(R.drawable.textview_unselector);
-                    select_exchange.setTextColor(getResources().getColor(R.color.outFocus));
-                    tag = "share";
-                }
-            });
+        if(category.equals("INGREDIENT EXCHANGE")){
+            select_exchange.setBackgroundResource(R.drawable.textview_selector);
+            select_exchange.setTextColor(getResources().getColor(R.color.original_white));
+            select_share.setBackgroundResource(R.drawable.textview_unselector);
+            select_share.setTextColor(getResources().getColor(R.color.outFocus));
+        } else {
+            select_share.setBackgroundResource(R.drawable.textview_selector);
+            select_share.setTextColor(getResources().getColor(R.color.original_white));
+            select_exchange.setBackgroundResource(R.drawable.textview_unselector);
+            select_exchange.setTextColor(getResources().getColor(R.color.outFocus));
+        }
+
+        select_exchange.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                select_exchange.setBackgroundResource(R.drawable.textview_selector);
+                select_exchange.setTextColor(getResources().getColor(R.color.original_white));
+                select_share.setBackgroundResource(R.drawable.textview_unselector);
+                select_share.setTextColor(getResources().getColor(R.color.outFocus));
+                category = "INGREDIENT EXCHANGE";
+            }
+        });
+        select_share.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                select_share.setBackgroundResource(R.drawable.textview_selector);
+                select_share.setTextColor(getResources().getColor(R.color.original_white));
+                select_exchange.setBackgroundResource(R.drawable.textview_unselector);
+                select_exchange.setTextColor(getResources().getColor(R.color.outFocus));
+                category = "INGREDIENT SHARE";
+            }
+        });
         setLocation();
     }
     public void setRecipeFreeComponents(){

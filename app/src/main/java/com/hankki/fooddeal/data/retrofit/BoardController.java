@@ -122,6 +122,37 @@ public class BoardController {
         return complete;
     }
 
+    public static boolean boardDelete(Context context, PostItem item){
+        boolean complete = false;
+        HashMap<String, String> body = new HashMap<>();
+        body.put("BOARD_SEQ",String.valueOf(item.getBoardSeq()));
+        body.put("USER_TOKEN",PreferenceManager.getString(context, "userToken"));
+        Call<MemberResponse> responseCall = apiInterface.boardDelete(body);
+        try{
+            complete = new AsyncTask<Void, Void, Boolean>() {
+                boolean finalComplete = false;
+                @Override
+                protected Boolean doInBackground(Void... voids) {
+                    try{
+                        MemberResponse response = responseCall.execute().body();
+                        if(response != null && response.getResponseCode()==420){
+                            finalComplete = true;
+                        }
+                    } catch (Exception e){
+                        e.printStackTrace();
+                    }
+                    return finalComplete;
+                }
+            }.execute().get();
+
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return complete;
+    }
+
+
     public static ArrayList<CommentItem> getBoardCommentList(PostItem postItem){
         ArrayList<CommentItem> commentItems = new ArrayList<>();
         Call<CommentListResponse> commentListResponseCall = apiInterface.getBoardCommentList(postItem.getBoardSeq());
@@ -140,7 +171,7 @@ public class BoardController {
 
                             if(item.getDelYn().equals("N")){
                                 int parentSeq = item.getParentCommentSeq();
-                                /**@TODO 수정 요망*/
+                                /*@TODO 수정 요망*/
                                 if(parentSeq==0) {
                                     items.add(item);
                                 } else {

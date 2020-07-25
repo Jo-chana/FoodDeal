@@ -48,6 +48,7 @@ import com.hankki.fooddeal.data.CommentItem;
 import com.hankki.fooddeal.data.PostItem;
 import com.hankki.fooddeal.data.PreferenceManager;
 import com.hankki.fooddeal.data.retrofit.APIInterface;
+import com.hankki.fooddeal.data.security.AES256Util;
 import com.hankki.fooddeal.data.staticdata.StaticChatRoom;
 import com.hankki.fooddeal.data.staticdata.StaticUser;
 import com.hankki.fooddeal.ui.MainActivity;
@@ -138,7 +139,7 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
                 break;
         }
 
-        if(uid.equals(FirebaseAuth.getInstance().getCurrentUser().getUid())){
+        if(mPost.getUserHashId().equals(uid)){
             setMyPostBottomToolbar();
         }
         if(uid.equals(""))
@@ -149,6 +150,8 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
     public void setExchangeSharePostDetail(){
         /*지도 설정*/
         mapLocation = findViewById(R.id.tv_post_loc);
+        String myLocation = mPost.getRegionFirst() + " " + mPost.getRegionSecond() + " " + mPost.getRegionThird();
+        mapLocation.setText(myLocation);
         String category;
         switch (mPost.getCategory()){
             case "INGREDIENT EXCHANGE":
@@ -163,7 +166,7 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
         postInfo.setText(category+" ･ "+mPost.getInsertDate());
 
         Button btn_chat = bottomToolbar.findViewById(R.id.btn_chatting);
-        /**@TODO 이현준 채팅방 생성*/
+        /*@TODO 이현준 채팅방 생성*/
     }
 
     public void setRecipeFreePostDetail(){
@@ -253,7 +256,7 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
         profile.setImageBitmap(mPost.getUserProfile());
 
         userId = post_common.findViewById(R.id.tv_user_id);
-        userId.setText(String.valueOf(mPost.getUserSeq()));
+        userId.setText(AES256Util.aesDecode(mPost.getUserHashId()));
 
         userLocation = post_common.findViewById(R.id.tv_user_location);
         userLocation.setText(mPost.getRegionSecond()+" "+mPost.getRegionFirst());
@@ -292,7 +295,32 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
             AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
             builder.setMessage("글을 삭제 하시겠습니까?");
             builder.setPositiveButton("확인", (dialog, which) -> {
-                StaticUser.getPagedPosts(StaticUser.getMyPosts(),page).remove(mPost);
+                if(BoardController.boardDelete(mContext,mPost)){
+                    Toast.makeText(mContext, "글을 삭제하였습니다.", Toast.LENGTH_SHORT).show();
+                    if(tag.equals("Main")) {
+                        /*게시글 리스트로 돌아갈 경우 변경사항 즉각 Update*/
+                        NavHostFragment navHostFragment = (NavHostFragment) ((MainActivity) MainActivity.mainContext)
+                                .getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
+                        assert navHostFragment != null;
+                        List<Fragment> fragments = navHostFragment.getChildFragmentManager().getFragments().get(0)
+                                .getChildFragmentManager().getFragments();
+
+                        Fragment fragment = fragments.get(page);
+                        switch (page) {
+                            case 0:
+                                ((ExchangeAndShare) fragment).setRecyclerView();
+                                break;
+                            case 1:
+                                ((RecipeShare) fragment).setRecyclerView();
+                                break;
+                            case 2:
+                                ((FreeCommunity) fragment).setRecyclerView();
+                                break;
+                        }
+                    }
+                } else {
+                    Toast.makeText(mContext, "실패!", Toast.LENGTH_SHORT).show();
+                }
                 finish();
             }).setNegativeButton("취소", (dialog, which) -> {
             });
@@ -366,8 +394,6 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
     public void onMapReady(GoogleMap googleMap) {
         /**지도 설정*/
         mapPost = googleMap;
-
-        mapLocation = findViewById(R.id.tv_post_loc);
 
         double latitude = Double.parseDouble(mPost.getUserLatitude());
         double longitude = Double.parseDouble(mPost.getUserLongitude());

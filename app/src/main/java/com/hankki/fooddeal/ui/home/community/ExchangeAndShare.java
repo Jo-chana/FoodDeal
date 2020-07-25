@@ -93,8 +93,10 @@ public class ExchangeAndShare extends Fragment {
                 fl_share.setBackgroundResource(R.drawable.cardview_selector);
                 tv_share_chip.setTextColor(getResources().getColor(R.color.original_black));
                 /**교환 게시글 필터링*/
+                setRecyclerView();
             }
         });
+
         cv_showShare.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -104,6 +106,7 @@ public class ExchangeAndShare extends Fragment {
                 fl_share.setBackgroundResource(R.drawable.cardview_unselector);
                 tv_share_chip.setTextColor(getResources().getColor(R.color.original_white));
                 /**나눔 게시글 필터링*/
+                setRecyclerView();
             }
         });
     }

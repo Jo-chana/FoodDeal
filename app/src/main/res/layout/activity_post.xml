@@ -170,7 +170,7 @@
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:text="식재교환"
-                        android:textColor="#000000"
+                        android:textColor="@color/original_white"
                         android:gravity="center"
                         android:layout_weight="1"/>
 

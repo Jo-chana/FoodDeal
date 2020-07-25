@@ -84,11 +84,11 @@ public interface APIInterface {
     Call<CommentListResponse> getBoardCommentList(@Query("BOARD_SEQ")int boardSeq);
 
     @Headers("Content-Type: application/json")
-    @DELETE("board/delete")
+    @PATCH("board/delete")
     Call<MemberResponse> boardDelete(@Body HashMap<String,String> body);
 
     @Headers("Content-Type: application/json")
-    @DELETE("board/comment/delete")
+    @PATCH("board/comment/delete")
     Call<MemberResponse> boardCommentDelete(@Body HashMap<String, String> body);
 
     @Headers("Content-Type: application/json")
