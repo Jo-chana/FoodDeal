@@ -7,6 +7,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.hankki.fooddeal.data.retrofit.retrofitDTO.BoardListResponse;
+import com.hankki.fooddeal.data.security.AES256Util;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -213,8 +214,8 @@ public class PostItem implements Comparable<PostItem>, Parcelable {
         boardSeq = boardResponse.getBoardSeq();
         boardTitle = boardResponse.getBoardTitle();
         boardContent = boardResponse.getBoardContent();
-        userLatitude = boardResponse.getUserLat();
-        userLongitude = boardResponse.getUserLat();
+        userLatitude = AES256Util.aesDecode(boardResponse.getUserLat());
+        userLongitude = AES256Util.aesDecode(boardResponse.getUserLat());
         userHashId = boardResponse.getUserHashId();
         regionFirst = boardResponse.getRegionFirst();
         regionSecond = boardResponse.getRegionSecond();
@@ -249,8 +250,8 @@ public class PostItem implements Comparable<PostItem>, Parcelable {
         body.put("BOARD_TITLE",this.getBoardTitle());
         body.put("BOARD_CONTENT",this.getBoardContent());
         body.put("INSERT_DATE",this.getInsertDate());
-        body.put("USER_LAT",PreferenceManager.getString(context, "Latitude"));
-        body.put("USER_LON",PreferenceManager.getString(context,"Longitude"));
+        body.put("USER_LAT",AES256Util.aesEncode(PreferenceManager.getString(context, "Latitude")));
+        body.put("USER_LON",AES256Util.aesEncode(PreferenceManager.getString(context,"Longitude")));
         body.put("REGION_1DEPTH_NAME",PreferenceManager.getString(context, "region1Depth"));
         body.put("REGION_2DEPTH_NAME",PreferenceManager.getString(context, "region2Depth"));
         body.put("REGION_3DEPTH_NAME",PreferenceManager.getString(context, "region3Depth"));

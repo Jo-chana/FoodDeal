@@ -77,7 +77,6 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
 
     ArrayList<CommentItem> commentItems; // 댓글 리스트
     PostItem mPost;
-    StaticPost staticPost = new StaticPost();
 
     CommentAdapter mAdapter;
     Context mContext;
@@ -370,8 +369,8 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
 
         mapLocation = findViewById(R.id.tv_post_loc);
 
-        double latitude = mPost.getLatitude();
-        double longitude = mPost.getLongitude();
+        double latitude = Double.parseDouble(mPost.getUserLatitude());
+        double longitude = Double.parseDouble(mPost.getUserLongitude());
 
         LatLng latlng = new LatLng(latitude, longitude);
 
