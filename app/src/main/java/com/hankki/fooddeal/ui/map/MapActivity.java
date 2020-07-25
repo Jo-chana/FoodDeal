@@ -24,7 +24,7 @@ import java.util.ArrayList;
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private GoogleMap map;
-    private ArrayList<PostItem> postItems;
+    private ArrayList<PostItem> postItems = new ArrayList<>();
     Context mContext;
 
     @Override
@@ -61,7 +61,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 .fillColor(Color.parseColor("#88ffb5c5")); // 배경색
         map.addCircle(circle1KM);
 
-        postItems = BoardController.getBoardList(mContext, "INGREDIENT EXCHANGE");
+        postItems.addAll(BoardController.getBoardList(mContext, "INGREDIENT EXCHANGE"));
+        postItems.addAll(BoardController.getBoardList(mContext,"INGREDIENT SHARE"));
+
         for (PostItem postItem : postItems) {
             LatLng position = new LatLng(Double.parseDouble(postItem.getUserLatitude()), Double.parseDouble(postItem.getUserLongitude()));
 
