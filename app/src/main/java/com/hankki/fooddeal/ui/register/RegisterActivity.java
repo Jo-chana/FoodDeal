@@ -26,20 +26,16 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.hankki.fooddeal.R;
+import com.hankki.fooddeal.data.PreferenceManager;
 import com.hankki.fooddeal.data.RegularCheck;
 import com.hankki.fooddeal.data.retrofit.APIClient;
 import com.hankki.fooddeal.data.retrofit.APIInterface;
 import com.hankki.fooddeal.data.retrofit.retrofitDTO.MemberResponse;
 import com.hankki.fooddeal.data.security.AES256Util;
 import com.hankki.fooddeal.data.security.HashMsgUtil;
-import com.hankki.fooddeal.ui.IntroActivity;
-import com.hankki.fooddeal.ui.MainActivity;
 import com.hankki.fooddeal.ui.login.LoginActivity;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -50,6 +46,8 @@ import retrofit2.Response;
 // TODO 패스워드 입력 텍스트를 rightDrawable 대신 Toggle로 해야지 InputMethodManager 자원 해제 가능
 public class RegisterActivity extends AppCompatActivity {
 
+    private static final int SEARCH_ADDRESS_ACTIVITY = 10000;
+
     private APIInterface apiInterface;
 
     String phoneNo, userID, userPassword, userEmail;
@@ -59,13 +57,14 @@ public class RegisterActivity extends AppCompatActivity {
     View toolbarView;
 
     TextView idHintTextView, passwordHintTextView, emailHintTextView, toolbarTextView;
-    EditText idEditText, passwordEditText, emailEditText;
+    EditText idEditText, passwordEditText, emailEditText, registerAddressEditText_1, registerAddressEditText_2;
     ImageView backButton;
-    Button dupIDCheckButton, postButton;
+    Button dupIDCheckButton, postButton, registerAddressButton;
 
     TextWatcher passwordTextWatcher, emailTextWatcher;
 
     boolean isFirstExecuted = true, isBackPressed, isPasswordVisible, isNewID, isRegularPassword, isRegularEmail;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -228,6 +227,18 @@ public class RegisterActivity extends AppCompatActivity {
                 } else { emailHintTextView.setText(""); }
             }
         });
+
+        registerAddressButton = findViewById(R.id.register_address_button);
+        registerAddressButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(RegisterActivity.this, WebViewActivity.class);
+                startActivityForResult(intent, SEARCH_ADDRESS_ACTIVITY);
+            }
+        });
+
+        registerAddressEditText_1 = findViewById(R.id.register_address_editText_1);
+        registerAddressEditText_2 = findViewById(R.id.register_address_editText_2);
     }
 
     // 자원할당 해제
@@ -339,6 +350,39 @@ public class RegisterActivity extends AppCompatActivity {
                         Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_LONG).show();
                     }
                 });
+    }
+
+    public void onActivityResult(int requestCode, int resultCode, Intent intent){
+
+        super.onActivityResult(requestCode, resultCode, intent);
+
+        switch(requestCode){
+
+            case SEARCH_ADDRESS_ACTIVITY:
+
+                if(resultCode == RESULT_OK){
+
+                    String data = intent.getExtras().getString("data");
+                    String[] address = data.split(",");
+                    String[] region = address[1].split(" ");
+
+                    PreferenceManager.setString(this, "address", address[1]);
+                    PreferenceManager.setString(this, "region1Depth", region[1]);
+                    PreferenceManager.setString(this, "region2Depth", region[2]);
+                    PreferenceManager.setString(this, "region3Depth", region[5]);
+
+                    if (data != null) {
+                        // 우편번호
+                        registerAddressEditText_1.setText(address[0]);
+                        // 상세 주소
+                        registerAddressEditText_2.setText(address[1]);
+                    }
+
+                }
+                break;
+
+        }
+
     }
 
     // 자원 할당

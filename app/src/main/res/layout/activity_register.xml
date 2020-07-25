@@ -192,18 +192,90 @@
         app:layout_constraintWidth_default="percent"
         app:layout_constraintWidth_percent="0.8" />
 
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="주소"
+        android:textColor="#000000"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/register_password_hint_textView"
+        app:layout_constraintTop_toBottomOf="@+id/register_password_hint_textView"
+        app:layout_constraintVertical_bias="0.277"
+        app:layout_constraintWidth_default="percent"
+        app:layout_constraintWidth_percent="0.2" />
+
+    <androidx.appcompat.widget.AppCompatEditText
+        android:id="@+id/register_address_editText_1"
+        android:layout_width="211dp"
+        android:layout_height="43dp"
+        android:layout_marginTop="104dp"
+        android:background="@drawable/round_edittext"
+        android:inputType="textMultiLine|textNoSuggestions|textEmailAddress"
+        android:paddingStart="12sp"
+        android:paddingTop="12sp"
+        android:paddingEnd="12sp"
+        android:paddingBottom="12sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent="0.063"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/textView5"
+        app:layout_constraintTop_toBottomOf="@+id/textView5"
+        app:layout_constraintWidth_default="percent"
+        app:layout_constraintWidth_percent="0.867" />
+
+    <Button
+        android:id="@+id/register_address_button"
+        android:layout_width="139dp"
+        android:layout_height="43dp"
+        android:background="@drawable/post_button"
+        android:text="우편번호 검색"
+        android:textColor="#FFFFFF"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/register_email_editText"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="@+id/register_email_hint_textView"
+        app:layout_constraintTop_toBottomOf="@+id/register_email_hint_textView"
+        app:layout_constraintVertical_bias="0.12"
+        app:layout_constraintWidth_default="percent"
+        app:layout_constraintWidth_percent="0.867" />
+
+    <androidx.appcompat.widget.AppCompatEditText
+        android:id="@+id/register_address_editText_2"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="152dp"
+        android:background="@drawable/round_edittext"
+        android:inputType="textMultiLine|textNoSuggestions|textEmailAddress"
+        android:paddingStart="12sp"
+        android:paddingTop="12sp"
+        android:paddingEnd="12sp"
+        android:paddingBottom="12sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent="0.063"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/textView5"
+        app:layout_constraintTop_toBottomOf="@+id/textView5"
+        app:layout_constraintWidth_default="percent"
+        app:layout_constraintWidth_percent="0.867" />
+
     <Button
         android:id="@+id/register_post_button"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="@drawable/post_button"
-        android:text="마지막 단계"
+        android:text="회원가입"
         android:textColor="#FFFFFF"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/register_email_editText"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="@+id/register_email_hint_textView"
         app:layout_constraintTop_toBottomOf="@+id/register_email_hint_textView"
-        app:layout_constraintVertical_bias="0.15"
+        app:layout_constraintVertical_bias="0.58"
         app:layout_constraintWidth_default="percent"
         app:layout_constraintWidth_percent="0.867" />
 

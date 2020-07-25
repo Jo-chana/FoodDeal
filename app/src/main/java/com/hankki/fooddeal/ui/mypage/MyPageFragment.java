@@ -1,11 +1,7 @@
 package com.hankki.fooddeal.ui.mypage;
 
 import android.Manifest;
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.ShapeDrawable;
@@ -23,9 +19,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.core.content.IntentCompat;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
@@ -44,10 +37,7 @@ import com.google.firebase.storage.UploadTask;
 import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.TedPermission;
 import com.hankki.fooddeal.R;
-import com.hankki.fooddeal.data.PreferenceManager;
 import com.hankki.fooddeal.data.staticdata.StaticUser;
-import com.hankki.fooddeal.ui.MainActivity;
-import com.hankki.fooddeal.ui.PopupActivity;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -62,7 +52,7 @@ public class MyPageFragment extends Fragment {
     ImageView arrow_my_post, arrow_notification, arrow_like, arrow_setting;
     ImageView iv_my_profile;
     TextView tv_my_name;
-    Button btn_profile_revise, btn_logout;
+    Button btn_profile_revise;
     StaticUser user = new StaticUser();
 
     String uid;
@@ -86,14 +76,6 @@ public class MyPageFragment extends Fragment {
     }
 
     public void setViewComponents(){
-        btn_logout = view.findViewById(R.id.deleteShared);
-        btn_logout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                PreferenceManager.removeKey(getContext(),"userToken");
-                FirebaseAuth.getInstance().signOut();
-            }
-        });
 
         iv_my_profile = view.findViewById(R.id.iv_my_profile);
         iv_my_profile.setBackground(new ShapeDrawable(new OvalShape()));

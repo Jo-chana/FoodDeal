@@ -28,6 +28,8 @@ public class PostItem implements Comparable<PostItem> {
     int likeCount = 0;
     int boardSeq;
     int userSeq;
+    double latitude;
+    double longitude;
 
     public void setLikeCount(int likeCount) {
         this.likeCount = likeCount;
@@ -51,7 +53,7 @@ public class PostItem implements Comparable<PostItem> {
 
     public PostItem(String username, String userpost, String userloc,
                     String userTitle, String userTime,@Nullable int distance, @Nullable Bitmap profile,
-                    @Nullable ArrayList<Bitmap> images, double x, double y){
+                    @Nullable ArrayList<Bitmap> images, double latitude, double longitude){
         UserName = username;
         boardContent = userpost;
         this.boardTitle = boardTitle;
@@ -64,6 +66,8 @@ public class PostItem implements Comparable<PostItem> {
         if(comments==null){
             comments = new ArrayList<>();
         }
+        this.latitude = latitude;
+        this.longitude = longitude;
     }
 
     public PostItem(String userpost, String boardTitle, String insertDate,
@@ -152,6 +156,22 @@ public class PostItem implements Comparable<PostItem> {
 
     public ArrayList<CommentItem> getComments() {
         return comments;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
     }
 
     public void addPostImage(Bitmap image){
