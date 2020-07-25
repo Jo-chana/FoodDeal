@@ -65,11 +65,15 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         postItems.addAll(BoardController.getBoardList(mContext,"INGREDIENT SHARE"));
 
         for (PostItem postItem : postItems) {
-            LatLng position = new LatLng(Double.parseDouble(postItem.getUserLatitude()), Double.parseDouble(postItem.getUserLongitude()));
+            try {
+                LatLng position = new LatLng(Double.parseDouble(postItem.getUserLatitude()), Double.parseDouble(postItem.getUserLongitude()));
 
-            markerOptions = new MarkerOptions();
-            markerOptions.position(position);
-            map.addMarker(markerOptions);
+                markerOptions = new MarkerOptions();
+                markerOptions.position(position);
+                map.addMarker(markerOptions);
+            } catch (Exception ignored){
+
+            }
         }
 
         map.animateCamera(CameraUpdateFactory.newLatLngZoom(currentPostion, 15));
