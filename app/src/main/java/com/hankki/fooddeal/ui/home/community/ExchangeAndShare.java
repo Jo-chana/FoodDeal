@@ -38,6 +38,7 @@ public class ExchangeAndShare extends Fragment {
     SetRecyclerViewOption setRecyclerViewOption;
     String category = "INGREDIENT EXCHANGE";
     TextView tv_exchange_chip, tv_share_chip;
+    ArrayList<PostItem> postItems;
 
     /**@Enum pageFrom {Main, My, Dib}*/
     String pageFrom = "Main";
@@ -69,7 +70,8 @@ public class ExchangeAndShare extends Fragment {
         }
         setRecyclerViewOption = new SetRecyclerViewOption(recyclerView, cv_postWrite,view,getContext(),R.layout.community_item);
 
-        setRecyclerViewOption.setPostItems(BoardController.getBoardList(getContext(),category));
+        postItems = BoardController.getBoardList(getContext(),category);
+        setRecyclerViewOption.setPostItems(postItems);
         setRecyclerViewOption.setTag("Main");
         setRecyclerViewOption.build(0);
     }

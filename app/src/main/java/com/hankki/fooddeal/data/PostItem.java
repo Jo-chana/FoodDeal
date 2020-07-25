@@ -56,6 +56,7 @@ public class PostItem implements Comparable<PostItem>, Parcelable {
         userSeq = in.readInt();
         delYN = in.readString();
         Distance = in.readInt();
+        userHashId = in.readString();
     }
 
     public static final Creator<PostItem> CREATOR = new Creator<PostItem>() {
@@ -283,5 +284,6 @@ public class PostItem implements Comparable<PostItem>, Parcelable {
         dest.writeInt(userSeq);
         dest.writeString(delYN);
         dest.writeInt(Distance);
+        dest.writeString(userHashId);
     }
 }
