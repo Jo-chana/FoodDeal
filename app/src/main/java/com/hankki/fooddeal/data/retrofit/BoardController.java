@@ -170,15 +170,8 @@ public class BoardController {
                             item.onBindCommentApi(comment);
 
                             if(item.getDelYn().equals("N")){
-                                int parentSeq = item.getParentCommentSeq();
-                                /*@TODO 수정 요망*/
-                                if(parentSeq==0) {
-                                    items.add(item);
-                                } else {
-                                    items.get(parentSeq).getCommentCommentList().add(item);
-                                }
+                                items.add(item);
                             }
-
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -196,6 +189,62 @@ public class BoardController {
     public static boolean commentWrite(Context context, CommentItem comment) {
         boolean complete = false;
         HashMap<String, String> body = comment.onBindBodyApi(context);
+        Call<MemberResponse> responseCall = apiInterface.commentWrite(body);
+        try {
+            complete = new AsyncTask<Void, Void, Boolean>() {
+                boolean finalComplete = false;
+                @Override
+                protected Boolean doInBackground(Void... voids) {
+                    try {
+                        MemberResponse response = responseCall.execute().body();
+                        if(response != null && response.getResponseCode()==800){
+                            finalComplete = true;
+                        }
+                    } catch (Exception e){
+                        e.printStackTrace();
+                    }
+                    return finalComplete;
+                }
+            }.execute().get();
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        return complete;
+    }
+
+    public static boolean commentDelete(Context context, CommentItem item){
+        boolean complete = false;
+        HashMap<String, String> body = new HashMap<>();
+        body.put("COMMENT_SEQ",String.valueOf(item.getCommentSeq()));
+        body.put("USER_TOKEN",PreferenceManager.getString(context,"userToken"));
+        body.put("BOARD_SEQ",String.valueOf(item.getBoardSeq()));
+        Call<MemberResponse> responseCall = apiInterface.commentDelete(body);
+        try{
+            complete = new AsyncTask<Void, Void, Boolean>() {
+                boolean finalComplete = false;
+                @Override
+                protected Boolean doInBackground(Void... voids) {
+                    try{
+                        MemberResponse response = responseCall.execute().body();
+                        if(response != null && response.getResponseCode()==820){
+                            finalComplete = true;
+                        }
+                    } catch (Exception e){
+                        e.printStackTrace();
+                    }
+                    return finalComplete;
+                }
+            }.execute().get();
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        return complete;
+    }
+
+    public static boolean childCommentWrite(Context context,CommentItem parentComment, CommentItem comment) {
+        boolean complete = false;
+        HashMap<String, String> body = comment.onBindBodyApi(context);
+        body.put("PARENT_COMMENT_SEQ",String.valueOf(parentComment.getCommentSeq()));
         Call<MemberResponse> responseCall = apiInterface.commentWrite(body);
         try {
             complete = new AsyncTask<Void, Void, Boolean>() {

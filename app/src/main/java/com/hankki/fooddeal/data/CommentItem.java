@@ -97,6 +97,14 @@ public class CommentItem implements Parcelable {
         this.parentDelYn = parentDelYn;
     }
 
+    public void setCommentCommentList(ArrayList<CommentItem> commentCommentList) {
+        this.commentCommentList = commentCommentList;
+    }
+
+    public void addChildCommentList(CommentItem child){
+        this.commentCommentList.add(child);
+    }
+
     public CommentItem(String userName, String message, String date, @Nullable Bitmap profile){
         this.userName = userName;
         this.message = message;

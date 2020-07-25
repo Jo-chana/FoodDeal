@@ -89,7 +89,7 @@ public interface APIInterface {
 
     @Headers("Content-Type: application/json")
     @PATCH("board/comment/delete")
-    Call<MemberResponse> boardCommentDelete(@Body HashMap<String, String> body);
+    Call<MemberResponse> commentDelete(@Body HashMap<String, String> body);
 
     @Headers("Content-Type: application/json")
     @POST("board/like/plus")

@@ -56,6 +56,7 @@ import com.hankki.fooddeal.ux.itemtouchhelper.ChatRoomItem;
 import com.hankki.fooddeal.ux.recyclerview.CommentAdapter;
 import com.hankki.fooddeal.data.CommentItem;
 import com.hankki.fooddeal.data.PostItem;
+import com.hankki.fooddeal.ux.recyclerview.CommentViewHolder;
 import com.hankki.fooddeal.ux.viewpager.GalleryAdapter;
 
 import java.text.SimpleDateFormat;
@@ -75,7 +76,8 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
     TextView userLocation, mapLocation; // 유저 위치, 게시글 위치(교환/나눔)
     TextView userId, postInfo, postText, postLike; //아이디, 게시글 정보(시간, 장소 등), 관심도(찜, 좋아요)
     RecyclerView rv_comment; // 댓글 리사이클러 뷰
-
+    Button btn_comment;
+    EditText et_comment;
     ArrayList<CommentItem> commentItems; // 댓글 리스트
     PostItem mPost;
 
@@ -90,6 +92,7 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
     int order;
     int page; // 교환나눔, 레시피, 자유
     String tag;
+    boolean isMyPage = false; // 내 게시글이면 대댓글 처리 따로
 
     ArrayList<String> addressList = new ArrayList<String>();
     ArrayList<String> region1depthAddressList = new ArrayList<String>();
@@ -142,6 +145,7 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
 
         if(mPost.getUserHashId().equals(uid)){
             setMyPostBottomToolbar();
+            isMyPage = true;
         }
         if(uid.equals(""))
             setGuestBottomToolbarOption();
@@ -172,37 +176,14 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
 
     public void setRecipeFreePostDetail(){
         /*댓글 설정*/
-        commentItems = BoardController.getBoardCommentList(mPost);
         rv_comment = findViewById(R.id.rv_comment);
         postInfo.setText(mPost.getInsertDate());
         scrollView = findViewById(R.id.scroll);
         rv_comment.setNestedScrollingEnabled(false);
 
-        EditText et_comment = bottomToolbar.findViewById(R.id.et_comment);
-        Button btn_comment = bottomToolbar.findViewById(R.id.btn_comment);
-        btn_comment.setOnClickListener(v -> {
-            String comment = et_comment.getText().toString();
-            if(comment.equals(""))
-                return;
-
-            InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-            assert imm != null;
-            imm.hideSoftInputFromWindow(et_comment.getWindowToken(),0);
-
-//                CommentItem item = new CommentItem(StaticUser.getName(),comment,getTime(),StaticUser.getProfile());
-            CommentItem item = new CommentItem();
-            item.setBoardSeq(mPost.getBoardSeq());
-            item.setCommentContent(comment);
-            item.setInsertDate(BoardController.getTime());
-
-            if(BoardController.commentWrite(mContext, item)){
-                commentItems.add(commentItems.size(),item);
-                mAdapter.notifyDataSetChanged();
-                et_comment.setText(null);
-            } else {
-                Toast.makeText(mContext,"실패!",Toast.LENGTH_SHORT).show();
-            }
-        });
+        et_comment = bottomToolbar.findViewById(R.id.et_comment);
+        btn_comment = bottomToolbar.findViewById(R.id.btn_comment);
+        defaultWriteComment();
         setCommentList();
 
         scrollView.addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
@@ -214,6 +195,90 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
             }
         });
     }
+
+    public void defaultWriteComment(){
+        btn_comment.setOnClickListener(v -> {
+            String comment = et_comment.getText().toString();
+            if(comment.equals(""))
+                return;
+
+            InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+            assert imm != null;
+            imm.hideSoftInputFromWindow(et_comment.getWindowToken(),0);
+
+            CommentItem item = new CommentItem();
+            item.setBoardSeq(mPost.getBoardSeq());
+            item.setCommentContent(comment);
+            item.setInsertDate(BoardController.getTime());
+
+            if(BoardController.commentWrite(mContext, item)){
+                setCommentList();
+                et_comment.setText(null);
+            } else {
+                Toast.makeText(mContext,"실패!",Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    public void writeChildComment(CommentItem parent){
+        InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+        assert imm != null;
+        et_comment.requestFocus();
+
+        btn_comment.setOnClickListener(v -> {
+            String comment = et_comment.getText().toString();
+            if(comment.equals(""))
+                return;
+            imm.hideSoftInputFromWindow(et_comment.getWindowToken(),0);
+
+            CommentItem item = new CommentItem();
+            item.setBoardSeq(mPost.getBoardSeq());
+            item.setCommentContent(comment);
+            item.setInsertDate(BoardController.getTime());
+            item.setParentCommentSeq(parent.getCommentSeq());
+
+            if(BoardController.childCommentWrite(mContext, parent, item)){
+                setCommentList();
+                et_comment.setText(null);
+            } else {
+                Toast.makeText(mContext,"실패!",Toast.LENGTH_SHORT).show();
+            }
+            defaultWriteComment();
+        });
+    }
+
+    public void writeChildComment(CommentViewHolder holder, CommentItem item){
+        holder.et_child_comment.setVisibility(View.VISIBLE);
+        holder.iv_child_send.setVisibility(View.VISIBLE);
+        /**대댓글 시작*/
+        holder.iv_child_send.setOnClickListener(v1 -> {
+            String comment = holder.et_child_comment.getText().toString();
+            if (comment.equals(""))
+                return;
+
+            InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+            assert imm != null;
+            imm.hideSoftInputFromWindow(holder.et_child_comment.getWindowToken(), 0);
+
+            CommentItem childItem = new CommentItem();
+            childItem.setBoardSeq(item.getBoardSeq());
+            childItem.setCommentContent(comment);
+            childItem.setInsertDate(BoardController.getTime());
+
+            if (BoardController.childCommentWrite(mContext, item, childItem)) {
+                setCommentList();
+                holder.et_child_comment.setText(null);
+            } else {
+                Toast.makeText(mContext, "실패!", Toast.LENGTH_SHORT).show();
+            }
+            holder.et_child_comment.setVisibility(View.GONE);
+            holder.iv_child_send.setVisibility(View.GONE);
+            defaultWriteComment();
+        });
+
+    }
+
+
 
     @SuppressLint("SetTextI18n")
     public void setPostCommon(){
@@ -355,7 +420,11 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
     }
 
     public void setCommentList(){
+        commentItems = BoardController.getBoardCommentList(mPost);
         mAdapter = new CommentAdapter(commentItems);
+        mAdapter.setChildCommentList();
+        mAdapter.setContext(mContext);
+        mAdapter.setIsMyPage(isMyPage);
         rv_comment.setLayoutManager(new LinearLayoutManager(this){
             @Override
             public boolean canScrollVertically() {
