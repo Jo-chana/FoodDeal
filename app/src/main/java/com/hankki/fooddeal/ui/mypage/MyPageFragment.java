@@ -37,6 +37,8 @@ import com.google.firebase.storage.UploadTask;
 import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.TedPermission;
 import com.hankki.fooddeal.R;
+import com.hankki.fooddeal.data.PreferenceManager;
+import com.hankki.fooddeal.data.security.AES256Util;
 import com.hankki.fooddeal.data.staticdata.StaticUser;
 
 import java.io.ByteArrayOutputStream;
@@ -60,7 +62,7 @@ public class MyPageFragment extends Fragment {
     View view;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
-                             ViewGroup container, Bundle savedInstanceState){
+                             ViewGroup container, Bundle savedInstanceState) {
 
         view = inflater.inflate(R.layout.fragment_mypage, container, false);
 
@@ -233,30 +235,34 @@ public class MyPageFragment extends Fragment {
     private void setUserProfile() {
         Glide
                 .with(getContext())
-                .load(R.drawable.user)
+                .load(R.drawable.ic_user)
                 .into(iv_my_profile);
 
-        final DocumentReference documentReference = FirebaseFirestore.getInstance().collection("users").document(uid);
-        documentReference
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                        if(task.isSuccessful()) {
-                            DocumentSnapshot documentSnapshot = task.getResult();
-                            if(!documentSnapshot.get("userPhotoUri").equals("")) {
+        if(!uid.equals("")) {
+            final DocumentReference documentReference = FirebaseFirestore.getInstance().collection("users").document(uid);
+            documentReference
+                    .get()
+                    .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                            if(task.isSuccessful()) {
+                                DocumentSnapshot documentSnapshot = task.getResult();
+                                if(!documentSnapshot.get("userPhotoUri").equals("")) {
 
-                                Glide
-                                        .with(getContext())
-                                        .load(documentSnapshot.get("userPhotoUri"))
-                                        .into(iv_my_profile);
+                                    Glide
+                                            .with(getContext())
+                                            .load(documentSnapshot.get("userPhotoUri"))
+                                            .into(iv_my_profile);
+                                }
+                                if(!documentSnapshot.get("userNickname").equals(""))
+                                    tv_my_name.setText(documentSnapshot.get("userNickname").toString());
+                                else
+                                    tv_my_name.setText(AES256Util.aesDecode(uid));
                             }
-                            if(!documentSnapshot.get("userNickname").equals(""))
-                                tv_my_name.setText(documentSnapshot.get("userNickname").toString());
-                            else
-                                tv_my_name.setText(documentSnapshot.get("userNickname").toString());
                         }
-                    }
-                });
+                    });
+        } else {
+            tv_my_name.setText("게스트");
+        }
     }
 }

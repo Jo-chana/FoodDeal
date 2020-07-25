@@ -1,14 +1,11 @@
 package com.hankki.fooddeal.ui;
 
-import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -24,17 +21,11 @@ import com.hankki.fooddeal.data.PreferenceManager;
 import com.hankki.fooddeal.data.retrofit.APIClient;
 import com.hankki.fooddeal.data.retrofit.APIInterface;
 import com.hankki.fooddeal.data.retrofit.retrofitDTO.MemberResponse;
+import com.hankki.fooddeal.data.staticdata.StaticUser;
 
-import permissions.dispatcher.NeedsPermission;
-import permissions.dispatcher.OnNeverAskAgain;
-import permissions.dispatcher.OnPermissionDenied;
-import permissions.dispatcher.OnShowRationale;
-import permissions.dispatcher.PermissionRequest;
-import permissions.dispatcher.RuntimePermissions;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
 /**스플래쉬 화면*/
 @RuntimePermissions
 public class SplashActivity extends AppCompatActivity {
@@ -106,7 +97,6 @@ public class SplashActivity extends AppCompatActivity {
         자동 로그인 구현
         */
         if(!PreferenceManager.getString(getApplicationContext(), "userToken").equals("")) {
-
             String userToken = PreferenceManager.getString(getApplicationContext(), "userToken");
             APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
             Call<MemberResponse> autoLoginCall = apiInterface.autoLogin(userToken);
@@ -126,7 +116,6 @@ public class SplashActivity extends AppCompatActivity {
                 }
             });
         } else {
-
             /** SharedPreference 기본틀, key 값이나 변수타입은 추후 수정*/
             intent = new Intent(SplashActivity.this, IntroActivity.class);
             Handler handler = new Handler();
