@@ -138,7 +138,7 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
                 break;
         }
 
-        if(BoardController.getBoardWriteList(mContext).get(0).getUserSeq() == mPost.getUserSeq()){
+        if(uid.equals(FirebaseAuth.getInstance().getCurrentUser().getUid())){
             setMyPostBottomToolbar();
         }
         if(uid.equals(""))
