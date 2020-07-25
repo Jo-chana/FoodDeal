@@ -67,6 +67,8 @@ public class Community_detail extends AppCompatActivity {
 
     ArrayList<Bitmap> postImages;
 
+    String uid;
+
     int page; // 교환나눔, 레시피, 자유
     String tag;
 
@@ -79,6 +81,12 @@ public class Community_detail extends AppCompatActivity {
             page = intent.getIntExtra("page", -1); //교환나눔, 레시피, 자유
             tag = intent.getStringExtra("Tag");
             mPost = intent.getParcelableExtra("item");
+        }
+
+        if(FirebaseAuth.getInstance().getCurrentUser().getUid() != null) {
+            uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        } else {
+            uid = "";
         }
 
         switch (page) {
@@ -190,7 +198,7 @@ public class Community_detail extends AppCompatActivity {
         CheckBox iv_like = bottomToolbar.findViewById(R.id.iv_like);
         /*내가 이미 찜한 게시글이면, iv_like 는 체크 상태 코드 추가
           if (mPost.isLiked == true) { iv_like.setChecked(true) }*/
-        if(mPost.getUserHashId().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())){
+        if(mPost.getUserHashId().equals(uid)){
             iv_like.setChecked(true);
         }
 
