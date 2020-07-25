@@ -15,7 +15,6 @@ import com.hankki.fooddeal.data.retrofit.APIInterface;
 import com.hankki.fooddeal.ui.address.GPSTracker;
 import com.hankki.fooddeal.ui.login.LoginActivity;
 import com.hankki.fooddeal.ui.register.PhoneAuthActivity;
-import com.hankki.fooddeal.ui.register.RegisterActivity;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -62,81 +61,65 @@ public class IntroActivity extends AppCompatActivity {
 
     private void onClickButton(){
         tv_tour = findViewById(R.id.tv_tour);
-        tv_tour.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                gpsTracker = new GPSTracker(IntroActivity.this);
+        tv_tour.setOnClickListener(v -> {
+            gpsTracker = new GPSTracker(IntroActivity.this);
 
-                double latitude = gpsTracker.getLatitude();
-                double longitude = gpsTracker.getLongitude();
+            double latitude = gpsTracker.getLatitude();
+            double longitude = gpsTracker.getLongitude();
 
-                PreferenceManager.setString(getApplicationContext(), "latitude", String.valueOf(latitude));
-                PreferenceManager.setString(getApplicationContext(), "longitude", String.valueOf(longitude));
+            PreferenceManager.setString(getApplicationContext(), "latitude", String.valueOf(latitude));
+            PreferenceManager.setString(getApplicationContext(), "longitude", String.valueOf(longitude));
 
-                disposable = Observable.fromCallable(new Callable<Object>() {
-                    @Override
-                    public Object call() throws Exception {
-                        Call<ResponseBody> currentAddressCall = apiInterface.getCurrentAddress(longitude, latitude);
-                        try {
-                            ResponseBody responseBody = currentAddressCall.execute().body();
-                            currentAddressList = new ArrayList<>();
-                            current1depthAddressList = new ArrayList<>();
-                            current2depthAddressList = new ArrayList<>();
-                            current3depthAddressList = new ArrayList<>();
+            disposable = Observable.fromCallable((Callable<Object>) () -> {
+                Call<ResponseBody> currentAddressCall = apiInterface.getCurrentAddress(longitude, latitude);
+                try {
+                    ResponseBody responseBody = currentAddressCall.execute().body();
+                    currentAddressList = new ArrayList<>();
+                    current1depthAddressList = new ArrayList<>();
+                    current2depthAddressList = new ArrayList<>();
+                    current3depthAddressList = new ArrayList<>();
 
-                            if (responseBody != null) {
-                                JSONObject jsonObject = new JSONObject(responseBody.string());
-                                JSONArray jsonArray = jsonObject.getJSONArray("documents");
+                    if (responseBody != null) {
+                        JSONObject jsonObject = new JSONObject(responseBody.string());
+                        JSONArray jsonArray = jsonObject.getJSONArray("documents");
 
-                                for (int i = 0; i < jsonArray.length(); i++) {
-                                    jsonObject = jsonArray.getJSONObject(i);
-                                    currentAddressList.add(jsonObject.getString("address_name"));
-                                    current1depthAddressList.add(jsonObject.getString("region_1depth_name"));
-                                    current2depthAddressList.add(jsonObject.getString("region_2depth_name"));
-                                    current3depthAddressList.add(jsonObject.getString("region_3depth_name"));
-                                }
-
-                                PreferenceManager.setString(getApplicationContext(), "region1Depth", current1depthAddressList.get(0));
-                                PreferenceManager.setString(getApplicationContext(), "region2Depth", current2depthAddressList.get(0));
-                                PreferenceManager.setString(getApplicationContext(), "region3Depth", current3depthAddressList.get(0));
-                            }
-                        } catch (IOException | JSONException e) {
-                            e.printStackTrace();
+                        for (int i = 0; i < jsonArray.length(); i++) {
+                            jsonObject = jsonArray.getJSONObject(i);
+                            currentAddressList.add(jsonObject.getString("address_name"));
+                            current1depthAddressList.add(jsonObject.getString("region_1depth_name"));
+                            current2depthAddressList.add(jsonObject.getString("region_2depth_name"));
+                            current3depthAddressList.add(jsonObject.getString("region_3depth_name"));
                         }
-                        return false;
+
+                        PreferenceManager.setString(getApplicationContext(), "region1Depth", current1depthAddressList.get(0));
+                        PreferenceManager.setString(getApplicationContext(), "region2Depth", current2depthAddressList.get(0));
+                        PreferenceManager.setString(getApplicationContext(), "region3Depth", current3depthAddressList.get(0));
                     }
-                })
+                } catch (IOException | JSONException e) {
+                    e.printStackTrace();
+                }
+                return false;
+            })
 
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(new Consumer<Object>() {
-                            @Override
-                            public void accept(Object result) throws Exception {
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(result -> {
+                    });
 
-                            }
-                        });
-
-                Intent main = new Intent(IntroActivity.this, MainActivity.class);
-                startActivity(main);
-            }
+            Intent main = new Intent(IntroActivity.this, MainActivity.class);
+            startActivity(main);
         });
 
         btn_login = findViewById(R.id.btn_login);
-        btn_login.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent login = new Intent(IntroActivity.this, LoginActivity.class);
-                startActivity(login);
-            }
+        btn_login.setOnClickListener(v -> {
+            Intent login = new Intent(IntroActivity.this, LoginActivity.class);
+            startActivity(login);
         });
 
         btn_register = findViewById(R.id.btn_register);
-        btn_register.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent register = new Intent(IntroActivity.this, PhoneAuthActivity.class);
-                startActivity(register);
-            }
+        btn_register.setOnClickListener(v -> {
+            Intent register = new Intent(IntroActivity.this, PhoneAuthActivity.class);
+            startActivity(register);
         });
 
     }
