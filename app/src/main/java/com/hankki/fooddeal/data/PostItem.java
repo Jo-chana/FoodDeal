@@ -216,7 +216,7 @@ public class PostItem implements Comparable<PostItem>, Parcelable {
         boardTitle = boardResponse.getBoardTitle();
         boardContent = boardResponse.getBoardContent();
         userLatitude = AES256Util.aesDecode(boardResponse.getUserLat());
-        userLongitude = AES256Util.aesDecode(boardResponse.getUserLat());
+        userLongitude = AES256Util.aesDecode(boardResponse.getUserLon());
         userHashId = boardResponse.getUserHashId();
         regionFirst = boardResponse.getRegionFirst();
         regionSecond = boardResponse.getRegionSecond();

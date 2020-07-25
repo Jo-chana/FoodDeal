@@ -256,10 +256,6 @@ public class PostActivity extends AppCompatActivity {
                     item.setBoardTitle(et_title.getText().toString());
                     item.setCategory(category);
 
-                    /**테스트*/
-                    PreferenceManager.setString(mContext,"Latitude","37.4758562");
-                    PreferenceManager.setString(mContext,"Longitude","127.1482274");
-
                     if(BoardController.boardWrite(mContext,item)){
                         Toast.makeText(mContext, "게시글을 작성하였습니다", Toast.LENGTH_SHORT).show();
                         /**게시글 추가 후, 해당 커뮤니티에서 즉각적으로 Update*/

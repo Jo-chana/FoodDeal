@@ -113,12 +113,13 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
             tag = intent.getStringExtra("Tag");
             mPost = intent.getParcelableExtra("item");
         }
-
-        if(FirebaseAuth.getInstance().getCurrentUser().getUid() != null) {
+        try {
+            FirebaseAuth.getInstance().getCurrentUser().getUid();
             uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        } else {
+        } catch (Exception e){
             uid = "";
         }
+
         switch (page) {
             case 0:
                 setContentView(R.layout.post_exchange_share);

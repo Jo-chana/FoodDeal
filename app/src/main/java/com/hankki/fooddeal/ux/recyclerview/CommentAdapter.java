@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.hankki.fooddeal.R;
 import com.hankki.fooddeal.data.CommentItem;
+import com.hankki.fooddeal.data.security.AES256Util;
 import com.hankki.fooddeal.data.staticdata.StaticUser;
 
 
@@ -37,7 +38,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
     @Override
     public void onBindViewHolder(@NonNull CommentViewHolder holder, int position) {
         CommentItem item = commentItems.get(position);
-        holder.tv_username.setText(item.getUserName());
+        holder.tv_username.setText(AES256Util.aesDecode(item.getUserHashId()));
         holder.tv_message.setText(item.getCommentContent());
         holder.tv_time.setText(item.getInsertDate());
         holder.iv_profile.setImageBitmap(StaticUser.getProfile());
