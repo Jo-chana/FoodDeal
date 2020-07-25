@@ -440,7 +440,7 @@ public class ChatActivity extends AppCompatActivity {
 
                 Glide
                         .with(getApplicationContext())
-                        .load(R.drawable.user)
+                        .load(R.drawable.ic_user)
                         .apply(requestOptions)
                         .into(messageViewHolder.user_photo);
                 /*if (userModel.getUserphoto() == null) {

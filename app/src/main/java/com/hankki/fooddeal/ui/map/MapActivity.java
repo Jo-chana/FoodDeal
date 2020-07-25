@@ -1,5 +1,6 @@
 package com.hankki.fooddeal.ui.map;
 
+import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -8,15 +9,21 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.hankki.fooddeal.R;
+import com.hankki.fooddeal.data.PostItem;
 import com.hankki.fooddeal.data.PreferenceManager;
+import com.hankki.fooddeal.data.staticdata.StaticPost;
+
+import java.util.ArrayList;
 
 
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private GoogleMap map;
+    private ArrayList<PostItem> postItems;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,15 +42,31 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         double latitude = Double.parseDouble(PreferenceManager.getString(getApplicationContext(), "latitude"));
         double longitude = Double.parseDouble(PreferenceManager.getString(getApplicationContext(), "longitude"));
 
-        LatLng latlng = new LatLng(latitude, longitude);
+        LatLng currentPostion = new LatLng(latitude, longitude);
 
         MarkerOptions markerOptions = new MarkerOptions();
-        markerOptions.position(latlng);
+        markerOptions.position(currentPostion);
         markerOptions.title("현재 위치");
-        markerOptions.snippet("경기도 하남시 학암동");
+        markerOptions.snippet(PreferenceManager.getString(this, "region1Depth") + " " +
+                PreferenceManager.getString(this, "region2Depth") + " " +
+                PreferenceManager.getString(this, "region3Depth"));
         map.addMarker(markerOptions);
 
-        map.moveCamera(CameraUpdateFactory.newLatLng(latlng));
-        map.animateCamera(CameraUpdateFactory.zoomTo(10));
+        CircleOptions circle1KM = new CircleOptions().center(currentPostion) // 원점
+                .radius(500)      // 반지름 단위 : m
+                .strokeWidth(0f)  // 선너비 0f : 선없음
+                .fillColor(Color.parseColor("#88ffb5c5")); // 배경색
+        map.addCircle(circle1KM);
+
+        postItems = new StaticPost().getPostList(0);
+        for (PostItem postItem : postItems) {
+            LatLng position = new LatLng(postItem.getLatitude(), postItem.getLongitude());
+
+            markerOptions = new MarkerOptions();
+            markerOptions.position(position);
+            map.addMarker(markerOptions);
+        }
+
+        map.animateCamera(CameraUpdateFactory.newLatLngZoom(currentPostion, 15));
     }
 }

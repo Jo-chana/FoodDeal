@@ -1,5 +1,6 @@
 package com.hankki.fooddeal.ui.home.community;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
@@ -27,6 +28,17 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.SetOptions;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.TedPermission;
 import com.hankki.fooddeal.R;
@@ -42,7 +54,9 @@ import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 /**게시글 쓰기 액티비티*/
@@ -487,5 +501,72 @@ public class PostActivity extends AppCompatActivity {
         Uri contentUri = Uri.fromFile(file);
         mediaScanIntent.setData(contentUri);
         this.sendBroadcast(mediaScanIntent);
+    }
+
+
+
+
+
+
+    /*Date date = new Date(System.currentTimeMillis());
+    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS");
+    TimeZone time = TimeZone.getTimeZone("Asia/Seoul");
+	    format.setTimeZone(time);
+
+	    bufW.write(format.format(date) + "\n");*/
+    /**
+    이현준
+     Firebase Storage에 등록하고 얻은 Uri들을 FireStore의 PostPhotos 컬렉션에다가 글이 등록된 시간별로 분류된 문서 안에 List를 저장
+     (시간을 밀스초단위로 쪼개서 저장하는게 좋을듯)
+     각각의 파일마다 이 함수 한번씩 써야함 (Firebase 파일 업로드 기능에 여러개를 보내는게 없음)
+     */
+    private void uploadPostPhoto(byte[] imageData, String time, Integer index) {
+        final StorageReference storageReference = FirebaseStorage.getInstance().getReference().child("PostPhotos/" + time + "/" + index + ".jpg");
+        UploadTask uploadTask = storageReference.putBytes(imageData);
+
+        Task<Uri> urlTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+            @Override
+            public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                if (!task.isSuccessful()) {
+                    throw task.getException();
+                }
+
+                return storageReference.getDownloadUrl();
+            }
+        }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+            @Override
+            public void onComplete(@NonNull Task<Uri> task) {
+                if(task.isSuccessful()) {
+                    Uri downloadUri = task.getResult();
+
+                    setPhotoUrlInFireStore(downloadUri, time, index);
+                } else {
+                    Toast.makeText(getApplicationContext(), "이미지 업로드 실패", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
+    // postPhotos -> 현재 시각(서울 기준으로 ms 까지) -> Map<Integer, Uri> 형식으로 저장
+    private void setPhotoUrlInFireStore(Uri photoUri, String time, Integer index) {
+        final DocumentReference documentReference = FirebaseFirestore.getInstance().collection("postPhotos").document(time);
+
+        Map<Integer, Uri> photoUriMap = new HashMap<>();
+        photoUriMap.put(index, photoUri);
+
+        documentReference
+                .set(photoUriMap, SetOptions.merge()) // 병합 옵션
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Toast.makeText(getApplicationContext(), "이미지 URL FireStore 등록 성공", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(getApplicationContext(), "이미지 URL FireStore 등록 실패", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 }

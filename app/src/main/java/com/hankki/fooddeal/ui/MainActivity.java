@@ -1,7 +1,6 @@
 package com.hankki.fooddeal.ui;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Toast;
 
@@ -23,10 +22,8 @@ public class MainActivity extends AppCompatActivity {
     public static Context mainContext;
     long backKeyPressedTime = 0;
     boolean isBackPressed;
-    boolean isPopup;
 
     FirebaseUser firebaseUser;
-    Intent intent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,7 +31,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         mainContext = this;
-        isPopup = PreferenceManager.getBoolean(this,"Popup");
 
         setBottomNavigation();
 
@@ -42,14 +38,9 @@ public class MainActivity extends AppCompatActivity {
             firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
             String uid = firebaseUser.getUid();
             Toast.makeText(getApplicationContext(), uid, Toast.LENGTH_SHORT).show();
-
-        } else if(!PreferenceManager.getString(getApplicationContext(), "userToken").equals("")) {
+        } else if (!PreferenceManager.getString(getApplicationContext(), "userToken").equals("")) {
 
         } else {
-            // startActivityResult로 값만 왔다갔다 하게
-            intent = new Intent(MainActivity.this, PopupActivity.class);
-            startActivity(intent);
-
             Toast.makeText(getApplicationContext(), "파이어베이스 사용자 없음", Toast.LENGTH_SHORT).show();
         }
 

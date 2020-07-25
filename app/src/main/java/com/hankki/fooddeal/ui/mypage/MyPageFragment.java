@@ -1,11 +1,7 @@
 package com.hankki.fooddeal.ui.mypage;
 
 import android.Manifest;
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.ShapeDrawable;
@@ -23,9 +19,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.core.content.IntentCompat;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
@@ -45,9 +38,8 @@ import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.TedPermission;
 import com.hankki.fooddeal.R;
 import com.hankki.fooddeal.data.PreferenceManager;
+import com.hankki.fooddeal.data.security.AES256Util;
 import com.hankki.fooddeal.data.staticdata.StaticUser;
-import com.hankki.fooddeal.ui.MainActivity;
-import com.hankki.fooddeal.ui.PopupActivity;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -62,7 +54,7 @@ public class MyPageFragment extends Fragment {
     ImageView arrow_my_post, arrow_notification, arrow_like, arrow_setting;
     ImageView iv_my_profile;
     TextView tv_my_name;
-    Button btn_profile_revise, btn_logout;
+    Button btn_profile_revise;
     StaticUser user = new StaticUser();
 
     String uid;
@@ -70,7 +62,7 @@ public class MyPageFragment extends Fragment {
     View view;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
-                             ViewGroup container, Bundle savedInstanceState){
+                             ViewGroup container, Bundle savedInstanceState) {
 
         view = inflater.inflate(R.layout.fragment_mypage, container, false);
 
@@ -86,6 +78,7 @@ public class MyPageFragment extends Fragment {
     }
 
     public void setViewComponents(){
+
         iv_my_profile = view.findViewById(R.id.iv_my_profile);
         iv_my_profile.setBackground(new ShapeDrawable(new OvalShape()));
         iv_my_profile.setClipToOutline(true);
@@ -242,30 +235,34 @@ public class MyPageFragment extends Fragment {
     private void setUserProfile() {
         Glide
                 .with(getContext())
-                .load(R.drawable.user)
+                .load(R.drawable.ic_user)
                 .into(iv_my_profile);
 
-        final DocumentReference documentReference = FirebaseFirestore.getInstance().collection("users").document(uid);
-        documentReference
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                        if(task.isSuccessful()) {
-                            DocumentSnapshot documentSnapshot = task.getResult();
-                            if(!documentSnapshot.get("userPhotoUri").equals("")) {
+        if(!uid.equals("")) {
+            final DocumentReference documentReference = FirebaseFirestore.getInstance().collection("users").document(uid);
+            documentReference
+                    .get()
+                    .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                            if(task.isSuccessful()) {
+                                DocumentSnapshot documentSnapshot = task.getResult();
+                                if(!documentSnapshot.get("userPhotoUri").equals("")) {
 
-                                Glide
-                                        .with(getContext())
-                                        .load(documentSnapshot.get("userPhotoUri"))
-                                        .into(iv_my_profile);
+                                    Glide
+                                            .with(getContext())
+                                            .load(documentSnapshot.get("userPhotoUri"))
+                                            .into(iv_my_profile);
+                                }
+                                if(!documentSnapshot.get("userNickname").equals(""))
+                                    tv_my_name.setText(documentSnapshot.get("userNickname").toString());
+                                else
+                                    tv_my_name.setText(AES256Util.aesDecode(uid));
                             }
-                            if(!documentSnapshot.get("userNickname").equals(""))
-                                tv_my_name.setText(documentSnapshot.get("userNickname").toString());
-                            else
-                                tv_my_name.setText(documentSnapshot.get("userNickname").toString());
                         }
-                    }
-                });
+                    });
+        } else {
+            tv_my_name.setText("게스트");
+        }
     }
 }

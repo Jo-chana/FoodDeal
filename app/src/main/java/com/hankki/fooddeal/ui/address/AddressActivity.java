@@ -4,7 +4,6 @@ import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.Address;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.text.Editable;
@@ -38,7 +37,6 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.Callable;
 
 import io.reactivex.Observable;
@@ -66,7 +64,6 @@ public class AddressActivity extends AppCompatActivity {
     private static final int PERMISSIONS_REQUEST_CODE = 100;
     String[] REQUIRED_PERMISSIONS  = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
 
-    private List<Address> addresses;
     private ArrayList<String> currentAddressList;
     private ArrayList<String> current1depthAddressList;
     private ArrayList<String> current2depthAddressList;
@@ -149,6 +146,8 @@ public class AddressActivity extends AppCompatActivity {
                         for (int i = 0; i < jsonArray.length(); i++) {
                             jsonObject = jsonArray.getJSONObject(i);
                             currentAddressList.add(jsonObject.getString("address_name"));
+                            current1depthAddressList.add(jsonObject.getString("region_1depth_name"));
+                            current2depthAddressList.add(jsonObject.getString("region_2depth_name"));
                             current3depthAddressList.add(jsonObject.getString("region_3depth_name"));
                         }
                     }
@@ -171,7 +170,9 @@ public class AddressActivity extends AppCompatActivity {
                             @Override
                             public void onItemClick(View v, int pos) {
                                 Intent intent = new Intent(AddressActivity.this, MainActivity.class);
-                                PreferenceManager.setString(getApplicationContext(), "Location", current3depthAddressList.get(pos));
+                                PreferenceManager.setString(getApplicationContext(), "region1Depth", current1depthAddressList.get(pos));
+                                PreferenceManager.setString(getApplicationContext(), "region2Depth", current2depthAddressList.get(pos));
+                                PreferenceManager.setString(getApplicationContext(), "region3Depth", current3depthAddressList.get(pos));
                                 startActivity(intent);
                                 finish();
                             }
@@ -182,8 +183,11 @@ public class AddressActivity extends AppCompatActivity {
                 });
 
     }
+
     public void searchAddressFromEditText() {
         addressList = new ArrayList<String>();
+        region1depthAddressList = new ArrayList<>();
+        region2depthAddressList = new ArrayList<>();
         region3depthAddressList = new ArrayList<>();
         disposable = Observable.fromCallable(new Callable<Object>() {
             @Override
@@ -201,8 +205,12 @@ public class AddressActivity extends AppCompatActivity {
                             addressList.add(jsonObject.getString("address_name"));
 
                             if (jsonObject.getJSONObject("address").getString("region_3depth_name").equals("")) {
+                                region1depthAddressList.add(jsonObject.getJSONObject("address").getString("region_1depth_name"));
+                                region2depthAddressList.add(jsonObject.getJSONObject("address").getString("region_2depth_name"));
                                 region3depthAddressList.add(jsonObject.getJSONObject("address").getString("region_3depth_h_name"));
                             } else {
+                                region1depthAddressList.add(jsonObject.getJSONObject("address").getString("region_1depth_name"));
+                                region2depthAddressList.add(jsonObject.getJSONObject("address").getString("region_2depth_name"));
                                 region3depthAddressList.add(jsonObject.getJSONObject("address").getString("region_3depth_name"));
                             }
                         }
@@ -226,7 +234,9 @@ public class AddressActivity extends AppCompatActivity {
                             @Override
                             public void onItemClick(View v, int pos) {
                                 Intent intent = new Intent(AddressActivity.this, MainActivity.class);
-                                PreferenceManager.setString(getApplicationContext(), "Location", region3depthAddressList.get(pos));
+                                PreferenceManager.setString(getApplicationContext(), "region1Depth", region1depthAddressList.get(pos));
+                                PreferenceManager.setString(getApplicationContext(), "region2Depth", region2depthAddressList.get(pos));
+                                PreferenceManager.setString(getApplicationContext(), "region3Depth", region3depthAddressList.get(pos));
                                 startActivity(intent);
                                 finish();
                             }

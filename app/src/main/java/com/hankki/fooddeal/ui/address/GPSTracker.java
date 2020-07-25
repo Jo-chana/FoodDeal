@@ -14,7 +14,7 @@ import android.util.Log;
 
 import androidx.core.content.ContextCompat;
 
-class GPSTracker extends Service implements LocationListener {
+public class GPSTracker extends Service implements LocationListener {
 
     private final Context context;
     Location location;

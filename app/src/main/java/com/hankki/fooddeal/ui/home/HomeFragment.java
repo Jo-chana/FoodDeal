@@ -51,8 +51,8 @@ public class HomeFragment extends Fragment {
         btn_location = view.findViewById(R.id.btn_location);
         btn_map = view.findViewById(R.id.btn_map);
 
-        setLocation();
         setFragments();
+        setLocation();
         setViewPager();
         setTabLayout();
         setMapButtonOnClickLisetener();
@@ -72,7 +72,7 @@ public class HomeFragment extends Fragment {
 
     public void setLocation(){
         tv_location = view.findViewById(R.id.tv_location);
-        tv_location.setText(PreferenceManager.getString(getContext(),"Location"));
+        tv_location.setText(PreferenceManager.getString(getContext(),"region3Depth"));
         tv_location.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -82,7 +82,6 @@ public class HomeFragment extends Fragment {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
                         Intent intent = new Intent(getActivity(), AddressActivity.class);
-                        PreferenceManager.setBoolean(getContext(), "Popup", false);
                         startActivity(intent);
 
                         return false;

@@ -43,6 +43,7 @@ public interface APIInterface {
     })
     @GET("v2/local/search/address")
     Call<ResponseBody> getAddress(@Query("query") String address);
+
     @Headers({
             "Content-Type: application/json",
             "Authorization: KakaoAK 5584ccb6bce16722991e3e4d5a0b0dbe"

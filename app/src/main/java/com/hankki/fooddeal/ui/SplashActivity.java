@@ -1,12 +1,15 @@
 package com.hankki.fooddeal.ui;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
+import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -22,16 +25,21 @@ import com.hankki.fooddeal.data.retrofit.APIClient;
 import com.hankki.fooddeal.data.retrofit.APIInterface;
 import com.hankki.fooddeal.data.retrofit.retrofitDTO.MemberResponse;
 
+import permissions.dispatcher.NeedsPermission;
+import permissions.dispatcher.OnNeverAskAgain;
+import permissions.dispatcher.OnPermissionDenied;
+import permissions.dispatcher.OnShowRationale;
+import permissions.dispatcher.PermissionRequest;
+import permissions.dispatcher.RuntimePermissions;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import com.hankki.fooddeal.data.staticdata.StaticUser;
-import com.hankki.fooddeal.ui.home.community.PostActivity;
-
-
 /**스플래쉬 화면*/
+@RuntimePermissions
 public class SplashActivity extends AppCompatActivity {
+
+
     Intent intent;
     /*
     이현준
@@ -45,6 +53,7 @@ public class SplashActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
+        SplashActivityPermissionsDispatcher.showLocationWithPermissionCheck(this);
 
         // 강제종료 알림 서비스
         startService(new Intent(this, ForcedTerminationService.class));
@@ -63,6 +72,35 @@ public class SplashActivity extends AppCompatActivity {
                 .setPersistenceEnabled(false)
                 .build();
         FirebaseFirestore.getInstance().setFirestoreSettings(settings);
+
+    }
+
+    // 토큰을 사용한 인증
+    private void signInWithCustomToken(String firebaseToken, String userToken) {
+        firebaseAuth.signInWithCustomToken(firebaseToken)
+                .addOnCompleteListener(activity, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            Intent toMainIntent = new Intent(SplashActivity.this, MainActivity.class);
+                            startActivity(toMainIntent);
+                            finish();
+                        }
+                    }
+                })
+                .addOnFailureListener(activity, new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        e.printStackTrace();
+                    }
+                });
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        SplashActivityPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
+
         /*
         이현준
         자동 로그인 구현
@@ -98,26 +136,42 @@ public class SplashActivity extends AppCompatActivity {
                 }
             }, 1000);
         }
+
+        return;
     }
 
-    // 토큰을 사용한 인증
-    private void signInWithCustomToken(String firebaseToken, String userToken) {
-        firebaseAuth.signInWithCustomToken(firebaseToken)
-                .addOnCompleteListener(activity, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            Intent toMainIntent = new Intent(SplashActivity.this, MainActivity.class);
-                            startActivity(toMainIntent);
-                            finish();
-                        }
-                    }
-                })
-                .addOnFailureListener(activity, new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        e.printStackTrace();
-                    }
-                });
+    @NeedsPermission({Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION})
+    void showLocation() {
+        intent = new Intent(SplashActivity.this, IntroActivity.class);
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                startActivity(intent);
+                finish();
+            }
+        }, 1000);
+    }
+
+    @OnShowRationale({Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION})
+    public void showRationaleForLocation(final PermissionRequest request) {
+        new AlertDialog.Builder(this)
+                .setMessage("위치 권한을 허용해 주시기 바랍니다.")
+                .setPositiveButton(android.R.string.ok, (dialog, button) -> request.proceed())
+                .setNegativeButton(android.R.string.cancel, (dialog, button) -> request.cancel())
+                .setCancelable(false)
+                .show();
+    }
+
+    @OnPermissionDenied({Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION})
+    public void showDeniedForLocation() {
+        Toast.makeText(this, "권한을 허용해 주세요.", Toast.LENGTH_SHORT).show();
+        finish();
+    }
+
+    @OnNeverAskAgain({Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION})
+    public void showNeverAskForLocation() {
+        Toast.makeText(this, "권한 허용을 해주지 않으신다면, 서비스 이용이 불가합니다.", Toast.LENGTH_SHORT).show();
+        finish();
     }
 }

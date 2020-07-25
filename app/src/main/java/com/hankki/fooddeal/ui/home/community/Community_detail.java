@@ -2,8 +2,10 @@ package com.hankki.fooddeal.ui.home.community;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.OvalShape;
 import android.os.Bundle;
@@ -30,10 +32,22 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CircleOptions;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.hankki.fooddeal.R;
 import com.hankki.fooddeal.data.retrofit.BoardController;
+import com.hankki.fooddeal.data.CommentItem;
+import com.hankki.fooddeal.data.PostItem;
+import com.hankki.fooddeal.data.PreferenceManager;
+import com.hankki.fooddeal.data.retrofit.APIInterface;
 import com.hankki.fooddeal.data.staticdata.StaticChatRoom;
 import com.hankki.fooddeal.data.staticdata.StaticUser;
 import com.hankki.fooddeal.ui.MainActivity;
@@ -43,10 +57,14 @@ import com.hankki.fooddeal.data.CommentItem;
 import com.hankki.fooddeal.data.PostItem;
 import com.hankki.fooddeal.ux.viewpager.GalleryAdapter;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Date;
 
-public class Community_detail extends AppCompatActivity {
+import io.reactivex.disposables.Disposable;
+
+public class Community_detail extends AppCompatActivity implements OnMapReadyCallback {
     ViewPager vp_image; // 이미지 뷰페이저
     TabLayout tl_dots;
     GalleryAdapter galleryAdapter; // 뷰페이저 어댑터
@@ -59,6 +77,7 @@ public class Community_detail extends AppCompatActivity {
 
     ArrayList<CommentItem> commentItems; // 댓글 리스트
     PostItem mPost;
+    StaticPost staticPost = new StaticPost();
 
     CommentAdapter mAdapter;
     Context mContext;
@@ -68,9 +87,20 @@ public class Community_detail extends AppCompatActivity {
     ArrayList<Bitmap> postImages;
 
     String uid;
-
+    int order;
     int page; // 교환나눔, 레시피, 자유
     String tag;
+
+    ArrayList<String> addressList = new ArrayList<String>();
+    ArrayList<String> region1depthAddressList = new ArrayList<String>();
+    ArrayList<String> region2depthAddressList = new ArrayList<String>();
+    ArrayList<String> region3depthAddressList = new ArrayList<String>();
+
+    Disposable disposable;
+    APIInterface apiInterface;
+    LatLng mPosition;
+    CameraUpdate cameraUpdate;
+    GoogleMap mapPost;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -79,6 +109,7 @@ public class Community_detail extends AppCompatActivity {
         if(getIntent()!=null) {
             Intent intent = getIntent();
             page = intent.getIntExtra("page", -1); //교환나눔, 레시피, 자유
+            order = intent.getIntExtra("index", -1); //몇 번째 게시글인가?
             tag = intent.getStringExtra("Tag");
             mPost = intent.getParcelableExtra("item");
         }
@@ -88,12 +119,16 @@ public class Community_detail extends AppCompatActivity {
         } else {
             uid = "";
         }
-
         switch (page) {
             case 0:
                 setContentView(R.layout.post_exchange_share);
                 setPostCommon();
                 setExchangeSharePostDetail();
+
+                SupportMapFragment mapFragment = (SupportMapFragment)getSupportFragmentManager()
+                        .findFragmentById(R.id.map_post);
+                mapFragment.getMapAsync(this);
+
                 break;
             case 1:
             case 2:
@@ -107,8 +142,7 @@ public class Community_detail extends AppCompatActivity {
         if(BoardController.getBoardWriteList(mContext).get(0).getUserSeq() == mPost.getUserSeq()){
             setMyPostBottomToolbar();
         }
-
-        if(FirebaseAuth.getInstance().getCurrentUser()==null)
+        if(uid.equals(""))
             setGuestBottomToolbarOption();
     }
 
@@ -130,17 +164,7 @@ public class Community_detail extends AppCompatActivity {
         postInfo.setText(category+" ･ "+mPost.getInsertDate());
 
         Button btn_chat = bottomToolbar.findViewById(R.id.btn_chatting);
-        btn_chat.setOnClickListener(v -> {
-            ChatRoomItem item = new ChatRoomItem(mPost.getBoardTitle(), page);
-            item.setInformation("새로운 채팅방이 개설되었습니다. 이야기를 나눠보세요!");
-            StaticChatRoom staticChatRoom = new StaticChatRoom();
-            int index = staticChatRoom.getChatItems().size();
-            staticChatRoom.addChatItem(item);
-            Intent intent = new Intent();
-            intent.putExtra("Chat",1);
-            intent.putExtra("index",index);
-            startActivity(intent);
-        });
+        /**@TODO 이현준 채팅방 생성*/
     }
 
     public void setRecipeFreePostDetail(){
@@ -337,5 +361,33 @@ public class Community_detail extends AppCompatActivity {
             }
         }
         super.onBackPressed();
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        /**지도 설정*/
+        mapPost = googleMap;
+
+        mapLocation = findViewById(R.id.tv_post_loc);
+
+        double latitude = mPost.getLatitude();
+        double longitude = mPost.getLongitude();
+
+        LatLng latlng = new LatLng(latitude, longitude);
+
+        MarkerOptions markerOptions = new MarkerOptions();
+        markerOptions.position(latlng);
+
+        mapPost.addMarker(markerOptions);
+
+        CircleOptions circle1KM = new CircleOptions().center(latlng) //원점
+                .radius(100)      //반지름 단위 : m
+                .strokeWidth(0f)  //선너비 0f : 선없음
+                .fillColor(Color.parseColor("#88ffb5c5")); //배경색
+        mapPost.addCircle(circle1KM);
+
+
+        cameraUpdate = CameraUpdateFactory.newLatLng(latlng);
+        mapPost.animateCamera(CameraUpdateFactory.newLatLngZoom(latlng, 17));
     }
 }

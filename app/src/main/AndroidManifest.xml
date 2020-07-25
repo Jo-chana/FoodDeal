@@ -45,9 +45,8 @@
         <activity android:name=".ui.login.LoginActivity" />
         <activity android:name=".ui.register.RegisterActivity"/>
         <activity android:name=".ui.address.AddressActivity" />
-        <activity
-            android:name=".ui.PopupActivity"
-            android:theme="@android:style/Theme.Dialog" />
+        <activity android:name=".ui.map.MapActivity" />
+        <activity android:name=".ui.register.WebViewActivity" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
