@@ -1,5 +1,6 @@
 package com.hankki.fooddeal.ui.map;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 
@@ -15,7 +16,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.hankki.fooddeal.R;
 import com.hankki.fooddeal.data.PostItem;
 import com.hankki.fooddeal.data.PreferenceManager;
-import com.hankki.fooddeal.data.staticdata.StaticPost;
+import com.hankki.fooddeal.data.retrofit.BoardController;
 
 import java.util.ArrayList;
 
@@ -24,11 +25,13 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     private GoogleMap map;
     private ArrayList<PostItem> postItems;
+    Context mContext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
+        mContext = this;
 
         SupportMapFragment mapFragment = (SupportMapFragment)getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -58,9 +61,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 .fillColor(Color.parseColor("#88ffb5c5")); // 배경색
         map.addCircle(circle1KM);
 
-        postItems = new StaticPost().getPostList(0);
+        postItems = BoardController.getBoardList(mContext, "INGREDIENT EXCHANGE");
         for (PostItem postItem : postItems) {
-            LatLng position = new LatLng(postItem.getLatitude(), postItem.getLongitude());
+            LatLng position = new LatLng(Double.parseDouble(postItem.getUserLatitude()), Double.parseDouble(postItem.getUserLongitude()));
 
             markerOptions = new MarkerOptions();
             markerOptions.position(position);
