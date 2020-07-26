@@ -29,7 +29,8 @@ public class PostItem implements Comparable<PostItem>, Parcelable {
     String userLongitude;
     String userToken;
     String userHashId;
-    ArrayList<Bitmap> images = new ArrayList<>();
+//    ArrayList<Bitmap> images = new ArrayList<>();
+    String thumbnailUrl;
     String category = "";
     int likeCount = 0;
     int commentCount = 0;
@@ -48,7 +49,7 @@ public class PostItem implements Comparable<PostItem>, Parcelable {
         userProfile = in.readParcelable(Bitmap.class.getClassLoader());
         userLatitude = in.readString();
         userLongitude = in.readString();
-        images = in.createTypedArrayList(Bitmap.CREATOR);
+        thumbnailUrl = in.readString();
         category = in.readString();
         likeCount = in.readInt();
         commentCount = in.readInt();
@@ -108,9 +109,6 @@ public class PostItem implements Comparable<PostItem>, Parcelable {
         Distance = distance;
     }
 
-    public ArrayList<Bitmap> getImages() {
-        return images;
-    }
 
     public String getBoardContent() {
         return boardContent;
@@ -170,9 +168,9 @@ public class PostItem implements Comparable<PostItem>, Parcelable {
         return delYN;
     }
 
-    public void addPostImage(Bitmap image){
-        images.add(image);
-    }
+//    public void addPostImage(Bitmap image){
+//        images.add(image);
+//    }
 
     public void setInsertDate(String insertDate) {
         this.insertDate = insertDate;
@@ -186,9 +184,9 @@ public class PostItem implements Comparable<PostItem>, Parcelable {
         this.userLongitude = userLongitude;
     }
 
-    public void setImages(ArrayList<Bitmap> images) {
-        this.images = images;
-    }
+    public String getThumbnailUrl() { return thumbnailUrl; }
+
+    public void setThumbnailUrl(String thumbnailUrl) { this.thumbnailUrl = thumbnailUrl; }
 
     public void setCommentCount(int commentCount) {
         this.commentCount = commentCount;
@@ -211,7 +209,7 @@ public class PostItem implements Comparable<PostItem>, Parcelable {
         return this.getDistance() - o.getDistance();
     }
 
-    public void onBindBoardApi(BoardListResponse.BoardResponse boardResponse){
+    public void onBindBoardApi(BoardListResponse.BoardResponse boardResponse, String url){
         boardSeq = boardResponse.getBoardSeq();
         boardTitle = boardResponse.getBoardTitle();
         boardContent = boardResponse.getBoardContent();
@@ -242,6 +240,7 @@ public class PostItem implements Comparable<PostItem>, Parcelable {
         likeCount = boardResponse.getLikeCount();
         delYN = boardResponse.getDelYn();
         commentCount = boardResponse.getCommentCount();
+        thumbnailUrl = url;
     }
 
     public HashMap<String, String> onBindBodyApi(Context context){
@@ -276,7 +275,7 @@ public class PostItem implements Comparable<PostItem>, Parcelable {
         dest.writeParcelable(userProfile, flags);
         dest.writeString(userLatitude);
         dest.writeString(userLongitude);
-        dest.writeTypedList(images);
+        dest.writeString(thumbnailUrl);
         dest.writeString(category);
         dest.writeInt(likeCount);
         dest.writeInt(commentCount);

@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.hankki.fooddeal.R;
 import com.hankki.fooddeal.data.PostItem;
 import com.hankki.fooddeal.ui.home.community.Community_detail;
@@ -18,7 +19,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 
-/**Recycler View Post Adapter*/
+/**
+ * Recycler View Post Adapter
+ */
 public class PostAdapter extends RecyclerView.Adapter<PostViewHolder> {
     private Context mContext;
     ArrayList<PostItem> postItems;
@@ -27,13 +30,13 @@ public class PostAdapter extends RecyclerView.Adapter<PostViewHolder> {
     int page;
     String tag = "Main"; // Main, My, Dib
 
-    public PostAdapter(Context context, ArrayList<PostItem> itemList, int layout){
+    public PostAdapter(Context context, ArrayList<PostItem> itemList, int layout) {
         mContext = context;
         postItems = itemList;
         this.layout = layout; // inflate 할 layout 받아와야 함.
     }
 
-    public void setTag(String tag){
+    public void setTag(String tag) {
         this.tag = tag;
     }
 
@@ -41,14 +44,16 @@ public class PostAdapter extends RecyclerView.Adapter<PostViewHolder> {
     @Override
     public PostViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
-        View baseView = View.inflate(mContext, layout ,null);
+        View baseView = View.inflate(mContext, layout, null);
         postViewHolder = new PostViewHolder(baseView);
 
         return postViewHolder;
     }
 
-    /**Layout 과 View Holder Binding.
-     * 데이터에 따라 변수 바인딩하는 로직 추가할 것*/
+    /**
+     * Layout 과 View Holder Binding.
+     * 데이터에 따라 변수 바인딩하는 로직 추가할 것
+     */
     @Override
     public void onBindViewHolder(@NonNull PostViewHolder holder, int position) {
         PostItem item = postItems.get(position);
@@ -57,9 +62,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostViewHolder> {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(holder.mView.getContext(), Community_detail.class);
-                intent.putExtra("page",page);
-                intent.putExtra("Tag",tag);
-                intent.putExtra("item",item);
+                intent.putExtra("page", page);
+                intent.putExtra("Tag", tag);
+                intent.putExtra("item", item);
                 holder.mView.getContext().startActivity(intent);
             }
         });
@@ -75,27 +80,33 @@ public class PostAdapter extends RecyclerView.Adapter<PostViewHolder> {
 //        });
     }
 
-    /**총 게시글/채팅방 수.*/
+    /**
+     * 총 게시글/채팅방 수.
+     */
     @Override
     public int getItemCount() {
         return postItems.size();
     }
 
-    public void setCommunityItem(PostViewHolder holder, PostItem item){
+    public void setCommunityItem(PostViewHolder holder, PostItem item) {
         holder.mTitle.setText(item.getBoardTitle()); // 수정해야 함! 테스트용
-        holder.mUserLocation.setText(String.valueOf(item.getDistance())+"m");
+        holder.mUserLocation.setText(String.valueOf(item.getDistance()) + "m");
         holder.mTime.setText(item.getInsertDate());
-        if(item.getImages() != null){
-            if(item.getImages().size() > 0){
-                holder.mImage.setImageBitmap(item.getImages().get(0));
-                holder.mImage.setScaleType(ImageView.ScaleType.FIT_XY);
-            }
+        // 썸네일로 쓸 내용이 있으면 표시 없으면 빈 값
+        if (!item.getThumbnailUrl().equals("NONE")) {
+            holder.mImage.setScaleType(ImageView.ScaleType.FIT_XY);
+
+            Glide
+                    .with(mContext)
+                    .load(item.getThumbnailUrl())
+                    .thumbnail(0.1f)
+                    .into(holder.mImage);
         }
-        if(page==0){ // 식재 나눔 교환
+        if (page == 0) { // 식재 나눔 교환
             /**찜 아이콘을 지우고, 댓글 부분은 찜으로 대체*/
             holder.iv_like.setImageBitmap(null);
             holder.tv_like.setText(null);
-            if(item.getLikeCount()==0){
+            if (item.getLikeCount() == 0) {
                 holder.iv_comment.setImageBitmap(null);
                 holder.tv_comment.setText(null);
             } else {
@@ -104,7 +115,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostViewHolder> {
             }
         } else { // 레시피 자유
             int like = item.getLikeCount();
-            if(item.getCommentCount() > 0) {
+            if (item.getCommentCount() > 0) {
                 int comment = item.getCommentCount();
 
                 if (like == 0 && comment == 0) { // 둘다 0
@@ -132,19 +143,19 @@ public class PostAdapter extends RecyclerView.Adapter<PostViewHolder> {
         }
     }
 
-    public void setPage(int page){
+    public void setPage(int page) {
         this.page = page;
     }
 
-    public void distanceFitering(int distance){
+    public void distanceFitering(int distance) {
 
     }
 
-    public void distanceSorting(int distance){
+    public void distanceSorting(int distance) {
         Collections.sort(postItems);
     }
 
-    public void setPostItems(ArrayList<PostItem> postItems){
+    public void setPostItems(ArrayList<PostItem> postItems) {
         this.postItems = postItems;
     }
 }

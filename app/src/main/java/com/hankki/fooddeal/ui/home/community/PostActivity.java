@@ -48,6 +48,7 @@ import com.hankki.fooddeal.data.PostItem;
 import com.hankki.fooddeal.ui.MainActivity;
 import com.hankki.fooddeal.ux.dialog.CustomDialog;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -75,6 +76,7 @@ public class PostActivity extends AppCompatActivity {
     CustomDialog customDialog;
 
     String category = ""; // 테스트용/ 교환인지 나눔인지
+    String mode = "";
 
     ArrayList<Bitmap> postImages = new ArrayList<>();
     int[] imageResources = new int[]{R.id.image_1,R.id.image_2,R.id.image_3,R.id.image_4};
@@ -97,6 +99,7 @@ public class PostActivity extends AppCompatActivity {
         page = intent.getIntExtra("page",-1);
         order = intent.getIntExtra("index",-1);
         category = intent.getStringExtra("category");
+        mode = intent.getStringExtra("mode");
 
         setIdComponents();
     }
@@ -122,7 +125,8 @@ public class PostActivity extends AppCompatActivity {
         });
 
         if(page==0){
-            setExchangeAndShareComponents();
+            if(!mode.equals("revise"))
+                setExchangeAndShareComponents();
         } else {
             setRecipeFreeComponents();
         }
@@ -135,7 +139,7 @@ public class PostActivity extends AppCompatActivity {
         }
         textViews[0].setText("0/4");
 
-        if (intent.getStringExtra("mode").equals("revise")) {
+        if (mode.equals("revise")) {
             toolbarTextView.setText("수정하기");
             setPostRevise();
         } else {
@@ -257,30 +261,28 @@ public class PostActivity extends AppCompatActivity {
                     item.setCategory(category);
 
                     if(BoardController.boardWrite(mContext,item)){
-                        Toast.makeText(mContext, "게시글을 작성하였습니다", Toast.LENGTH_SHORT).show();
-                        /**게시글 추가 후, 해당 커뮤니티에서 즉각적으로 Update*/
-                        NavHostFragment navHostFragment = (NavHostFragment) ((MainActivity) MainActivity.mainContext)
-                                .getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
-                        List<Fragment> fragments = navHostFragment.getChildFragmentManager().getFragments().get(0)
-                                .getChildFragmentManager().getFragments();
+                        // 이현준 이미지 Firebase 업로드 추가
+                        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-                        Fragment fragment = fragments.get(page);
-                        switch (page) {
-                            case 0:
-                                ((ExchangeAndShare) fragment).setRecyclerView();
-                                break;
-                            case 1:
-                                ((RecipeShare) fragment).setRecyclerView();
-                                break;
-                            case 2:
-                                ((FreeCommunity) fragment).setRecyclerView();
-                                break;
+                        for(int i=0;i<postImages.size();i++) {
+                            postImages.get(i).compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                            byte[] data = baos.toByteArray();
+
+                            uploadPostPhoto(data, item.getInsertDate(), Integer.toString(i), postImages.size());
+                            baos.reset();
                         }
 
+                        try {
+                            baos.flush();
+                            baos.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        // 이현준 이미지 Firebase 업로드 끝
                     } else {
                         Toast.makeText(mContext,"실패!",Toast.LENGTH_SHORT).show();
                     }
-                    finish();
+
                 }
             }
         });
@@ -527,7 +529,7 @@ public class PostActivity extends AppCompatActivity {
      (시간을 밀스초단위로 쪼개서 저장하는게 좋을듯)
      각각의 파일마다 이 함수 한번씩 써야함 (Firebase 파일 업로드 기능에 여러개를 보내는게 없음)
      */
-    private void uploadPostPhoto(byte[] imageData, String time, Integer index) {
+    private void uploadPostPhoto(byte[] imageData, String time, String index, Integer size) {
         final StorageReference storageReference = FirebaseStorage.getInstance().getReference().child("PostPhotos/" + time + "/" + index + ".jpg");
         UploadTask uploadTask = storageReference.putBytes(imageData);
 
@@ -546,7 +548,7 @@ public class PostActivity extends AppCompatActivity {
                 if(task.isSuccessful()) {
                     Uri downloadUri = task.getResult();
 
-                    setPhotoUrlInFireStore(downloadUri, time, index);
+                    setPhotoUrlInFireStore(downloadUri.toString(), time, index, size-1);
                 } else {
                     Toast.makeText(getApplicationContext(), "이미지 업로드 실패", Toast.LENGTH_SHORT).show();
                 }
@@ -554,11 +556,11 @@ public class PostActivity extends AppCompatActivity {
         });
     }
 
-    // postPhotos -> 현재 시각(서울 기준으로 ms 까지) -> Map<Integer, Uri> 형식으로 저장
-    private void setPhotoUrlInFireStore(Uri photoUri, String time, Integer index) {
+    // postPhotos -> 현재 시각(서울 기준으로 ms 까지) -> Map<String, String> 형식으로 저장
+    private void setPhotoUrlInFireStore(String photoUri, String time, String index, Integer size) {
         final DocumentReference documentReference = FirebaseFirestore.getInstance().collection("postPhotos").document(time);
 
-        Map<Integer, Uri> photoUriMap = new HashMap<>();
+        Map<String, String> photoUriMap = new HashMap<>();
         photoUriMap.put(index, photoUri);
 
         documentReference
@@ -566,7 +568,9 @@ public class PostActivity extends AppCompatActivity {
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        Toast.makeText(getApplicationContext(), "이미지 URL FireStore 등록 성공", Toast.LENGTH_SHORT).show();
+                        if(index.equals(size.toString())) {
+                            updateRecyclerView();
+                        }
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -575,5 +579,28 @@ public class PostActivity extends AppCompatActivity {
                         Toast.makeText(getApplicationContext(), "이미지 URL FireStore 등록 실패", Toast.LENGTH_SHORT).show();
                     }
                 });
+    }
+
+    private void updateRecyclerView() {
+        /**게시글 추가 후, 해당 커뮤니티에서 즉각적으로 Update*/
+        NavHostFragment navHostFragment = (NavHostFragment) ((MainActivity) MainActivity.mainContext)
+                .getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
+        List<Fragment> fragments = navHostFragment.getChildFragmentManager().getFragments().get(0)
+                .getChildFragmentManager().getFragments();
+
+        Fragment fragment = fragments.get(page);
+        switch (page) {
+            case 0:
+                ((ExchangeAndShare) fragment).setRecyclerView();
+                break;
+            case 1:
+                ((RecipeShare) fragment).setRecyclerView();
+                break;
+            case 2:
+                ((FreeCommunity) fragment).setRecyclerView();
+                break;
+        }
+
+        finish();
     }
 }

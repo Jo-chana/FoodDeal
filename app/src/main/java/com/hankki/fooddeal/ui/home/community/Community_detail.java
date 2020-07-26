@@ -271,8 +271,8 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
             postLike.setText(String.valueOf(mPost.getLikeCount())+" 명이 찜했어요");
         }
 
-        postImages = mPost.getImages();
-        setImageViewPager();
+//        postImages = mPost.getImages();
+//        setImageViewPager();
     }
 
     public void setMyPostBottomToolbar(){
@@ -290,6 +290,7 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
             reviseIntent.putExtra("page",page);
             reviseIntent.putExtra("item",mPost);
             startActivity(reviseIntent);
+            finish();
             finish();
         });
         ll_delete.setOnClickListener(v -> {
