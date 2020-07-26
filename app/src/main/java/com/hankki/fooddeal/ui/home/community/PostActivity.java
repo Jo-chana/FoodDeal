@@ -76,7 +76,8 @@ public class PostActivity extends AppCompatActivity {
     CustomDialog customDialog;
 
     String category = ""; // 테스트용/ 교환인지 나눔인지
-    String mode = "";
+    String mode = ""; // 수정인지 글쓰기인지
+
 
     ArrayList<Bitmap> postImages = new ArrayList<>();
     int[] imageResources = new int[]{R.id.image_1,R.id.image_2,R.id.image_3,R.id.image_4};

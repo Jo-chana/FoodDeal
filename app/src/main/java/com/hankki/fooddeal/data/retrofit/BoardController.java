@@ -118,7 +118,6 @@ public class BoardController {
         try {
             complete = new AsyncTask<Void, Void, Boolean>() {
                 boolean finalComplete = false;
-
                 @Override
                 protected Boolean doInBackground(Void... voids) {
                     try {
@@ -148,7 +147,6 @@ public class BoardController {
         try {
             complete = new AsyncTask<Void, Void, Boolean>() {
                 boolean finalComplete = false;
-
                 @Override
                 protected Boolean doInBackground(Void... voids) {
                     try {
@@ -177,7 +175,6 @@ public class BoardController {
         try {
             commentItems = new AsyncTask<Void, Void, ArrayList<CommentItem>>() {
                 final ArrayList<CommentItem> items = new ArrayList<>();
-
                 @Override
                 protected ArrayList<CommentItem> doInBackground(Void... voids) {
                     try {
@@ -188,16 +185,9 @@ public class BoardController {
                             CommentItem item = new CommentItem();
                             item.onBindCommentApi(comment);
 
-                            if (item.getDelYn().equals("N")) {
-                                int parentSeq = item.getParentCommentSeq();
-                                /*@TODO 수정 요망*/
-                                if (parentSeq == 0) {
-                                    items.add(item);
-                                } else {
-                                    items.get(parentSeq).getCommentCommentList().add(item);
-                                }
+                            if(item.getDelYn().equals("N")){
+                                items.add(item);
                             }
-
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -219,7 +209,6 @@ public class BoardController {
         try {
             complete = new AsyncTask<Void, Void, Boolean>() {
                 boolean finalComplete = false;
-
                 @Override
                 protected Boolean doInBackground(Void... voids) {
                     try {
@@ -234,6 +223,62 @@ public class BoardController {
                 }
             }.execute().get();
         } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return complete;
+    }
+
+    public static boolean commentDelete(Context context, CommentItem item){
+        boolean complete = false;
+        HashMap<String, String> body = new HashMap<>();
+        body.put("COMMENT_SEQ",String.valueOf(item.getCommentSeq()));
+        body.put("USER_TOKEN",PreferenceManager.getString(context,"userToken"));
+        body.put("BOARD_SEQ",String.valueOf(item.getBoardSeq()));
+        Call<MemberResponse> responseCall = apiInterface.commentDelete(body);
+        try{
+            complete = new AsyncTask<Void, Void, Boolean>() {
+                boolean finalComplete = false;
+                @Override
+                protected Boolean doInBackground(Void... voids) {
+                    try{
+                        MemberResponse response = responseCall.execute().body();
+                        if(response != null && response.getResponseCode()==820){
+                            finalComplete = true;
+                        }
+                    } catch (Exception e){
+                        e.printStackTrace();
+                    }
+                    return finalComplete;
+                }
+            }.execute().get();
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        return complete;
+    }
+
+    public static boolean childCommentWrite(Context context,CommentItem parentComment, CommentItem comment) {
+        boolean complete = false;
+        HashMap<String, String> body = comment.onBindBodyApi(context);
+        body.put("PARENT_COMMENT_SEQ",String.valueOf(parentComment.getCommentSeq()));
+        Call<MemberResponse> responseCall = apiInterface.commentWrite(body);
+        try {
+            complete = new AsyncTask<Void, Void, Boolean>() {
+                boolean finalComplete = false;
+                @Override
+                protected Boolean doInBackground(Void... voids) {
+                    try {
+                        MemberResponse response = responseCall.execute().body();
+                        if(response != null && response.getResponseCode()==800){
+                            finalComplete = true;
+                        }
+                    } catch (Exception e){
+                        e.printStackTrace();
+                    }
+                    return finalComplete;
+                }
+            }.execute().get();
+        } catch (Exception e){
             e.printStackTrace();
         }
         return complete;
@@ -254,7 +299,6 @@ public class BoardController {
         try {
             complete = new AsyncTask<Void, Void, Boolean>() {
                 boolean finalComplete = false;
-
                 @Override
                 protected Boolean doInBackground(Void... voids) {
                     try {
@@ -339,7 +383,7 @@ public class BoardController {
         return myBoardList;
     }
 
-    public static ArrayList<PostItem> getExchangeShareBoardWriteList(Context context) {
+    public static ArrayList<PostItem> getExchangeShareBoardWriteList(Context context, String category){
         ArrayList<PostItem> myBoardList = new ArrayList<>();
         Call<BoardListResponse> responseCall = apiInterface.getBoardWriteList(PreferenceManager.getString(context, "userToken"));
         try {
@@ -356,8 +400,7 @@ public class BoardController {
                                 PostItem item = new PostItem();
                                 item.onBindBoardApi(boardResponse, getThumbnailUrl(boardResponse.getInsertDate()));
                                 if (!item.getDelYN().equals("Y")) {
-                                    if (item.getCategory().equals("INGREDIENT EXCHANGE") ||
-                                            item.getCategory().equals("INGREDIENT SHARE"))
+                                    if (item.getCategory().equals(category))
                                         items.add(item);
                                 }
                             }
@@ -477,7 +520,7 @@ public class BoardController {
         return likeBoardList;
     }
 
-    public static ArrayList<PostItem> getExchangeShareBoardLikeList(Context context) {
+    public static ArrayList<PostItem> getExchangeShareBoardLikeList(Context context, String category){
         ArrayList<PostItem> likeBoardList = new ArrayList<>();
         Call<BoardListResponse> responseCall = apiInterface.getBoardLikeList(PreferenceManager.getString(context, "userToken"));
         try {
@@ -494,8 +537,7 @@ public class BoardController {
                                 PostItem item = new PostItem();
                                 item.onBindBoardApi(boardResponse, getThumbnailUrl(boardResponse.getInsertDate()));
                                 if (!item.getDelYN().equals("Y")) {
-                                    if (item.getCategory().equals("INGREDIENT EXCHANGE") ||
-                                            item.getCategory().equals("INGREDIENT SHARE"))
+                                    if (item.getCategory().equals(category))
                                         items.add(item);
                                 }
                             }

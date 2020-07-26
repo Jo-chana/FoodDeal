@@ -2,7 +2,6 @@ package com.hankki.fooddeal.ui.home.community;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -46,38 +45,32 @@ import com.hankki.fooddeal.R;
 import com.hankki.fooddeal.data.retrofit.BoardController;
 import com.hankki.fooddeal.data.CommentItem;
 import com.hankki.fooddeal.data.PostItem;
-import com.hankki.fooddeal.data.PreferenceManager;
-import com.hankki.fooddeal.data.retrofit.APIInterface;
 import com.hankki.fooddeal.data.security.AES256Util;
-import com.hankki.fooddeal.data.staticdata.StaticChatRoom;
-import com.hankki.fooddeal.data.staticdata.StaticUser;
 import com.hankki.fooddeal.ui.MainActivity;
-import com.hankki.fooddeal.ux.itemtouchhelper.ChatRoomItem;
 import com.hankki.fooddeal.ux.recyclerview.CommentAdapter;
-import com.hankki.fooddeal.data.CommentItem;
-import com.hankki.fooddeal.data.PostItem;
 import com.hankki.fooddeal.ux.viewpager.GalleryAdapter;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Date;
-
-import io.reactivex.disposables.Disposable;
 
 public class Community_detail extends AppCompatActivity implements OnMapReadyCallback {
     ViewPager vp_image; // 이미지 뷰페이저
     TabLayout tl_dots;
     GalleryAdapter galleryAdapter; // 뷰페이저 어댑터
-    View topToolbar; // 상단 툴바,
+    View topToolbar, myPostBottomToolbar, myCommentBottomToolbar;
     ConstraintLayout post_common, bottomToolbar; // 게시글 몸통, 하단 툴바(채팅 및 댓글창)
     ImageView profile; // 유저 프로필
     TextView userLocation, mapLocation; // 유저 위치, 게시글 위치(교환/나눔)
     TextView userId, postInfo, postText, postLike; //아이디, 게시글 정보(시간, 장소 등), 관심도(찜, 좋아요)
     RecyclerView rv_comment; // 댓글 리사이클러 뷰
-
+    Button btn_comment;
+    EditText et_comment;
     ArrayList<CommentItem> commentItems; // 댓글 리스트
     PostItem mPost;
+
+    ImageView iv_setting, iv_dot;
+    LinearLayout ll_revise, ll_delete;
+    FrameLayout fl_bottom;
 
     CommentAdapter mAdapter;
     Context mContext;
@@ -90,15 +83,8 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
     int order;
     int page; // 교환나눔, 레시피, 자유
     String tag;
+    boolean isMyPage = false; // 내 게시글이면 대댓글 처리 따로
 
-    ArrayList<String> addressList = new ArrayList<String>();
-    ArrayList<String> region1depthAddressList = new ArrayList<String>();
-    ArrayList<String> region2depthAddressList = new ArrayList<String>();
-    ArrayList<String> region3depthAddressList = new ArrayList<String>();
-
-    Disposable disposable;
-    APIInterface apiInterface;
-    LatLng mPosition;
     CameraUpdate cameraUpdate;
     GoogleMap mapPost;
 
@@ -142,6 +128,7 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
 
         if(mPost.getUserHashId().equals(uid)){
             setMyPostBottomToolbar();
+            isMyPage = true;
         }
         if(uid.equals(""))
             setGuestBottomToolbarOption();
@@ -172,37 +159,14 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
 
     public void setRecipeFreePostDetail(){
         /*댓글 설정*/
-        commentItems = BoardController.getBoardCommentList(mPost);
         rv_comment = findViewById(R.id.rv_comment);
         postInfo.setText(mPost.getInsertDate());
         scrollView = findViewById(R.id.scroll);
         rv_comment.setNestedScrollingEnabled(false);
 
-        EditText et_comment = bottomToolbar.findViewById(R.id.et_comment);
-        Button btn_comment = bottomToolbar.findViewById(R.id.btn_comment);
-        btn_comment.setOnClickListener(v -> {
-            String comment = et_comment.getText().toString();
-            if(comment.equals(""))
-                return;
-
-            InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-            assert imm != null;
-            imm.hideSoftInputFromWindow(et_comment.getWindowToken(),0);
-
-//                CommentItem item = new CommentItem(StaticUser.getName(),comment,getTime(),StaticUser.getProfile());
-            CommentItem item = new CommentItem();
-            item.setBoardSeq(mPost.getBoardSeq());
-            item.setCommentContent(comment);
-            item.setInsertDate(BoardController.getTime());
-
-            if(BoardController.commentWrite(mContext, item)){
-                commentItems.add(commentItems.size(),item);
-                mAdapter.notifyDataSetChanged();
-                et_comment.setText(null);
-            } else {
-                Toast.makeText(mContext,"실패!",Toast.LENGTH_SHORT).show();
-            }
-        });
+        et_comment = bottomToolbar.findViewById(R.id.et_comment);
+        btn_comment = bottomToolbar.findViewById(R.id.btn_comment);
+        defaultWriteComment();
         setCommentList();
 
         scrollView.addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
@@ -212,6 +176,57 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
                     et_comment.requestFocus();
                 }, 100);
             }
+        });
+    }
+
+    public void defaultWriteComment(){
+        btn_comment.setOnClickListener(v -> {
+            String comment = et_comment.getText().toString();
+            if(comment.equals(""))
+                return;
+
+            InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+            assert imm != null;
+            imm.hideSoftInputFromWindow(et_comment.getWindowToken(),0);
+
+            CommentItem item = new CommentItem();
+            item.setBoardSeq(mPost.getBoardSeq());
+            item.setCommentContent(comment);
+            item.setInsertDate(BoardController.getTime());
+
+            if(BoardController.commentWrite(mContext, item)){
+                setCommentList();
+                et_comment.setText(null);
+            } else {
+                Toast.makeText(mContext,"실패!",Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    public void writeChildComment(CommentItem parent){
+        InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+        assert imm != null;
+        et_comment.requestFocus();
+
+        btn_comment.setOnClickListener(v -> {
+            String comment = et_comment.getText().toString();
+            if(comment.equals(""))
+                return;
+            imm.hideSoftInputFromWindow(et_comment.getWindowToken(),0);
+
+            CommentItem item = new CommentItem();
+            item.setBoardSeq(mPost.getBoardSeq());
+            item.setCommentContent(comment);
+            item.setInsertDate(BoardController.getTime());
+            item.setParentCommentSeq(parent.getCommentSeq());
+
+            if(BoardController.childCommentWrite(mContext, parent, item)){
+                setCommentList();
+                et_comment.setText(null);
+            } else {
+                Toast.makeText(mContext,"실패!",Toast.LENGTH_SHORT).show();
+            }
+            defaultWriteComment();
         });
     }
 
@@ -276,14 +291,53 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
     }
 
     public void setMyPostBottomToolbar(){
-        FrameLayout fl_bottom = findViewById(R.id.fl_bottom);
+        fl_bottom = findViewById(R.id.fl_bottom);
         fl_bottom.removeView(bottomToolbar);
-        View myPostBottomToolbar = View.inflate(this,R.layout.bottom_mypost, null);
-        fl_bottom.addView(myPostBottomToolbar);
+        myPostBottomToolbar = View.inflate(this,R.layout.bottom_mypost, null);
+        ll_revise = myPostBottomToolbar.findViewById(R.id.ll_revise);
+        ll_delete = myPostBottomToolbar.findViewById(R.id.ll_delete);
+        iv_dot = myPostBottomToolbar.findViewById(R.id.iv_dot);
 
-        LinearLayout ll_revise = myPostBottomToolbar.findViewById(R.id.ll_revise);
-        LinearLayout ll_delete = myPostBottomToolbar.findViewById(R.id.ll_delete);
+        myCommentBottomToolbar = View.inflate(this, R.layout.bottom_my_comment, null);
+        iv_setting = myCommentBottomToolbar.findViewById(R.id.iv_setting);
+        et_comment = myCommentBottomToolbar.findViewById(R.id.et_comment);
+        btn_comment = myCommentBottomToolbar.findViewById(R.id.btn_comment);
 
+        if(page != 0){ // 레시피 자유
+            fl_bottom.addView(myCommentBottomToolbar);
+            postSetting();
+            defaultWriteComment();
+            scrollView.addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
+                if (bottom < oldBottom){
+                    v.postDelayed(() -> {
+                        scrollView.fullScroll(ScrollView.FOCUS_DOWN);
+                        et_comment.requestFocus();
+                    }, 100);
+                }
+            });
+        } else {
+            fl_bottom.addView(myPostBottomToolbar);
+            postRevise();
+            postDelete();
+        }
+    }
+
+    public void postSetting(){
+        iv_setting.setOnClickListener(v -> {
+            fl_bottom.removeView(myCommentBottomToolbar);
+            fl_bottom.addView(myPostBottomToolbar);
+        });
+        iv_dot.setOnClickListener(v1 -> {
+            fl_bottom.removeView(myPostBottomToolbar);
+            fl_bottom.addView(myCommentBottomToolbar);
+            postSetting();
+            defaultWriteComment();
+        });
+        postRevise();
+        postDelete();
+    }
+
+    public void postRevise(){
         ll_revise.setOnClickListener(v -> {
             Intent reviseIntent = new Intent(mContext,PostActivity.class);
             reviseIntent.putExtra("mode","revise");
@@ -293,6 +347,9 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
             finish();
             finish();
         });
+    }
+
+    public void postDelete(){
         ll_delete.setOnClickListener(v -> {
             AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
             builder.setMessage("글을 삭제 하시겠습니까?");
@@ -329,7 +386,6 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
             AlertDialog alertDialog = builder.create();
             alertDialog.show();
         });
-
     }
 
     public void setGuestBottomToolbarOption(){
@@ -356,7 +412,11 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
     }
 
     public void setCommentList(){
+        commentItems = BoardController.getBoardCommentList(mPost);
         mAdapter = new CommentAdapter(commentItems);
+        mAdapter.setChildCommentList();
+        mAdapter.setContext(mContext);
+        mAdapter.setIsMyPage(isMyPage);
         rv_comment.setLayoutManager(new LinearLayoutManager(this){
             @Override
             public boolean canScrollVertically() {

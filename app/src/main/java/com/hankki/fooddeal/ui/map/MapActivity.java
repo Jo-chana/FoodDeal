@@ -24,7 +24,7 @@ import java.util.ArrayList;
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private GoogleMap map;
-    private ArrayList<PostItem> postItems;
+    private ArrayList<PostItem> postItems = new ArrayList<>();
     Context mContext;
 
     @Override
@@ -61,13 +61,19 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 .fillColor(Color.parseColor("#88ffb5c5")); // 배경색
         map.addCircle(circle1KM);
 
-        postItems = BoardController.getBoardList(mContext, "INGREDIENT EXCHANGE");
-        for (PostItem postItem : postItems) {
-            LatLng position = new LatLng(Double.parseDouble(postItem.getUserLatitude()), Double.parseDouble(postItem.getUserLongitude()));
+        postItems.addAll(BoardController.getBoardList(mContext, "INGREDIENT EXCHANGE"));
+        postItems.addAll(BoardController.getBoardList(mContext,"INGREDIENT SHARE"));
 
-            markerOptions = new MarkerOptions();
-            markerOptions.position(position);
-            map.addMarker(markerOptions);
+        for (PostItem postItem : postItems) {
+            try {
+                LatLng position = new LatLng(Double.parseDouble(postItem.getUserLatitude()), Double.parseDouble(postItem.getUserLongitude()));
+
+                markerOptions = new MarkerOptions();
+                markerOptions.position(position);
+                map.addMarker(markerOptions);
+            } catch (Exception ignored){
+
+            }
         }
 
         map.animateCamera(CameraUpdateFactory.newLatLngZoom(currentPostion, 15));
