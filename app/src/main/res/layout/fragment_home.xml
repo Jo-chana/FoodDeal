@@ -27,14 +27,14 @@
                 android:fontFamily="sans-serif"
                 android:textStyle="bold"
                 android:textColor="#000000"
-                android:text="동패동"
+                android:text="위치정보없음"
                 android:textSize="25sp"
                 android:layout_centerVertical="true"
                 android:layout_marginLeft="20dp"/>
 
             <Button
                 android:id="@+id/btn_location"
-                android:background="@drawable/ic_icon_drop_off"
+                android:background="@drawable/drop_off_x4"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
                 android:layout_centerVertical="true"

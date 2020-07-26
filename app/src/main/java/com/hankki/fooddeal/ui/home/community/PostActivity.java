@@ -75,6 +75,8 @@ public class PostActivity extends AppCompatActivity {
     CustomDialog customDialog;
 
     String category = ""; // 테스트용/ 교환인지 나눔인지
+    String mode = ""; // 수정인지 글쓰기인지
+
 
     ArrayList<Bitmap> postImages = new ArrayList<>();
     int[] imageResources = new int[]{R.id.image_1,R.id.image_2,R.id.image_3,R.id.image_4};
@@ -97,6 +99,7 @@ public class PostActivity extends AppCompatActivity {
         page = intent.getIntExtra("page",-1);
         order = intent.getIntExtra("index",-1);
         category = intent.getStringExtra("category");
+        mode = intent.getStringExtra("mode");
 
         setIdComponents();
     }
@@ -122,7 +125,8 @@ public class PostActivity extends AppCompatActivity {
         });
 
         if(page==0){
-            setExchangeAndShareComponents();
+            if(!mode.equals("revise"))
+                setExchangeAndShareComponents();
         } else {
             setRecipeFreeComponents();
         }
@@ -135,7 +139,7 @@ public class PostActivity extends AppCompatActivity {
         }
         textViews[0].setText("0/4");
 
-        if (intent.getStringExtra("mode").equals("revise")) {
+        if (mode.equals("revise")) {
             toolbarTextView.setText("수정하기");
             setPostRevise();
         } else {

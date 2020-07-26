@@ -89,12 +89,10 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentViewHolder> {
         holder.iv_profile.setImageBitmap(StaticUser.getProfile());
         holder.iv_profile.setScaleType(ImageView.ScaleType.CENTER_CROP);
         holder.tv_btn_reply.setOnClickListener(v -> {
-            if (!isMyPage) {
-                holder.tv_reply.setTextColor(context.getResources().getColor(R.color.original_primary));
-                ((Community_detail) context).writeChildComment(item);
-            } else {
-                ((Community_detail) context).writeChildComment(holder, item);
-            }
+
+            holder.tv_reply.setTextColor(context.getResources().getColor(R.color.original_primary));
+            ((Community_detail) context).writeChildComment(item);
+
         });
         if(!item.getUserHashId().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())){
             holder.tv_btn_delete.setVisibility(View.GONE);

@@ -4,9 +4,9 @@
     android:layout_height="70dp"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <CheckBox
-        android:id="@+id/iv_like"
-        android:button="@drawable/like_button"
+    <ImageView
+        android:id="@+id/iv_setting"
+        android:src="@drawable/ic_icon_setting"
         android:layout_width="25dp"
         android:layout_height="25dp"
         app:layout_constraintTop_toTopOf="parent"
@@ -22,7 +22,7 @@
         android:layout_width="0dp"
         android:layout_height="40dp"
         app:layout_constraintWidth_percent="0.8"
-        app:layout_constraintLeft_toRightOf="@id/iv_like"
+        app:layout_constraintLeft_toRightOf="@id/iv_setting"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toRightOf="parent"

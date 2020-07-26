@@ -56,7 +56,7 @@
         app:layout_constraintTop_toBottomOf="@id/btn_profile_revise">
     <ImageView
         android:id="@+id/iv_my_post"
-        android:background="@drawable/round_edittext"
+        android:src="@drawable/ic_icon_mywrite"
         android:layout_width="30dp"
         android:layout_height="30dp"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -78,7 +78,7 @@
 
     <ImageView
         android:id="@+id/iv_notification"
-        android:background="@drawable/round_edittext"
+        android:src="@drawable/ic_icon_alarm_off"
         android:layout_width="30dp"
         android:layout_height="30dp"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -99,7 +99,7 @@
         android:layout_marginLeft="20dp"/>
     <ImageView
         android:id="@+id/iv_like"
-        android:background="@drawable/round_edittext"
+        android:src="@drawable/ic_icon_heart_on"
         android:layout_width="30dp"
         android:layout_height="30dp"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -121,7 +121,7 @@
 
     <ImageView
         android:id="@+id/iv_setting"
-        android:background="@drawable/round_edittext"
+        android:src="@drawable/ic_icon_setting"
         android:layout_width="30dp"
         android:layout_height="30dp"
         app:layout_constraintLeft_toLeftOf="parent"

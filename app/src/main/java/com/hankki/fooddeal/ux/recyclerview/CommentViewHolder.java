@@ -18,9 +18,8 @@ public class CommentViewHolder extends RecyclerView.ViewHolder{
     public TextView tv_message;
     public TextView tv_time;
     public TextView tv_reply, tv_btn_reply, tv_btn_delete;
-    public ImageView iv_profile, iv_child_send;
+    public ImageView iv_profile;
     public RecyclerView rl_comment;
-    public EditText et_child_comment;
 
     public CommentViewHolder(@NonNull View itemView, String type) {
         super(itemView);
@@ -35,8 +34,6 @@ public class CommentViewHolder extends RecyclerView.ViewHolder{
             tv_reply = itemView.findViewById(R.id.tv_reply);
             tv_btn_reply = itemView.findViewById(R.id.tv_btn_reply);
             rl_comment = itemView.findViewById(R.id.rl_comment_comment);
-            iv_child_send = itemView.findViewById(R.id.iv_child_comment_send);
-            et_child_comment = itemView.findViewById(R.id.et_child_comment);
             tv_btn_delete = itemView.findViewById(R.id.tv_btn_delete);
         }
     }
