@@ -11,6 +11,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.hankki.fooddeal.R;
 import com.hankki.fooddeal.data.PostItem;
 import com.hankki.fooddeal.ui.home.community.Community_detail;
@@ -29,6 +31,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostViewHolder> {
     PostViewHolder postViewHolder;
     int page;
     String tag = "Main"; // Main, My, Dib
+
+    StorageReference ref;
 
     public PostAdapter(Context context, ArrayList<PostItem> itemList, int layout) {
         mContext = context;
@@ -89,9 +93,11 @@ public class PostAdapter extends RecyclerView.Adapter<PostViewHolder> {
     }
 
     public void setCommunityItem(PostViewHolder holder, PostItem item) {
+
         holder.mTitle.setText(item.getBoardTitle()); // 수정해야 함! 테스트용
         holder.mUserLocation.setText(String.valueOf(item.getDistance()) + "m");
         holder.mTime.setText(item.getInsertDate());
+
         // 썸네일로 쓸 내용이 있으면 표시 없으면 빈 값
         if (!item.getThumbnailUrl().equals("NONE")) {
             holder.mImage.setScaleType(ImageView.ScaleType.FIT_XY);

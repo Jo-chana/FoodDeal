@@ -237,7 +237,7 @@ public class LoginActivity extends AppCompatActivity {
                 .addOnFailureListener(activity, new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Log.d(TAG, Objects.requireNonNull(e.getMessage()));
+                        Log.d("#############", Objects.requireNonNull(e.getMessage()));
                     }
                 });
     }

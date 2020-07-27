@@ -29,7 +29,7 @@ public class PostItem implements Comparable<PostItem>, Parcelable {
     String userLongitude;
     String userToken;
     String userHashId;
-//    ArrayList<Bitmap> images = new ArrayList<>();
+    ArrayList<Bitmap> images = new ArrayList<>();
     String thumbnailUrl;
     String category = "";
     int likeCount = 0;
@@ -49,6 +49,7 @@ public class PostItem implements Comparable<PostItem>, Parcelable {
         userProfile = in.readParcelable(Bitmap.class.getClassLoader());
         userLatitude = in.readString();
         userLongitude = in.readString();
+        images = in.createTypedArrayList(Bitmap.CREATOR);
         thumbnailUrl = in.readString();
         category = in.readString();
         likeCount = in.readInt();
@@ -168,9 +169,17 @@ public class PostItem implements Comparable<PostItem>, Parcelable {
         return delYN;
     }
 
-//    public void addPostImage(Bitmap image){
-//        images.add(image);
-//    }
+    public void addPostImage(Bitmap image){
+        images.add(image);
+    }
+
+    public ArrayList<Bitmap> getImages() {
+        return images;
+    }
+
+    public void setImages(ArrayList<Bitmap> images) {
+        this.images = images;
+    }
 
     public void setInsertDate(String insertDate) {
         this.insertDate = insertDate;
@@ -275,6 +284,7 @@ public class PostItem implements Comparable<PostItem>, Parcelable {
         dest.writeParcelable(userProfile, flags);
         dest.writeString(userLatitude);
         dest.writeString(userLongitude);
+        dest.writeTypedList(images);
         dest.writeString(thumbnailUrl);
         dest.writeString(category);
         dest.writeInt(likeCount);

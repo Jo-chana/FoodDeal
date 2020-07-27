@@ -43,8 +43,6 @@ public class MainActivity extends AppCompatActivity {
         } else {
             Toast.makeText(getApplicationContext(), "파이어베이스 사용자 없음", Toast.LENGTH_SHORT).show();
         }
-
-
     }
 
     /**네비게이션 바 세팅*/

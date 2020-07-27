@@ -645,7 +645,7 @@ public class BoardController {
     }
 
     private static String getThumbnailUrl(String timestamp) {
-        String result = "NONE";
+        String result = "";
 
         final DocumentReference documentReference = FirebaseFirestore.getInstance().collection("postPhotos").document(timestamp);
         Task<DocumentSnapshot> task = documentReference.get();
@@ -653,8 +653,8 @@ public class BoardController {
             DocumentSnapshot documentSnapshot = Tasks.await(task);
             result = documentSnapshot.getString("0");
             Log.w("############", result);
-        } catch (ExecutionException | InterruptedException e) {
-            Log.w("############", e.toString());
+        } catch (Exception e) {
+            result = "NONE";
         }
 
         return result;

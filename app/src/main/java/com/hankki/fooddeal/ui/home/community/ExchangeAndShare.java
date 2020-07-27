@@ -1,20 +1,25 @@
 package com.hankki.fooddeal.ui.home.community;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.PopupMenu;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -23,6 +28,7 @@ import com.hankki.fooddeal.data.PostItem;
 import com.hankki.fooddeal.data.retrofit.BoardController;
 import com.hankki.fooddeal.data.staticdata.StaticUser;
 import com.hankki.fooddeal.ui.MainActivity;
+import com.hankki.fooddeal.ux.dialog.CustomAnimationDialog;
 import com.hankki.fooddeal.ux.recyclerview.SetRecyclerViewOption;
 
 import java.util.ArrayList;
@@ -49,6 +55,7 @@ public class ExchangeAndShare extends Fragment {
                              ViewGroup container, Bundle savedInstanceState){
 
         view = inflater.inflate(R.layout.fragment_exchange, container, false);
+
         if(pageFrom.equals("Main")) {
             setShowLists();
             setRecyclerView();
@@ -58,6 +65,7 @@ public class ExchangeAndShare extends Fragment {
             setShowLists();
         }
         filterButtonClickListener();
+
         return view;
     }
 
@@ -93,8 +101,9 @@ public class ExchangeAndShare extends Fragment {
                 fl_share.setBackgroundResource(R.drawable.cardview_selector);
                 tv_share_chip.setTextColor(getResources().getColor(R.color.original_black));
                 /**교환 게시글 필터링*/
-                if(pageFrom.equals("Main"))
+                if(pageFrom.equals("Main")) {
                     setRecyclerView();
+                }
                 else
                     setMyPostOption();
             }
@@ -109,8 +118,9 @@ public class ExchangeAndShare extends Fragment {
                 fl_share.setBackgroundResource(R.drawable.cardview_unselector);
                 tv_share_chip.setTextColor(getResources().getColor(R.color.original_white));
                 /**나눔 게시글 필터링*/
-                if(pageFrom.equals("Main"))
+                if(pageFrom.equals("Main")) {
                     setRecyclerView();
+                }
                 else
                     setMyPostOption();
             }

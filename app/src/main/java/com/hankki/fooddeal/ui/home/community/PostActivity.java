@@ -261,12 +261,16 @@ public class PostActivity extends AppCompatActivity {
                     item.setBoardTitle(et_title.getText().toString());
                     item.setCategory(category);
 
+                    /**테스트*/
+                    PreferenceManager.setString(mContext,"Latitude","37.4758562");
+                    PreferenceManager.setString(mContext,"Longitude","127.1482274");
+
                     if(BoardController.boardWrite(mContext,item)){
                         // 이현준 이미지 Firebase 업로드 추가
                         final ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
                         for(int i=0;i<postImages.size();i++) {
-                            postImages.get(i).compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                            postImages.get(i).compress(Bitmap.CompressFormat.JPEG, 20, baos);
                             byte[] data = baos.toByteArray();
 
                             uploadPostPhoto(data, item.getInsertDate(), Integer.toString(i), postImages.size());
