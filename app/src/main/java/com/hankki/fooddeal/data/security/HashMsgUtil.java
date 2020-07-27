@@ -24,9 +24,9 @@ public class HashMsgUtil {
     }
 
     // TODO 채팅방을 더 식별할 수 있는 구분자가 필요
-    public static String getSHARoomID(Integer roomType, List<String> userList) {
+    public static String getSHARoomID(String insertDate, List<String> userList) {
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(roomType);
+        stringBuilder.append(insertDate);
 
         for(String user : userList) stringBuilder.append(user);
 

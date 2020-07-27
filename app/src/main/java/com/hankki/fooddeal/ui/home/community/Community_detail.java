@@ -52,7 +52,9 @@ import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
@@ -62,8 +64,12 @@ import com.hankki.fooddeal.data.retrofit.BoardController;
 import com.hankki.fooddeal.data.CommentItem;
 import com.hankki.fooddeal.data.PostItem;
 import com.hankki.fooddeal.data.security.AES256Util;
+import com.hankki.fooddeal.data.security.HashMsgUtil;
 import com.hankki.fooddeal.ui.MainActivity;
 import com.hankki.fooddeal.ui.address.AddressActivity;
+import com.hankki.fooddeal.ui.chatting.ChatActivity;
+import com.hankki.fooddeal.ui.chatting.ChatRoomFragment;
+import com.hankki.fooddeal.ui.chatting.chatDTO.ChatRoomModel;
 import com.hankki.fooddeal.ux.dialog.CustomAnimationDialog;
 import com.hankki.fooddeal.ux.recyclerview.AddressAdapter;
 import com.hankki.fooddeal.ux.recyclerview.CommentAdapter;
@@ -75,6 +81,8 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -192,7 +200,62 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
         postInfo.setText(category + " ･ " + mPost.getInsertDate());
 
         Button btn_chat = bottomToolbar.findViewById(R.id.btn_chatting);
-        /*@TODO 이현준 채팅방 생성*/
+        btn_chat.setOnClickListener(v -> {
+            // 1대1 채팅방 생성
+            ArrayList<String> roomUserList = new ArrayList<>();
+            roomUserList.add(AES256Util.aesDecode(uid));
+            roomUserList.add(AES256Util.aesDecode(mPost.getUserHashId()));
+
+            HashMap<String, Integer> unreadUserCountMap = new HashMap<>();
+            unreadUserCountMap.put(AES256Util.aesDecode(uid), 0);
+            unreadUserCountMap.put(AES256Util.aesDecode(mPost.getUserHashId()), 0);
+
+            // id에 글 등록 시간과 유저리스트가 포함되어 있기 때문에 나중에 해당 게시글의 채팅 참여하기 버튼으로 해당 채팅방 접근 가능
+            String roomId = HashMsgUtil.getSHARoomID(mPost.getInsertDate(), roomUserList);
+            String newRoomTitle = "[" + category + "] " + mPost.getBoardTitle();
+
+            DocumentReference docRef = FirebaseFirestore.getInstance().collection("rooms").document(roomId);
+            docRef
+                    .get()
+                    .addOnCompleteListener(task -> {
+                        if(task.isSuccessful()) {
+                            DocumentSnapshot documentSnapshot = task.getResult();
+                            // 이미 있는 채팅방은 바로 참가
+                            if(documentSnapshot.exists()) {
+                                Intent intent = new Intent(getApplicationContext(), ChatActivity.class);
+                                intent.putExtra("roomID", roomId);
+                                intent.putExtra("roomTitle", newRoomTitle);
+                                intent.putExtra("userTotal", 2);
+                                startActivity(intent);
+                            }
+                            // 없는 채팅방이면 생성 후 참가
+                            else {
+                                createChattingRoom(docRef, roomId, newRoomTitle, roomUserList, unreadUserCountMap);
+                            }
+                        } else {
+                            Log.d("##########", "채팅방 생성 에러");
+                        }
+                    });
+        });
+    }
+
+    private void createChattingRoom(final DocumentReference room, String roomID, String roomTitle, List<String> userList, HashMap<String, Integer> unreadUserCountMap) {
+        // 첫 방 생성할때는 메시지가 없으므로 타임만 서버에 채팅방이 등록되는 시간으로 설정, unreadUserCountMap들의 값들도 0
+        ChatRoomModel chatRoomModel = new ChatRoomModel(roomID, 3, roomTitle, userList, unreadUserCountMap, null, new Date(System.currentTimeMillis()));
+
+        room
+                .set(chatRoomModel)
+                .addOnCompleteListener(task -> {
+                    if(task.isSuccessful()) {
+                        // 채팅방 참여
+                        Intent intent = new Intent(getApplicationContext(), ChatActivity.class);
+                        intent.putExtra("roomID", roomID);
+                        intent.putExtra("roomTitle", roomTitle);
+                        intent.putExtra("userTotal", 2);
+                        startActivity(intent);
+                    }
+                })
+                .addOnFailureListener(e -> Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_LONG).show());
     }
 
     public void setRecipeFreePostDetail() {
@@ -328,36 +391,30 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
     }
 
     private void setBroadPostImages(String date) {
-        disposable = Observable.fromCallable(new Callable<Object>() {
-            @Override
-            public Object call() throws Exception {
-                for(int i=0;i<4;i++) {
-                    StorageReference downloadImageRef = FirebaseStorage.getInstance().getReference().child("PostPhotos/" + date + "/" + Integer.toString(i) + ".jpg");
+        disposable = Observable.fromCallable((Callable<Object>) () -> {
+            for(int i=0;i<4;i++) {
+                StorageReference downloadImageRef = FirebaseStorage.getInstance().getReference().child("PostPhotos/" + date + "/" + Integer.toString(i) + ".jpg");
 
-                    final long MAX_SIZE = 1024 * 1024 * 15;
-                    Task<byte[]> task = downloadImageRef.getBytes(MAX_SIZE);
-                    try {
-                        byte[] imageBytes = Tasks.await(task);
-                        Bitmap bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
-                        postImages.add(bitmap);
-                        Log.e("#########", "postImages에 비트맵 추가");
-                    } catch (Exception e) {
-                        Log.e("#########", e.toString());
-                    }
+                final long MAX_SIZE = 1024 * 1024 * 15;
+                Task<byte[]> task = downloadImageRef.getBytes(MAX_SIZE);
+                try {
+                    byte[] imageBytes = Tasks.await(task);
+                    Bitmap bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
+                    postImages.add(bitmap);
+                    Log.e("#########", "postImages에 비트맵 추가");
+                } catch (Exception e) {
+                    Log.e("#########", e.toString());
                 }
-
-                return false;
             }
+
+            return false;
         })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Consumer<Object>() {
-                    @Override
-                    public void accept(Object result) throws Exception {
-                        disposable.dispose();
-                        setImageViewPager();
-                        Log.e("#########", "setImageViewPager 실행");
-                    }
+                .subscribe(result -> {
+//                        disposable.dispose();
+                    setImageViewPager();
+                    Log.e("#########", "setImageViewPager 실행");
                 });
     }
 
