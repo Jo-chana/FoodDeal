@@ -155,7 +155,7 @@ public class RegisterActivity extends AppCompatActivity {
         animAppearHint.setInterpolator(AnimationUtils.loadInterpolator(this, android.R.anim.decelerate_interpolator));
 
         // 툴바 이미지 클릭 이벤트
-        backButton = toolbarView.findViewById(R.id.back_button);
+        backButton = toolbarView.findViewById(R.id.btn_back);
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) { onBackPressed(); }

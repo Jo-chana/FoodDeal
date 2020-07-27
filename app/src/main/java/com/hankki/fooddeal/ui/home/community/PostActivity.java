@@ -115,7 +115,7 @@ public class PostActivity extends AppCompatActivity {
         ll_choice = findViewById(R.id.ll_choice);
         toolbarView = findViewById(R.id.post_toolbar);
         toolbarTextView = toolbarView.findViewById(R.id.toolbar_title);
-        backButton = toolbarView.findViewById(R.id.back_button);
+        backButton = toolbarView.findViewById(R.id.btn_back);
 
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -259,10 +259,6 @@ public class PostActivity extends AppCompatActivity {
                     item.setBoardContent(et_post.getText().toString());
                     item.setBoardTitle(et_title.getText().toString());
                     item.setCategory(category);
-
-//                    /**테스트*/
-//                    PreferenceManager.setString(mContext,"Latitude","37.4758562");
-//                    PreferenceManager.setString(mContext,"Longitude","127.1482274");
 
                     if(BoardController.boardWrite(mContext,item)){
                         // 이현준 이미지 Firebase 업로드 추가

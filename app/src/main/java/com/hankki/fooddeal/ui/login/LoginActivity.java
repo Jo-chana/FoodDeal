@@ -27,7 +27,6 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.hankki.fooddeal.R;
 import com.hankki.fooddeal.data.PreferenceManager;
 import com.hankki.fooddeal.data.RegularCheck;
@@ -116,7 +115,7 @@ public class LoginActivity extends AppCompatActivity {
         toolbarTextView = toolbarView.findViewById(R.id.toolbar_title);
         toolbarTextView.setText(getString(R.string.activity_login_login_button));
 
-        backButton = toolbarView.findViewById(R.id.back_button);
+        backButton = toolbarView.findViewById(R.id.btn_back);
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

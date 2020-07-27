@@ -120,6 +120,7 @@ public class AddressActivity extends AppCompatActivity {
         });
     }
 
+    /* @TODO 법정동, 행정동 중에 법정동만 보이게끔 */
     public void searchAddressFromCurrentLocation() {
         gpsTracker = new GPSTracker(AddressActivity.this);
 
@@ -172,7 +173,14 @@ public class AddressActivity extends AppCompatActivity {
                             @Override
                             public void onItemClick(View v, int pos) {
                                 Intent intent = new Intent(AddressActivity.this, MainActivity.class);
-                                PreferenceManager.setString(getApplicationContext(), "region1Depth", current1depthAddressList.get(pos));
+
+                                String region1Depth = current1depthAddressList.get(pos);
+                                if (region1Depth.contains("서울")) {
+                                    PreferenceManager.setString(getApplicationContext(), "region1Depth", "서울시");
+                                }
+                                if (region1Depth.contains("경기")) {
+                                    PreferenceManager.setString(getApplicationContext(), "region1Depth", "경기도");
+                                }
                                 PreferenceManager.setString(getApplicationContext(), "region2Depth", current2depthAddressList.get(pos));
                                 PreferenceManager.setString(getApplicationContext(), "region3Depth", current3depthAddressList.get(pos));
 
@@ -187,6 +195,7 @@ public class AddressActivity extends AppCompatActivity {
 
     }
 
+    /* @TODO 리스트 여러 번 보이는 현상 해결 */
     public void searchAddressFromEditText() {
         addressList = new ArrayList<String>();
         region1depthAddressList = new ArrayList<>();
@@ -243,7 +252,13 @@ public class AddressActivity extends AppCompatActivity {
                             @Override
                             public void onItemClick(View v, int pos) {
                                 Intent intent = new Intent(AddressActivity.this, MainActivity.class);
-                                PreferenceManager.setString(getApplicationContext(), "region1Depth", region1depthAddressList.get(pos));
+                                String region1Depth = region1depthAddressList.get(pos);
+                                if (region1Depth.contains("서울")) {
+                                    PreferenceManager.setString(getApplicationContext(), "region1Depth", "서울시");
+                                }
+                                if (region1Depth.contains("경기")) {
+                                    PreferenceManager.setString(getApplicationContext(), "region1Depth", "경기도");
+                                }
                                 PreferenceManager.setString(getApplicationContext(), "region2Depth", region2depthAddressList.get(pos));
                                 PreferenceManager.setString(getApplicationContext(), "region3Depth", region3depthAddressList.get(pos));
                                 PreferenceManager.setString(getApplicationContext(), "Latitude", latitudeList.get(pos));

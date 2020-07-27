@@ -50,21 +50,29 @@ public class HomeFragment extends Fragment {
         btn_filter = view.findViewById(R.id.btn_filter);
         btn_location = view.findViewById(R.id.btn_location);
         btn_map = view.findViewById(R.id.btn_map);
+        tv_location = view.findViewById(R.id.tv_location);
 
-        setLocation();
         setFragments();
         setLocation();
         setViewPager();
         setTabLayout();
         setMapButtonOnClickLisetener();
 //        filterButtonClickListener();
+
+
+        /* @TODO 앱 새로 깔았을 때 동이 바로 뜨지 않는 문제 */
+        setLocation();
+
         return view;
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        tv_location.setText(PreferenceManager.getString(getContext(),"region3Depth"));
+
+        tv_location = view.findViewById(R.id.tv_location);
+        String location = PreferenceManager.getString(getContext(),"region3Depth");
+        tv_location.setText(location);
     }
 
     public void setMapButtonOnClickLisetener() {
@@ -78,7 +86,6 @@ public class HomeFragment extends Fragment {
     }
 
     public void setLocation(){
-        tv_location = view.findViewById(R.id.tv_location);
         tv_location.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
