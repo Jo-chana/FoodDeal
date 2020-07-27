@@ -47,6 +47,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * 채팅 화면
@@ -55,7 +56,7 @@ import java.util.List;
 public class ChatRoomFragment extends Fragment {
     private RecyclerView recyclerView;
     private RecyclerViewAdapter mAdapter;
-    private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("hh:mm a");
+    private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("hh:mm a", Locale.KOREA);
     private String roomId;
     private String sUID;
 
@@ -130,21 +131,18 @@ public class ChatRoomFragment extends Fragment {
                     .collection("rooms")
                     .whereArrayContains("roomUserList", sUID)
                     .orderBy("lastMessageTime", Query.Direction.DESCENDING)
-                    .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                        @Override
-                        public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-                            // TODO 여기서 다이얼로그 팝업
-                            if (error != null) return;
+                    .addSnapshotListener((value, error) -> {
+                        // TODO 여기서 다이얼로그 팝업
+                        if (error != null) return;
 
-                            roomList.clear();
-                            for (final QueryDocumentSnapshot queryDocumentSnapshot : value) {
-                                ChatRoomModel chatRoomModel = queryDocumentSnapshot.toObject(ChatRoomModel.class);
-                                roomList.add(chatRoomModel);
-                            }
-
-                            notifyDataSetChanged();
-                            // TODO 여기서 다이얼로그 디스미스
+                        roomList.clear();
+                        for (final QueryDocumentSnapshot queryDocumentSnapshot : value) {
+                            ChatRoomModel chatRoomModel = queryDocumentSnapshot.toObject(ChatRoomModel.class);
+                            roomList.add(chatRoomModel);
                         }
+
+                        notifyDataSetChanged();
+                        // TODO 여기서 다이얼로그 디스미스
                     });
         }
 
@@ -201,15 +199,12 @@ public class ChatRoomFragment extends Fragment {
                 roomViewHolder.unread_count.setVisibility(View.INVISIBLE);
             }
 
-            roomViewHolder.itemView.setOnClickListener(new View.OnClickListener(){
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(v.getContext(), ChatActivity.class);
-                    intent.putExtra("roomID", chatRoomModel.getRoomId());
-                    intent.putExtra("roomTitle", chatRoomModel.getRoomTitle());
-                    intent.putExtra("userTotal", chatRoomModel.getRoomUserList().size());
-                    startActivity(intent);
-                }
+            roomViewHolder.itemView.setOnClickListener(v -> {
+                Intent intent = new Intent(v.getContext(), ChatActivity.class);
+                intent.putExtra("roomID", chatRoomModel.getRoomId());
+                intent.putExtra("roomTitle", chatRoomModel.getRoomTitle());
+                intent.putExtra("userTotal", chatRoomModel.getRoomUserList().size());
+                startActivity(intent);
             });
         }
 
@@ -249,30 +244,30 @@ public class ChatRoomFragment extends Fragment {
     }
 
     // TODO 이걸 게시판 상세페이지 채팅하기 버튼이나 공동구매 시작하기 버튼 이벤트로 달아주면 됨
-    private void createChattingRoom(final DocumentReference room, String roomID, List<String> userList, HashMap<String, Integer> unreadUserCountMap) {
-//        String uid = AES256Util.aesDecode(FirebaseAuth.getInstance().getCurrentUser().getUid());
-
-        String roomTitle = "[공동구매] 감자 2KG 교환허쉴?";
-        // 첫 방 생성할때는 메시지가 없으므로 타임만 현재시간으로 설정, unreadUserCountMap들의 값들도 0
-        ChatRoomModel chatRoomModel = new ChatRoomModel(roomID, 3, roomTitle, userList, unreadUserCountMap, null, new Date(System.currentTimeMillis()));
-
-        room
-                .set(chatRoomModel)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if(task.isSuccessful()) {
-                            mAdapter = new RecyclerViewAdapter();
-                            recyclerView.setAdapter(mAdapter);
-                            Toast.makeText(getContext(), "성공!", Toast.LENGTH_LONG).show();
-                        }
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(getContext(), e.toString(), Toast.LENGTH_LONG).show();
-                    }
-                });
-    }
+//    private void createChattingRoom(final DocumentReference room, String roomID, List<String> userList, HashMap<String, Integer> unreadUserCountMap) {
+////        String uid = AES256Util.aesDecode(FirebaseAuth.getInstance().getCurrentUser().getUid());
+//
+//        String roomTitle = "[공동구매] 감자 2KG 교환허쉴?";
+//        // 첫 방 생성할때는 메시지가 없으므로 타임만 현재시간으로 설정, unreadUserCountMap들의 값들도 0
+//        ChatRoomModel chatRoomModel = new ChatRoomModel(roomID, 3, roomTitle, userList, unreadUserCountMap, null, new Date(System.currentTimeMillis()));
+//
+//        room
+//                .set(chatRoomModel)
+//                .addOnCompleteListener(new OnCompleteListener<Void>() {
+//                    @Override
+//                    public void onComplete(@NonNull Task<Void> task) {
+//                        if(task.isSuccessful()) {
+//                            mAdapter = new RecyclerViewAdapter();
+//                            recyclerView.setAdapter(mAdapter);
+//                            Toast.makeText(getContext(), "성공!", Toast.LENGTH_LONG).show();
+//                        }
+//                    }
+//                })
+//                .addOnFailureListener(new OnFailureListener() {
+//                    @Override
+//                    public void onFailure(@NonNull Exception e) {
+//                        Toast.makeText(getContext(), e.toString(), Toast.LENGTH_LONG).show();
+//                    }
+//                });
+//    }
 }
