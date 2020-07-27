@@ -4,12 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-
-import com.google.android.gms.tasks.OnCanceledListener;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.DocumentReference;
@@ -23,15 +18,12 @@ import com.hankki.fooddeal.data.retrofit.retrofitDTO.CommentListResponse;
 import com.hankki.fooddeal.data.retrofit.retrofitDTO.MemberResponse;
 
 import java.io.IOException;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
 import java.util.TimeZone;
-import java.util.concurrent.ExecutionException;
 
 import retrofit2.Call;
 
@@ -39,12 +31,12 @@ public class BoardController {
     public static APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
 
     public static ArrayList<PostItem> getBoardList(Context context, String boardCode) {
+
         ArrayList<PostItem> items = new ArrayList<>();
-
-        PreferenceManager.setString(context, "region1Depth", "서울");
-        PreferenceManager.setString(context, "region2Depth", "광진");
-        PreferenceManager.setString(context, "region3Depth", "화양");
-
+//
+//        PreferenceManager.setString(context, "region1Depth", "서울");
+//        PreferenceManager.setString(context, "region2Depth", "광진");
+//        PreferenceManager.setString(context, "region3Depth", "화양");
 
         String regionFirst = PreferenceManager.getString(context, "region1Depth");
         String regionSecond = PreferenceManager.getString(context, "region2Depth");

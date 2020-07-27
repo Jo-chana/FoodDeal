@@ -73,6 +73,8 @@ public class AddressActivity extends AppCompatActivity {
     private ArrayList<String> region1depthAddressList;
     private ArrayList<String> region2depthAddressList;
     private ArrayList<String> region3depthAddressList;
+    private ArrayList<String> longitudeList;
+    private ArrayList<String> latitudeList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -123,8 +125,8 @@ public class AddressActivity extends AppCompatActivity {
 
         double longitude = gpsTracker.getLongitude();
         double latitude = gpsTracker.getLatitude();
-        PreferenceManager.setString(getApplicationContext(), "longitude", String.valueOf(longitude));
-        PreferenceManager.setString(getApplicationContext(), "latitude", String.valueOf(latitude));
+        PreferenceManager.setString(getApplicationContext(), "Longitude", String.valueOf(longitude));
+        PreferenceManager.setString(getApplicationContext(), "Latitude", String.valueOf(latitude));
 
         tv_search_result.setText("'현재 위치' 검색 결과");
 
@@ -173,6 +175,7 @@ public class AddressActivity extends AppCompatActivity {
                                 PreferenceManager.setString(getApplicationContext(), "region1Depth", current1depthAddressList.get(pos));
                                 PreferenceManager.setString(getApplicationContext(), "region2Depth", current2depthAddressList.get(pos));
                                 PreferenceManager.setString(getApplicationContext(), "region3Depth", current3depthAddressList.get(pos));
+
                                 startActivity(intent);
                                 finish();
                             }
@@ -189,6 +192,9 @@ public class AddressActivity extends AppCompatActivity {
         region1depthAddressList = new ArrayList<>();
         region2depthAddressList = new ArrayList<>();
         region3depthAddressList = new ArrayList<>();
+        longitudeList = new ArrayList<>();
+        latitudeList = new ArrayList<>();
+
         disposable = Observable.fromCallable(new Callable<Object>() {
             @Override
             public Object call() throws Exception {
@@ -213,6 +219,9 @@ public class AddressActivity extends AppCompatActivity {
                                 region2depthAddressList.add(jsonObject.getJSONObject("address").getString("region_2depth_name"));
                                 region3depthAddressList.add(jsonObject.getJSONObject("address").getString("region_3depth_name"));
                             }
+
+                            longitudeList.add(jsonObject.getJSONObject("address").getString("x"));
+                            latitudeList.add(jsonObject.getJSONObject("address").getString("y"));
                         }
                     }
                 } catch (IOException | JSONException e) {
@@ -237,6 +246,8 @@ public class AddressActivity extends AppCompatActivity {
                                 PreferenceManager.setString(getApplicationContext(), "region1Depth", region1depthAddressList.get(pos));
                                 PreferenceManager.setString(getApplicationContext(), "region2Depth", region2depthAddressList.get(pos));
                                 PreferenceManager.setString(getApplicationContext(), "region3Depth", region3depthAddressList.get(pos));
+                                PreferenceManager.setString(getApplicationContext(), "Latitude", latitudeList.get(pos));
+                                PreferenceManager.setString(getApplicationContext(), "Longitude", longitudeList.get(pos));
                                 startActivity(intent);
                                 finish();
                             }

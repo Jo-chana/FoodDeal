@@ -2,7 +2,6 @@ package com.hankki.fooddeal.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -27,7 +26,6 @@ import java.util.concurrent.Callable;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -67,8 +65,8 @@ public class IntroActivity extends AppCompatActivity {
             double latitude = gpsTracker.getLatitude();
             double longitude = gpsTracker.getLongitude();
 
-            PreferenceManager.setString(getApplicationContext(), "latitude", String.valueOf(latitude));
-            PreferenceManager.setString(getApplicationContext(), "longitude", String.valueOf(longitude));
+            PreferenceManager.setString(getApplicationContext(), "Latitude", String.valueOf(latitude));
+            PreferenceManager.setString(getApplicationContext(), "Longitude", String.valueOf(longitude));
 
             disposable = Observable.fromCallable((Callable<Object>) () -> {
                 Call<ResponseBody> currentAddressCall = apiInterface.getCurrentAddress(longitude, latitude);

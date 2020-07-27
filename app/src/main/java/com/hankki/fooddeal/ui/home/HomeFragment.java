@@ -51,6 +51,7 @@ public class HomeFragment extends Fragment {
         btn_location = view.findViewById(R.id.btn_location);
         btn_map = view.findViewById(R.id.btn_map);
 
+        setLocation();
         setFragments();
         setLocation();
         setViewPager();
@@ -58,6 +59,12 @@ public class HomeFragment extends Fragment {
         setMapButtonOnClickLisetener();
 //        filterButtonClickListener();
         return view;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        tv_location.setText(PreferenceManager.getString(getContext(),"region3Depth"));
     }
 
     public void setMapButtonOnClickLisetener() {
@@ -72,7 +79,6 @@ public class HomeFragment extends Fragment {
 
     public void setLocation(){
         tv_location = view.findViewById(R.id.tv_location);
-        tv_location.setText(PreferenceManager.getString(getContext(),"region3Depth"));
         tv_location.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
