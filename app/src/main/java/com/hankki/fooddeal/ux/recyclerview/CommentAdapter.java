@@ -18,7 +18,11 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.hankki.fooddeal.R;
 import com.hankki.fooddeal.data.CommentItem;
 import com.hankki.fooddeal.data.PreferenceManager;
@@ -87,7 +91,22 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentViewHolder> {
         holder.tv_username.setText(AES256Util.aesDecode(item.getUserHashId()));
         holder.tv_message.setText(item.getCommentContent());
         holder.tv_time.setText(item.getRelativeTime());
-        holder.iv_profile.setImageBitmap(StaticUser.getProfile());
+
+        DocumentReference documentReference = FirebaseFirestore.getInstance().collection("users")
+                .document(item.getUserHashId());
+        documentReference
+                .get()
+                .addOnCompleteListener(task -> {
+                    DocumentSnapshot snapshot = task.getResult();
+                    if(!snapshot.get("userPhotoUri").equals("")) {
+
+                        Glide
+                                .with(context)
+                                .load(snapshot.get("userPhotoUri"))
+                                .into(holder.iv_profile);
+                    }
+                });
+
         holder.iv_profile.setScaleType(ImageView.ScaleType.CENTER_CROP);
         holder.tv_reply.setOnClickListener(v -> {
 

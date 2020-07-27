@@ -242,23 +242,20 @@ public class MyPageFragment extends Fragment {
             final DocumentReference documentReference = FirebaseFirestore.getInstance().collection("users").document(uid);
             documentReference
                     .get()
-                    .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                            if(task.isSuccessful()) {
-                                DocumentSnapshot documentSnapshot = task.getResult();
-                                if(!documentSnapshot.get("userPhotoUri").equals("")) {
+                    .addOnCompleteListener(task -> {
+                        if(task.isSuccessful()) {
+                            DocumentSnapshot documentSnapshot = task.getResult();
+                            if(!documentSnapshot.get("userPhotoUri").equals("")) {
 
-                                    Glide
-                                            .with(getContext())
-                                            .load(documentSnapshot.get("userPhotoUri"))
-                                            .into(iv_my_profile);
-                                }
-                                if(!documentSnapshot.get("userNickname").equals(""))
-                                    tv_my_name.setText(documentSnapshot.get("userNickname").toString());
-                                else
-                                    tv_my_name.setText(AES256Util.aesDecode(uid));
+                                Glide
+                                        .with(getContext())
+                                        .load(documentSnapshot.get("userPhotoUri"))
+                                        .into(iv_my_profile);
                             }
+                            if(!documentSnapshot.get("userNickname").equals(""))
+                                tv_my_name.setText(documentSnapshot.get("userNickname").toString());
+                            else
+                                tv_my_name.setText(AES256Util.aesDecode(uid));
                         }
                     });
         } else {

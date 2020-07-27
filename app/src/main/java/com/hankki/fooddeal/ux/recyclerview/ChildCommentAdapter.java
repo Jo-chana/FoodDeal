@@ -8,7 +8,11 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.hankki.fooddeal.R;
 import com.hankki.fooddeal.data.CommentItem;
 import com.hankki.fooddeal.data.retrofit.BoardController;
@@ -41,6 +45,21 @@ public class ChildCommentAdapter extends RecyclerView.Adapter<CommentViewHolder>
         holder.tv_message.setText(item.getCommentContent());
         holder.tv_time.setText(item.getRelativeTime());
         holder.tv_username.setText(AES256Util.aesDecode(item.getUserHashId()));
+
+        DocumentReference documentReference = FirebaseFirestore.getInstance().collection("users")
+                .document(item.getUserHashId());
+        documentReference
+                .get()
+                .addOnCompleteListener(task -> {
+                    DocumentSnapshot snapshot = task.getResult();
+                    if(!snapshot.get("userPhotoUri").equals("")) {
+                        Glide
+                                .with(context)
+                                .load(snapshot.get("userPhotoUri"))
+                                .into(holder.iv_profile);
+                    }
+                });
+
         if(!item.getUserHashId().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())){
             holder.tv_btn_delete.setVisibility(View.GONE);
         } else {
