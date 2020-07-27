@@ -60,6 +60,12 @@ public class HomeFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        tv_location.setText(PreferenceManager.getString(getContext(),"region3Depth"));
+    }
+
     public void setMapButtonOnClickLisetener() {
         btn_map.setOnClickListener(v -> {
             Intent intent = new Intent(getActivity(), MapActivity.class);
@@ -70,16 +76,22 @@ public class HomeFragment extends Fragment {
     public void setLocation(){
         tv_location = view.findViewById(R.id.tv_location);
         tv_location.setText(PreferenceManager.getString(getContext(),"region3Depth"));
-        tv_location.setOnClickListener(v -> {
-            PopupMenu p = new PopupMenu(getContext(),v);
-            ((MainActivity)MainActivity.mainContext).getMenuInflater().inflate(R.menu.menu_location,p.getMenu());
-            p.setOnMenuItemClickListener(item -> {
-                Intent intent = new Intent(getActivity(), AddressActivity.class);
-                startActivity(intent);
+        tv_location.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                PopupMenu p = new PopupMenu(getContext(),v);
+                ((MainActivity)MainActivity.mainContext).getMenuInflater().inflate(R.menu.menu_location,p.getMenu());
+                p.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        Intent intent = new Intent(getActivity(), AddressActivity.class);
+                        startActivity(intent);
 
-                return false;
-            });
-            p.show();
+                        return false;
+                    }
+                });
+                p.show();
+            }
         });
     }
 
@@ -108,7 +120,7 @@ public class HomeFragment extends Fragment {
         ).attach();
     }
 
-    //    public void filterButtonClickListener(){
+//    public void filterButtonClickListener(){
 //        btn_filter.setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View v) {

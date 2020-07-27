@@ -1,12 +1,5 @@
 package com.hankki.fooddeal.ui.home.community;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.FileProvider;
-import androidx.fragment.app.Fragment;
-import androidx.navigation.fragment.NavHostFragment;
-
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
@@ -28,6 +21,13 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
+import androidx.fragment.app.Fragment;
+import androidx.navigation.fragment.NavHostFragment;
+
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -42,9 +42,8 @@ import com.google.firebase.storage.UploadTask;
 import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.TedPermission;
 import com.hankki.fooddeal.R;
-import com.hankki.fooddeal.data.PreferenceManager;
-import com.hankki.fooddeal.data.retrofit.BoardController;
 import com.hankki.fooddeal.data.PostItem;
+import com.hankki.fooddeal.data.retrofit.BoardController;
 import com.hankki.fooddeal.ui.MainActivity;
 import com.hankki.fooddeal.ux.dialog.CustomDialog;
 
@@ -261,9 +260,9 @@ public class PostActivity extends AppCompatActivity {
                     item.setBoardTitle(et_title.getText().toString());
                     item.setCategory(category);
 
-                    /**테스트*/
-                    PreferenceManager.setString(mContext,"Latitude","37.4758562");
-                    PreferenceManager.setString(mContext,"Longitude","127.1482274");
+//                    /**테스트*/
+//                    PreferenceManager.setString(mContext,"Latitude","37.4758562");
+//                    PreferenceManager.setString(mContext,"Longitude","127.1482274");
 
                     if(BoardController.boardWrite(mContext,item)){
                         // 이현준 이미지 Firebase 업로드 추가

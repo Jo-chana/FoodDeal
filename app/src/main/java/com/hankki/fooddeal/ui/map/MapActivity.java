@@ -42,8 +42,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
 
-        double latitude = Double.parseDouble(PreferenceManager.getString(getApplicationContext(), "latitude"));
-        double longitude = Double.parseDouble(PreferenceManager.getString(getApplicationContext(), "longitude"));
+        double latitude = Double.parseDouble(PreferenceManager.getString(getApplicationContext(), "Latitude"));
+        double longitude = Double.parseDouble(PreferenceManager.getString(getApplicationContext(), "Longitude"));
 
         LatLng currentPostion = new LatLng(latitude, longitude);
 

@@ -35,8 +35,20 @@ import com.hankki.fooddeal.data.security.AES256Util;
 import com.hankki.fooddeal.data.security.HashMsgUtil;
 import com.hankki.fooddeal.ui.login.LoginActivity;
 
-import java.util.HashMap;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.concurrent.Callable;
+
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -49,6 +61,7 @@ public class RegisterActivity extends AppCompatActivity {
     private static final int SEARCH_ADDRESS_ACTIVITY = 10000;
 
     private APIInterface apiInterface;
+    private APIInterface kakaoApiInterface;
 
     String phoneNo, userID, userPassword, userEmail;
 
@@ -65,11 +78,14 @@ public class RegisterActivity extends AppCompatActivity {
 
     boolean isFirstExecuted = true, isBackPressed, isPasswordVisible, isNewID, isRegularPassword, isRegularEmail;
 
+    Disposable disposable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
+
+        kakaoApiInterface = APIClient.getKakaoClient().create(APIInterface.class);
 
         // 암호화 된 전화번호가 넘어왔음
         if(getIntent() != null) phoneNo = getIntent().getStringExtra("phoneNo");
@@ -352,6 +368,42 @@ public class RegisterActivity extends AppCompatActivity {
                 });
     }
 
+    public void searchLatLngFromAddress(String address) {
+        disposable = Observable.fromCallable(new Callable<Object>() {
+            @Override
+            public Object call() throws Exception {
+                Call<ResponseBody> addressSearchCall = kakaoApiInterface.getAddress(address);
+                try {
+                    ResponseBody responseBody = addressSearchCall.execute().body();
+
+                    if(responseBody != null) {
+                        JSONObject jsonObject = new JSONObject(responseBody.string());
+                        JSONArray jsonArray = jsonObject.getJSONArray("documents");
+
+                        jsonObject = jsonArray.getJSONObject(0);
+                        String longitude = jsonObject.getJSONObject("address").getString("x");
+                        String latitude = jsonObject.getJSONObject("address").getString("y");
+
+                        PreferenceManager.setString(getApplicationContext(), "Latitude", latitude);
+                        PreferenceManager.setString(getApplicationContext(), "Longitude", longitude);
+                    }
+                } catch (IOException | JSONException e) {
+                    e.printStackTrace();
+                }
+                return false;
+            }
+        })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<Object>() {
+                    @Override
+                    public void accept(Object result) throws Exception {
+                        disposable.dispose();
+
+                    }
+                });
+    }
+
     public void onActivityResult(int requestCode, int resultCode, Intent intent){
 
         super.onActivityResult(requestCode, resultCode, intent);
@@ -371,11 +423,13 @@ public class RegisterActivity extends AppCompatActivity {
                     PreferenceManager.setString(this, "region2Depth", region[2]);
                     PreferenceManager.setString(this, "region3Depth", region[5]);
 
+                    searchLatLngFromAddress(address[1]);
+
                     if (data != null) {
                         // 우편번호
                         registerAddressEditText_1.setText(address[0]);
                         // 상세 주소
-                        registerAddressEditText_2.setText(address[1].replace(region[5], ""));
+                        registerAddressEditText_2.setText(address[1]);
                     }
 
                 }
