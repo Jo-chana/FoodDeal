@@ -1,5 +1,12 @@
 package com.hankki.fooddeal.ui.home.community;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
+import androidx.fragment.app.Fragment;
+import androidx.navigation.fragment.NavHostFragment;
+
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
@@ -288,6 +295,7 @@ public class PostActivity extends AppCompatActivity {
                     }
 
                 }
+                finish();
             }
         });
     }

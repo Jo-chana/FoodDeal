@@ -27,14 +27,13 @@ public class CommentViewHolder extends RecyclerView.ViewHolder{
         tv_username = itemView.findViewById(R.id.tv_comment_user_name);
         tv_time = itemView.findViewById(R.id.tv_comment_time);
         iv_profile = itemView.findViewById(R.id.iv_comment_user_profile);
+        tv_btn_delete = itemView.findViewById(R.id.tv_btn_delete);
+        commentView = itemView.findViewById(R.id.comment_item);
         iv_profile.setBackground(new ShapeDrawable(new OvalShape()));
         iv_profile.setClipToOutline(true);
         if(type.equals("Parent")){
-            commentView = itemView.findViewById(R.id.comment_item);
             tv_reply = itemView.findViewById(R.id.tv_reply);
-            tv_btn_reply = itemView.findViewById(R.id.tv_btn_reply);
             rl_comment = itemView.findViewById(R.id.rl_comment_comment);
-            tv_btn_delete = itemView.findViewById(R.id.tv_btn_delete);
         }
     }
 }

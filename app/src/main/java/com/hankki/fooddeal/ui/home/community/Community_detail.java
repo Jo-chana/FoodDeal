@@ -197,7 +197,7 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
             default:
                 category = mPost.getCategory();
         }
-        postInfo.setText(category + " ･ " + mPost.getInsertDate());
+        postInfo.setText(category + " ･ " + mPost.getRelativeTime());
 
         Button btn_chat = bottomToolbar.findViewById(R.id.btn_chatting);
         btn_chat.setOnClickListener(v -> {
@@ -261,7 +261,7 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
     public void setRecipeFreePostDetail() {
         /*댓글 설정*/
         rv_comment = findViewById(R.id.rv_comment);
-        postInfo.setText(mPost.getInsertDate());
+        postInfo.setText(mPost.getRelativeTime());
         scrollView = findViewById(R.id.scroll);
         rv_comment.setNestedScrollingEnabled(false);
 
@@ -390,6 +390,7 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
         setBroadPostImages(mPost.getInsertDate());
     }
 
+    /*조찬아 @TODO 수정 모드일 때 Null pointer 오류 수정할 것*/
     private void setBroadPostImages(String date) {
         disposable = Observable.fromCallable((Callable<Object>) () -> {
             for(int i=0;i<4;i++) {

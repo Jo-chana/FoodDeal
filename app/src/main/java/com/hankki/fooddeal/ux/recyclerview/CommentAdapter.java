@@ -85,10 +85,10 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentViewHolder> {
 
         holder.tv_username.setText(AES256Util.aesDecode(item.getUserHashId()));
         holder.tv_message.setText(item.getCommentContent());
-        holder.tv_time.setText(item.getInsertDate());
+        holder.tv_time.setText(item.getRelativeTime());
         holder.iv_profile.setImageBitmap(StaticUser.getProfile());
         holder.iv_profile.setScaleType(ImageView.ScaleType.CENTER_CROP);
-        holder.tv_btn_reply.setOnClickListener(v -> {
+        holder.tv_reply.setOnClickListener(v -> {
 
             holder.tv_reply.setTextColor(context.getResources().getColor(R.color.original_primary));
             ((Community_detail) context).writeChildComment(item);
@@ -110,7 +110,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentViewHolder> {
 
         if(childCommentList.get(item.getCommentSeq())!=null &&
                 childCommentList.get(item.getCommentSeq()).size()>0){
-            ChildCommentAdapter adapter = new ChildCommentAdapter(childCommentList.get(item.getCommentSeq()));
+            ChildCommentAdapter adapter = new ChildCommentAdapter(context, childCommentList.get(item.getCommentSeq()));
             holder.rl_comment.setLayoutManager(new LinearLayoutManager(context){
                 @Override
                 public boolean canScrollVertically() {

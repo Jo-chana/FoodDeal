@@ -2,7 +2,6 @@ package com.hankki.fooddeal.ux.recyclerview;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -11,7 +10,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.hankki.fooddeal.R;
 import com.hankki.fooddeal.data.PostItem;
@@ -95,8 +93,12 @@ public class PostAdapter extends RecyclerView.Adapter<PostViewHolder> {
     public void setCommunityItem(PostViewHolder holder, PostItem item) {
 
         holder.mTitle.setText(item.getBoardTitle()); // 수정해야 함! 테스트용
-        holder.mUserLocation.setText(String.valueOf(item.getDistance()) + "m");
-        holder.mTime.setText(item.getInsertDate());
+        if(item.getDistance()==0){
+            holder.mUserLocation.setText("근처");
+        } else {
+            holder.mUserLocation.setText(String.valueOf(item.getDistance()) + "m");
+        }
+        holder.mTime.setText(item.getRelativeTime());
 
         // 썸네일로 쓸 내용이 있으면 표시 없으면 빈 값
         if (!item.getThumbnailUrl().equals("NONE")) {
@@ -107,7 +109,13 @@ public class PostAdapter extends RecyclerView.Adapter<PostViewHolder> {
                     .load(item.getThumbnailUrl())
                     .thumbnail(0.1f)
                     .into(holder.mImage);
+            holder.mImage.setClipToOutline(true);
+        } else {
+            holder.mImage.setBackground(null);
+            holder.mImage.getLayoutParams().width = 0;
         }
+
+
         if (page == 0) { // 식재 나눔 교환
             /**찜 아이콘을 지우고, 댓글 부분은 찜으로 대체*/
             holder.iv_like.setImageBitmap(null);

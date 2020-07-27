@@ -143,7 +143,7 @@
     
     <ImageView
         android:id="@+id/arrow_my_post"
-        android:background="@drawable/round_edittext"
+        android:src="@drawable/ic_icon_next"
         android:layout_width="30dp"
         android:layout_height="30dp"
         app:layout_constraintRight_toRightOf="parent"
@@ -151,7 +151,7 @@
         app:layout_constraintBottom_toBottomOf="@+id/iv_my_post"/>
     <ImageView
         android:id="@+id/arrow_notification"
-        android:background="@drawable/round_edittext"
+        android:src="@drawable/ic_icon_next"
         android:layout_width="30dp"
         android:layout_height="30dp"
         app:layout_constraintRight_toRightOf="parent"
@@ -159,7 +159,7 @@
         app:layout_constraintBottom_toBottomOf="@+id/iv_notification"/>
     <ImageView
         android:id="@+id/arrow_like"
-        android:background="@drawable/round_edittext"
+        android:src="@drawable/ic_icon_next"
         android:layout_width="30dp"
         android:layout_height="30dp"
         app:layout_constraintRight_toRightOf="parent"
@@ -167,7 +167,7 @@
         app:layout_constraintBottom_toBottomOf="@+id/iv_like"/>
     <ImageView
         android:id="@+id/arrow_setting"
-        android:background="@drawable/round_edittext"
+        android:src="@drawable/ic_icon_next"
         android:layout_width="30dp"
         android:layout_height="30dp"
         app:layout_constraintRight_toRightOf="parent"
