@@ -145,7 +145,6 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentViewHolder> {
             });
             holder.rl_comment.setAdapter(adapter);
         }
-
     }
 
     @Override

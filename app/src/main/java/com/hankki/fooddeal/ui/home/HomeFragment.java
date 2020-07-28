@@ -3,6 +3,7 @@ package com.hankki.fooddeal.ui.home;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +25,15 @@ import com.hankki.fooddeal.ui.home.community.RecipeShare;
 import com.hankki.fooddeal.ui.map.MapActivity;
 import com.hankki.fooddeal.ux.dialog.HomeLocationDialog;
 import com.hankki.fooddeal.ux.viewpager.viewPagerAdapter;
+
+import java.util.concurrent.Callable;
+
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
+
 /**홈 화면*/
 public class HomeFragment extends Fragment {
     ViewPager2 viewpager;
@@ -39,6 +49,8 @@ public class HomeFragment extends Fragment {
     Button btn_location;
     Button btn_map;
 
+    Disposable disposable;
+
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState){
 
@@ -53,14 +65,24 @@ public class HomeFragment extends Fragment {
         setViewPager();
         setTabLayout();
         setMapButtonOnClickListener();
+
+        disposable = Observable.fromCallable(new Callable<Object>() {
+            @Override
+            public Object call() throws Exception { return false; }
+        })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<Object>() {
+                    @Override
+                    public void accept(Object result) throws Exception {
+                        tv_location.setText(PreferenceManager.getString(getContext(),"region3Depth"));
+                        Log.d("########", "여기 실행!");
+                        Log.d("########", PreferenceManager.getString(getContext(),"region3Depth"));
+                        disposable.dispose();
+                    }
+                });
 //        filterButtonClickListener();
         return view;
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        tv_location.setText(PreferenceManager.getString(getContext(),"region3Depth"));
     }
 
     public void setMapButtonOnClickListener() {
