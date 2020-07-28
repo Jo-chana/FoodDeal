@@ -5,6 +5,18 @@
     android:id="@+id/main_layout"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <ProgressBar
+        android:id="@+id/customDialog_progressBar"
+        style="@style/Widget.AppCompat.ProgressBar"
+        android:layout_width="32sp"
+        android:layout_height="32sp"
+        android:indeterminateTint="@color/original_primary"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="parent"
+        android:visibility="gone"/>
+
     <include layout="@layout/layout_default_toolbar"/>
 
     <androidx.viewpager.widget.ViewPager

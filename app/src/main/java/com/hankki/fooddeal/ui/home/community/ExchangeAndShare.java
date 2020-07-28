@@ -9,22 +9,42 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.PopupMenu;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.hankki.fooddeal.R;
 import com.hankki.fooddeal.data.PostItem;
+import com.hankki.fooddeal.data.PreferenceManager;
 import com.hankki.fooddeal.data.retrofit.BoardController;
 import com.hankki.fooddeal.ui.MainActivity;
+import com.hankki.fooddeal.ui.address.AddressActivity;
+import com.hankki.fooddeal.ux.dialog.CustomAnimationDialog;
+import com.hankki.fooddeal.ux.recyclerview.AddressAdapter;
 import com.hankki.fooddeal.ux.recyclerview.SetRecyclerViewOption;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.concurrent.Callable;
+
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
 
 
 public class ExchangeAndShare extends Fragment {
@@ -42,14 +62,47 @@ public class ExchangeAndShare extends Fragment {
     /**@Enum pageFrom {Main, My, Dib}*/
     String pageFrom = "Main";
 
+    Disposable disposable;
+
+    ProgressBar progressBar;
+
     public ExchangeAndShare(){}
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState){
-
         view = inflater.inflate(R.layout.fragment_exchange, container, false);
 
-        if(pageFrom.equals("Main")) {
+        progressBar = view.findViewById(R.id.customDialog_progressBar);
+        progressBar.setVisibility(View.VISIBLE);
+//        customAnimationDialog = new CustomAnimationDialog(getContext());
+//        customAnimationDialog.show();
+
+        disposable = Observable.fromCallable(new Callable<Object>() {
+            @Override
+            public Object call() throws Exception { return false; }
+        })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<Object>() {
+                    @Override
+                    public void accept(Object result) throws Exception {
+                        if(pageFrom.equals("Main")) {
+                            setShowLists();
+                            setRecyclerView();
+                            setPostWrite();
+                        } else {
+                            setMyPostOption();
+                            setShowLists();
+                        }
+                        filterButtonClickListener();
+                        progressBar.setVisibility(View.GONE);
+//                        customAnimationDialog.dismiss();
+                        disposable.dispose();
+                    }
+                });
+
+        // 다이얼로그 전 버전
+        /*if(pageFrom.equals("Main")) {
             setShowLists();
             setRecyclerView();
             setPostWrite();
@@ -57,7 +110,8 @@ public class ExchangeAndShare extends Fragment {
             setMyPostOption();
             setShowLists();
         }
-        filterButtonClickListener();
+        filterButtonClickListener();*/
+
         return view;
     }
 
@@ -87,34 +141,69 @@ public class ExchangeAndShare extends Fragment {
         cv_showExchange.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+//                customAnimationDialog.show();
+                progressBar.setVisibility(View.VISIBLE);
                 category = "INGREDIENT EXCHANGE";
                 fl_exchange.setBackgroundResource(R.drawable.cardview_unselector);
                 tv_exchange_chip.setTextColor(getResources().getColor(R.color.original_white));
                 fl_share.setBackgroundResource(R.drawable.cardview_selector);
                 tv_share_chip.setTextColor(getResources().getColor(R.color.original_black));
                 /**교환 게시글 필터링*/
-                if(pageFrom.equals("Main")) {
-                    setRecyclerView();
-                }
-                else
-                    setMyPostOption();
+                disposable = Observable.fromCallable(new Callable<Object>() {
+                    @Override
+                    public Object call() throws Exception { return false; }
+                })
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new Consumer<Object>() {
+                            @Override
+                            public void accept(Object result) throws Exception {
+                                if(pageFrom.equals("Main")) {
+                                    setRecyclerView();
+                                }
+                                else {
+                                    setMyPostOption();
+                                }
+                                progressBar.setVisibility(View.GONE);
+//                                customAnimationDialog.dismiss();
+                                disposable.dispose();
+                            }
+                        });
+
             }
         });
 
         cv_showShare.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                progressBar.setVisibility(View.VISIBLE);
+//                customAnimationDialog.show();
                 category = "INGREDIENT SHARE";
                 fl_exchange.setBackgroundResource(R.drawable.cardview_selector);
                 tv_exchange_chip.setTextColor(getResources().getColor(R.color.original_black));
                 fl_share.setBackgroundResource(R.drawable.cardview_unselector);
                 tv_share_chip.setTextColor(getResources().getColor(R.color.original_white));
                 /**나눔 게시글 필터링*/
-                if(pageFrom.equals("Main")) {
-                    setRecyclerView();
-                }
-                else
-                    setMyPostOption();
+                disposable = Observable.fromCallable(new Callable<Object>() {
+                    @Override
+                    public Object call() throws Exception { return false; }
+                })
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new Consumer<Object>() {
+                            @Override
+                            public void accept(Object result) throws Exception {
+                                if(pageFrom.equals("Main")) {
+                                    setRecyclerView();
+                                }
+                                else {
+                                    setMyPostOption();
+                                }
+                                progressBar.setVisibility(View.GONE);
+//                                customAnimationDialog.dismiss();
+                                disposable.dispose();
+                            }
+                        });
             }
         });
     }
@@ -188,12 +277,19 @@ public class ExchangeAndShare extends Fragment {
         });
     }
 
-    @Override
-    public void onResume(){
-        super.onResume();
-        if(pageFrom.equals("Main"))
-            setRecyclerViewOption.update();
-    }
+//    @Override
+//    public void onResume(){
+//        super.onResume();
+//        if(pageFrom.equals("Main"))
+//            setRecyclerViewOption.update();
+//    }
+
+//    @Override
+//    public void onStart() {
+//        super.onStart();
+//        if(pageFrom.equals("Main"))
+//            setRecyclerViewOption.update();
+//    }
 
     public ArrayList<PostItem> getPostItems(){
         return postItems;

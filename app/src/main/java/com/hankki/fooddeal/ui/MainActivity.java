@@ -2,6 +2,7 @@ package com.hankki.fooddeal.ui;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -37,11 +38,11 @@ public class MainActivity extends AppCompatActivity {
         if (FirebaseAuth.getInstance().getCurrentUser() != null) {
             firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
             String uid = firebaseUser.getUid();
-            Toast.makeText(getApplicationContext(), uid, Toast.LENGTH_SHORT).show();
         } else if (!PreferenceManager.getString(getApplicationContext(), "userToken").equals("")) {
 
         } else {
-            Toast.makeText(getApplicationContext(), "파이어베이스 사용자 없음", Toast.LENGTH_SHORT).show();
+            Log.d("###########", "파이어베이스 사용자 없음");
+//            Toast.makeText(getApplicationContext(), "파이어베이스 사용자 없음", Toast.LENGTH_SHORT).show();
         }
     }
 

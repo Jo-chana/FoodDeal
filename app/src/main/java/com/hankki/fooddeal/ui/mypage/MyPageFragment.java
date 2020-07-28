@@ -39,7 +39,6 @@ import com.gun0912.tedpermission.TedPermission;
 import com.hankki.fooddeal.R;
 import com.hankki.fooddeal.data.PreferenceManager;
 import com.hankki.fooddeal.data.security.AES256Util;
-import com.hankki.fooddeal.data.staticdata.StaticUser;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -55,7 +54,6 @@ public class MyPageFragment extends Fragment {
     ImageView iv_my_profile;
     TextView tv_my_name;
     Button btn_profile_revise;
-    StaticUser user = new StaticUser();
 
     String uid;
 
@@ -163,10 +161,6 @@ public class MyPageFragment extends Fragment {
 
                     Bitmap img = BitmapFactory.decodeStream(in);
                     in.close();
-//                    iv_my_profile.setImageBitmap(img);
-//                    iv_my_profile.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                    /**내 프로필 사진 DB 반영*/
-                    user.setProfile(img);
 
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
                     img.compress(Bitmap.CompressFormat.JPEG, 100, baos);

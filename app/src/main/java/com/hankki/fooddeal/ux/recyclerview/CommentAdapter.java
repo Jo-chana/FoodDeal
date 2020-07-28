@@ -19,23 +19,21 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+
 import com.hankki.fooddeal.R;
 import com.hankki.fooddeal.data.CommentItem;
-import com.hankki.fooddeal.data.PreferenceManager;
 import com.hankki.fooddeal.data.retrofit.BoardController;
 import com.hankki.fooddeal.data.security.AES256Util;
-import com.hankki.fooddeal.data.staticdata.StaticUser;
 import com.hankki.fooddeal.ui.home.community.Community_detail;
 
 
 import java.util.ArrayList;
 import java.util.HashMap;
-
-import static android.content.Context.INPUT_METHOD_SERVICE;
 
 public class CommentAdapter extends RecyclerView.Adapter<CommentViewHolder> {
     ArrayList<CommentItem> commentItems;
