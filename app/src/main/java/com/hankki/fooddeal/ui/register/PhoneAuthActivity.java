@@ -74,7 +74,7 @@ public class PhoneAuthActivity extends AppCompatActivity {
         toolbarTextView = toolbarView.findViewById(R.id.toolbar_title);
         toolbarTextView.setText(getString(R.string.activity_register_toolbar));
 
-        backButton = toolbarView.findViewById(R.id.btn_back);
+        backButton = toolbarView.findViewById(R.id.back_button);
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) { onBackPressed(); }
