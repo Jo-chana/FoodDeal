@@ -36,6 +36,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -378,7 +379,21 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
         profile = post_common.findViewById(R.id.iv_user_profile);
         profile.setBackground(new ShapeDrawable(new OvalShape()));
         profile.setClipToOutline(true);
-        profile.setImageBitmap(mPost.getUserProfile());
+
+        DocumentReference documentReference = FirebaseFirestore.getInstance().collection("users")
+                .document(mPost.getUserHashId());
+        documentReference
+                .get()
+                .addOnCompleteListener(task -> {
+                    DocumentSnapshot snapshot = task.getResult();
+                    if(!snapshot.get("userPhotoUri").equals("")) {
+
+                        Glide
+                                .with(mContext)
+                                .load(snapshot.get("userPhotoUri"))
+                                .into(profile);
+                    }
+                });
 
         userId = post_common.findViewById(R.id.tv_user_id);
         userId.setText(AES256Util.aesDecode(mPost.getUserHashId()));
