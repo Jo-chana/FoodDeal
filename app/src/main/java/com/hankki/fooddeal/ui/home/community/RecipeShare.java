@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
@@ -13,12 +14,16 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.hankki.fooddeal.R;
-import com.hankki.fooddeal.data.PostItem;
 import com.hankki.fooddeal.data.retrofit.BoardController;
-import com.hankki.fooddeal.data.staticdata.StaticUser;
 import com.hankki.fooddeal.ux.recyclerview.SetRecyclerViewOption;
 
-import java.util.ArrayList;
+import java.util.concurrent.Callable;
+
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 
 public class RecipeShare extends Fragment {
     View view;
@@ -30,18 +35,49 @@ public class RecipeShare extends Fragment {
     /**@Enum pageFrom {Main, My, Dib}*/
     String pageFrom = "Main";
 
+    Disposable disposable;
+
+    ProgressBar progressBar;
+
     public RecipeShare(){}
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState){
 
         view = inflater.inflate(R.layout.fragment_recipe, container, false);
-        if(pageFrom.equals("Main")) {
+
+        progressBar = view.findViewById(R.id.customDialog_progressBar);
+        progressBar.setVisibility(View.VISIBLE);
+
+        disposable = Observable.fromCallable(new Callable<Object>() {
+            @Override
+            public Object call() throws Exception { return false; }
+        })
+
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<Object>() {
+                    @Override
+                    public void accept(Object result) throws Exception {
+                        if(pageFrom.equals("Main")) {
+                            setRecyclerView();
+                            setPostWrite();
+                        } else {
+                            setMyPostOption();
+                        }
+                        progressBar.setVisibility(View.GONE);
+//                        customAnimationDialog.dismiss();
+                        disposable.dispose();
+                    }
+                });
+
+        // 다이얼로그 이전 버전
+        /*if(pageFrom.equals("Main")) {
             setRecyclerView();
             setPostWrite();
         } else {
             setMyPostOption();
-        }
+        }*/
         return view;
     }
 

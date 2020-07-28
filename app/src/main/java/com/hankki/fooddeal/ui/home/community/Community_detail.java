@@ -19,6 +19,7 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -132,10 +133,16 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
 
     Disposable disposable;
 
+    ProgressBar progressBar;
+
+//    CustomAnimationDialog customAnimationDialog;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mContext = this;
+
+//        customAnimationDialog = new CustomAnimationDialog(this);
 
         postImages = new ArrayList<>();
 
@@ -333,6 +340,7 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
 
     @SuppressLint("SetTextI18n")
     public void setPostCommon() {
+        progressBar = findViewById(R.id.customDialog_progressBar);
         vp_image = findViewById(R.id.vp_image);
         tl_dots = findViewById(R.id.tl_dots);
 
@@ -392,6 +400,8 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
 
     /*조찬아 @TODO 수정 모드일 때 Null pointer 오류 수정할 것*/
     private void setBroadPostImages(String date) {
+//        customAnimationDialog.show();
+        progressBar.setVisibility(View.VISIBLE);
         disposable = Observable.fromCallable((Callable<Object>) () -> {
             for(int i=0;i<4;i++) {
                 StorageReference downloadImageRef = FirebaseStorage.getInstance().getReference().child("PostPhotos/" + date + "/" + Integer.toString(i) + ".jpg");
@@ -414,7 +424,11 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(result -> {
 //                        disposable.dispose();
-                    setImageViewPager();
+//                    customAnimationDialog.dismiss();
+                    if(!mPost.getThumbnailUrl().equals("NONE")) {
+                        setImageViewPager();
+                    }
+                    progressBar.setVisibility(View.GONE);
                     Log.e("#########", "setImageViewPager 실행");
                 });
     }
@@ -557,27 +571,27 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
 
     @Override
     public void onBackPressed() {
-        if (tag.equals("Main")) {
-            /*게시글 리스트로 돌아갈 경우 변경사항 즉각 Update*/
-            NavHostFragment navHostFragment = (NavHostFragment) ((MainActivity) MainActivity.mainContext)
-                    .getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
-            assert navHostFragment != null;
-            List<Fragment> fragments = navHostFragment.getChildFragmentManager().getFragments().get(0)
-                    .getChildFragmentManager().getFragments();
-
-            Fragment fragment = fragments.get(page);
-            switch (page) {
-                case 0:
-                    ((ExchangeAndShare) fragment).setRecyclerView();
-                    break;
-                case 1:
-                    ((RecipeShare) fragment).setRecyclerView();
-                    break;
-                case 2:
-                    ((FreeCommunity) fragment).setRecyclerView();
-                    break;
-            }
-        }
+//        if (tag.equals("Main")) {
+//            /*게시글 리스트로 돌아갈 경우 변경사항 즉각 Update*/
+//            NavHostFragment navHostFragment = (NavHostFragment) ((MainActivity) MainActivity.mainContext)
+//                    .getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
+//            assert navHostFragment != null;
+//            List<Fragment> fragments = navHostFragment.getChildFragmentManager().getFragments().get(0)
+//                    .getChildFragmentManager().getFragments();
+//
+//            Fragment fragment = fragments.get(page);
+//            switch (page) {
+//                case 0:
+//                    ((ExchangeAndShare) fragment).setRecyclerView();
+//                    break;
+//                case 1:
+//                    ((RecipeShare) fragment).setRecyclerView();
+//                    break;
+//                case 2:
+//                    ((FreeCommunity) fragment).setRecyclerView();
+//                    break;
+//            }
+//        }
         super.onBackPressed();
     }
 

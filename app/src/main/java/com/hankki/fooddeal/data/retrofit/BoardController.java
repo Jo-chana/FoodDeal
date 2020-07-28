@@ -2,6 +2,8 @@ package com.hankki.fooddeal.data.retrofit;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -10,12 +12,15 @@ import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.hankki.fooddeal.data.CommentItem;
 import com.hankki.fooddeal.data.PostItem;
 import com.hankki.fooddeal.data.PreferenceManager;
 import com.hankki.fooddeal.data.retrofit.retrofitDTO.BoardListResponse;
 import com.hankki.fooddeal.data.retrofit.retrofitDTO.CommentListResponse;
 import com.hankki.fooddeal.data.retrofit.retrofitDTO.MemberResponse;
+import com.hankki.fooddeal.ux.dialog.CustomAnimationDialog;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -26,21 +31,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.TimeZone;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 import retrofit2.Call;
 
 public class BoardController {
-
     public static APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
 
     public static ArrayList<PostItem> getBoardList(Context context, String boardCode) {
-
+        Log.d("############", "getBoardList Start");
         ArrayList<PostItem> items = new ArrayList<>();
-
-//        PreferenceManager.setString(context, "region1Depth", "서울");
-//        PreferenceManager.setString(context, "region2Depth", "광진");
-//        PreferenceManager.setString(context, "region3Depth", "화양");
 
         String regionFirst = PreferenceManager.getString(context, "region1Depth");
         String regionSecond = PreferenceManager.getString(context, "region2Depth");
@@ -76,6 +81,8 @@ public class BoardController {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        Log.d("############", "getBoardList End");
         return items;
     }
 

@@ -1,16 +1,11 @@
 package com.hankki.fooddeal.ux.recyclerview;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.drawable.ShapeDrawable;
-import android.graphics.drawable.shapes.OvalShape;
+
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
+
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -18,19 +13,15 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
+
 import com.hankki.fooddeal.R;
 import com.hankki.fooddeal.data.CommentItem;
-import com.hankki.fooddeal.data.PreferenceManager;
 import com.hankki.fooddeal.data.retrofit.BoardController;
 import com.hankki.fooddeal.data.security.AES256Util;
-import com.hankki.fooddeal.data.staticdata.StaticUser;
 import com.hankki.fooddeal.ui.home.community.Community_detail;
-
 
 import java.util.ArrayList;
 import java.util.HashMap;
-
-import static android.content.Context.INPUT_METHOD_SERVICE;
 
 public class CommentAdapter extends RecyclerView.Adapter<CommentViewHolder> {
     ArrayList<CommentItem> commentItems;
@@ -86,7 +77,6 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentViewHolder> {
         holder.tv_username.setText(AES256Util.aesDecode(item.getUserHashId()));
         holder.tv_message.setText(item.getCommentContent());
         holder.tv_time.setText(item.getRelativeTime());
-        holder.iv_profile.setImageBitmap(StaticUser.getProfile());
         holder.iv_profile.setScaleType(ImageView.ScaleType.CENTER_CROP);
         holder.tv_reply.setOnClickListener(v -> {
 

@@ -7,6 +7,13 @@
 
     tools:context=".ui.home.community.ExchangeAndShare">
 
+    <ProgressBar
+        android:id="@+id/customDialog_progressBar"
+        style="@style/Widget.AppCompat.ProgressBar"
+        android:layout_width="32sp"
+        android:layout_height="32sp"
+        android:indeterminateTint="@color/original_primary"
+        android:visibility="gone"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_free"
