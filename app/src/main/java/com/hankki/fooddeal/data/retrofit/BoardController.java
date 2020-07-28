@@ -664,4 +664,13 @@ public class BoardController {
 
         return result;
     }
+
+    public static ArrayList<PostItem> boardDistanceFiltering(ArrayList<PostItem> items, int distance){
+        for(PostItem item: items){
+            if(item.getDistance() > distance){
+                items.remove(item);
+            }
+        }
+        return items;
+    }
 }

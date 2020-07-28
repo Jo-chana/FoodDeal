@@ -161,6 +161,10 @@ public class MyPageFragment extends Fragment {
 
                     Bitmap img = BitmapFactory.decodeStream(in);
                     in.close();
+//                    iv_my_profile.setImageBitmap(img);
+//                    iv_my_profile.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                    /**내 프로필 사진 DB 반영*/
+
 
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
                     img.compress(Bitmap.CompressFormat.JPEG, 100, baos);
