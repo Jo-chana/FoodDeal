@@ -1,6 +1,7 @@
 package com.hankki.fooddeal.ux.recyclerview;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.OvalShape;
@@ -17,7 +18,11 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.hankki.fooddeal.R;
 import com.hankki.fooddeal.data.CommentItem;
 import com.hankki.fooddeal.data.PreferenceManager;
@@ -85,32 +90,55 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentViewHolder> {
 
         holder.tv_username.setText(AES256Util.aesDecode(item.getUserHashId()));
         holder.tv_message.setText(item.getCommentContent());
-        holder.tv_time.setText(item.getInsertDate());
-        holder.iv_profile.setImageBitmap(StaticUser.getProfile());
+        holder.tv_time.setText(item.getRelativeTime());
+
+        DocumentReference documentReference = FirebaseFirestore.getInstance().collection("users")
+                .document(item.getUserHashId());
+        documentReference
+                .get()
+                .addOnCompleteListener(task -> {
+                    DocumentSnapshot snapshot = task.getResult();
+                    if(!snapshot.get("userPhotoUri").equals("")) {
+
+                        Glide
+                                .with(context)
+                                .load(snapshot.get("userPhotoUri"))
+                                .into(holder.iv_profile);
+                    }
+                });
+
         holder.iv_profile.setScaleType(ImageView.ScaleType.CENTER_CROP);
-        holder.tv_btn_reply.setOnClickListener(v -> {
+        holder.tv_reply.setOnClickListener(v -> {
 
             holder.tv_reply.setTextColor(context.getResources().getColor(R.color.original_primary));
             ((Community_detail) context).writeChildComment(item);
 
         });
+
         if(!item.getUserHashId().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())){
             holder.tv_btn_delete.setVisibility(View.GONE);
         } else {
             holder.tv_btn_delete.setOnClickListener(v -> {
-                if(BoardController.commentDelete(context,item)){
-                    Toast.makeText(context, "댓글을 삭제했습니다.", Toast.LENGTH_SHORT).show();
-                    holder.commentView.setVisibility(View.GONE);
-                    holder.commentView.getLayoutParams().height=0;
-                } else {
-                    Toast.makeText(context, "실패!", Toast.LENGTH_SHORT).show();
-                }
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                builder.setMessage("댓글을 삭제하시겠습니까?");
+                builder.setPositiveButton("네", ((dialog, which) -> {
+                    if(BoardController.commentDelete(context,item)){
+                        Toast.makeText(context, "댓글을 삭제했습니다.", Toast.LENGTH_SHORT).show();
+                        holder.commentView.setVisibility(View.GONE);
+                        holder.commentView.getLayoutParams().height=0;
+                    } else {
+                        Toast.makeText(context, "실패!", Toast.LENGTH_SHORT).show();
+                    }
+                })).setNegativeButton("아니오",(dialog, which) -> {});
+
+                AlertDialog dialog = builder.create();
+                dialog.show();
             });
         }
 
         if(childCommentList.get(item.getCommentSeq())!=null &&
                 childCommentList.get(item.getCommentSeq()).size()>0){
-            ChildCommentAdapter adapter = new ChildCommentAdapter(childCommentList.get(item.getCommentSeq()));
+            ChildCommentAdapter adapter = new ChildCommentAdapter(context, childCommentList.get(item.getCommentSeq()));
             holder.rl_comment.setLayoutManager(new LinearLayoutManager(context){
                 @Override
                 public boolean canScrollVertically() {

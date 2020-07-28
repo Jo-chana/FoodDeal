@@ -76,9 +76,14 @@ public class HomeFragment extends Fragment {
     }
 
     public void setMapButtonOnClickLisetener() {
-        btn_map.setOnClickListener(v -> {
-            Intent intent = new Intent(getActivity(), MapActivity.class);
-            startActivity(intent);
+        btn_map.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), MapActivity.class);
+                intent.putParcelableArrayListExtra("Items",
+                        ((ExchangeAndShare)getChildFragmentManager().getFragments().get(0)).getPostItems());
+                startActivity(intent);
+            }
         });
     }
 

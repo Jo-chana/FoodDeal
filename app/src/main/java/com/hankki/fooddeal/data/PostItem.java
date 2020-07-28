@@ -1,15 +1,20 @@
 package com.hankki.fooddeal.data;
 
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.location.Location;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.hankki.fooddeal.data.retrofit.retrofitDTO.BoardListResponse;
 import com.hankki.fooddeal.data.security.AES256Util;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 
 /**Post Item
@@ -36,7 +41,10 @@ public class PostItem implements Comparable<PostItem>, Parcelable {
     int commentCount = 0;
     int boardSeq;
     int userSeq;
+    int distance;
     String delYN;
+    String relativeTime;
+    long absoluteTime;
 
 
     protected PostItem(Parcel in) {
@@ -57,8 +65,9 @@ public class PostItem implements Comparable<PostItem>, Parcelable {
         boardSeq = in.readInt();
         userSeq = in.readInt();
         delYN = in.readString();
-        Distance = in.readInt();
+        distance = in.readInt();
         userHashId = in.readString();
+        relativeTime = in.readString();
     }
 
     public static final Creator<PostItem> CREATOR = new Creator<PostItem>() {
@@ -89,7 +98,7 @@ public class PostItem implements Comparable<PostItem>, Parcelable {
         return category;
     }
 
-    int Distance; // 내 위치와 글 쓴 사람의 거리 (필터링용)
+
 
     public PostItem(){
     }
@@ -107,7 +116,7 @@ public class PostItem implements Comparable<PostItem>, Parcelable {
     }
 
     public void setDistance(int distance) {
-        Distance = distance;
+        this.distance = distance;
     }
 
 
@@ -120,7 +129,7 @@ public class PostItem implements Comparable<PostItem>, Parcelable {
     }
 
     public int getDistance() {
-        return Distance;
+        return distance;
     }
 
     public String getInsertDate(){ return insertDate; }
@@ -195,6 +204,12 @@ public class PostItem implements Comparable<PostItem>, Parcelable {
 
     public String getThumbnailUrl() { return thumbnailUrl; }
 
+    public String getRelativeTime(){return relativeTime;}
+
+    public long getAbsoluteTime() {
+        return absoluteTime;
+    }
+
     public void setThumbnailUrl(String thumbnailUrl) { this.thumbnailUrl = thumbnailUrl; }
 
     public void setCommentCount(int commentCount) {
@@ -218,7 +233,8 @@ public class PostItem implements Comparable<PostItem>, Parcelable {
         return this.getDistance() - o.getDistance();
     }
 
-    public void onBindBoardApi(BoardListResponse.BoardResponse boardResponse, String url){
+
+    public void onBindBoardApi(Context context, BoardListResponse.BoardResponse boardResponse, String url) throws ParseException {
         boardSeq = boardResponse.getBoardSeq();
         boardTitle = boardResponse.getBoardTitle();
         boardContent = boardResponse.getBoardContent();
@@ -250,6 +266,8 @@ public class PostItem implements Comparable<PostItem>, Parcelable {
         delYN = boardResponse.getDelYn();
         commentCount = boardResponse.getCommentCount();
         thumbnailUrl = url;
+        relativeTime = calculateTime(insertDate);
+        distance = calculateDistance(context, Double.parseDouble(userLatitude),Double.parseDouble(userLongitude));
     }
 
     public HashMap<String, String> onBindBodyApi(Context context){
@@ -292,7 +310,44 @@ public class PostItem implements Comparable<PostItem>, Parcelable {
         dest.writeInt(boardSeq);
         dest.writeInt(userSeq);
         dest.writeString(delYN);
-        dest.writeInt(Distance);
+        dest.writeInt(distance);
         dest.writeString(userHashId);
+        dest.writeString(relativeTime);
+    }
+
+    public String calculateTime(String date) throws ParseException {
+        String relativeTime;
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS");
+        Date date1 = format.parse(date);
+        long time1 = date1.getTime();
+        absoluteTime = System.currentTimeMillis() - time1;
+        int second = (int) (absoluteTime)/1000;
+        if(second > 60){
+            if(second > 3600){
+                if(second > 86400){
+                    relativeTime = (int) second/86400 + "일 전";
+                } else {
+                    relativeTime = String.valueOf((int) second / 3600) + "시간 전";
+                }
+            } else {
+                relativeTime = String.valueOf((int)second/60) + "분 전";
+            }
+        } else {
+            relativeTime = String.valueOf(second) + "초 전";
+        }
+        return relativeTime;
+    }
+
+    public int calculateDistance(Context context, double lat, double lon){
+        Location myLoc = new Location("myLoc");
+        myLoc.setLatitude(Double.parseDouble(PreferenceManager.getString(context, "Latitude")));
+        myLoc.setLongitude(Double.parseDouble(PreferenceManager.getString(context, "Longitude")));
+
+        Location targetLoc = new Location("targetLoc");
+        targetLoc.setLatitude(lat);
+        targetLoc.setLongitude(lon);
+
+        float distance = myLoc.distanceTo(targetLoc);
+        return (int) distance;
     }
 }

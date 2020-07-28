@@ -1,5 +1,6 @@
 package com.hankki.fooddeal.data;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Parcel;
@@ -9,8 +10,12 @@ import androidx.annotation.Nullable;
 
 import com.hankki.fooddeal.data.retrofit.retrofitDTO.CommentListResponse;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 
 public class CommentItem implements Parcelable {
     String userName;
@@ -27,6 +32,7 @@ public class CommentItem implements Parcelable {
     String insertDate;
     String delYn;
     String parentDelYn;
+    String relativeTime;
     ArrayList<CommentItem> commentCommentList = new ArrayList<>();
 
     public ArrayList<CommentItem> getCommentCommentList() {
@@ -59,6 +65,10 @@ public class CommentItem implements Parcelable {
 
     public String getDelYn() {
         return delYn;
+    }
+
+    public String getRelativeTime() {
+        return relativeTime;
     }
 
     public String getParentDelYn() {
@@ -116,7 +126,7 @@ public class CommentItem implements Parcelable {
 
     }
 
-    public void onBindCommentApi(CommentListResponse.CommentResponse response){
+    public void onBindCommentApi(CommentListResponse.CommentResponse response) throws ParseException {
         commentSeq = response.getCommentSeq();
         boardSeq = response.getBoardSeq();
         parentCommentSeq = response.getParentCommentSeq();
@@ -125,6 +135,11 @@ public class CommentItem implements Parcelable {
         insertDate = response.getInsertDate();
         delYn = response.getDelYN();
         parentDelYn = response.getParentDelYN();
+        try {
+            relativeTime = calculateTime(response.getInsertDate());
+        } catch (Exception e){
+            relativeTime = "예전";
+        }
     }
 
     public HashMap<String, String> onBindBodyApi(Context context){
@@ -140,6 +155,7 @@ public class CommentItem implements Parcelable {
         userName = in.readString();
         message = in.readString();
         date = in.readString();
+        relativeTime = in.readString();
     }
 
     public void setMessage(String message) {
@@ -170,6 +186,29 @@ public class CommentItem implements Parcelable {
         dest.writeString(userName);
         dest.writeString(message);
         dest.writeString(date);
+        dest.writeString(relativeTime);
+    }
+
+    public String calculateTime(String date) throws ParseException {
+        String relativeTime;
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",Locale.KOREA);
+        Date date1 = format.parse(date);
+        long time1 = date1.getTime();
+        int second = (int) (System.currentTimeMillis() - time1)/1000;
+        if(second > 60){
+            if(second > 3600){
+                if(second > 86400){
+                    relativeTime = (int) second/86400 + "일 전";
+                } else {
+                    relativeTime = String.valueOf((int) second / 3600) + "시간 전";
+                }
+            } else {
+                relativeTime = String.valueOf((int)second/60) + "분 전";
+            }
+        } else {
+            relativeTime = String.valueOf(second) + "초 전";
+        }
+        return relativeTime;
     }
 
     public static final Creator<CommentItem> CREATOR = new Creator<CommentItem>() {

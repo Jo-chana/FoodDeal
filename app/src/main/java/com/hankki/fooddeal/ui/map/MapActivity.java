@@ -32,6 +32,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
         mContext = this;
+        postItems = getIntent().getParcelableArrayListExtra("Items");
 
         SupportMapFragment mapFragment = (SupportMapFragment)getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -61,8 +62,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 .fillColor(Color.parseColor("#88ffb5c5")); // 배경색
         map.addCircle(circle1KM);
 
-        postItems.addAll(BoardController.getBoardList(mContext, "INGREDIENT EXCHANGE"));
-        postItems.addAll(BoardController.getBoardList(mContext,"INGREDIENT SHARE"));
+//        postItems.addAll(BoardController.getBoardList(mContext, "INGREDIENT EXCHANGE"));
+//        postItems.addAll(BoardController.getBoardList(mContext,"INGREDIENT SHARE"));
 
         for (PostItem postItem : postItems) {
             try {

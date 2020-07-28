@@ -58,7 +58,6 @@ public class ExchangeAndShare extends Fragment {
             setShowLists();
         }
         filterButtonClickListener();
-
         return view;
     }
 
@@ -194,6 +193,10 @@ public class ExchangeAndShare extends Fragment {
         super.onResume();
         if(pageFrom.equals("Main"))
             setRecyclerViewOption.update();
+    }
+
+    public ArrayList<PostItem> getPostItems(){
+        return postItems;
     }
 
 }

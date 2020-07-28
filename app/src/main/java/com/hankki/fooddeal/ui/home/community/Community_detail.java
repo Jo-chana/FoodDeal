@@ -35,6 +35,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -197,7 +198,7 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
             default:
                 category = mPost.getCategory();
         }
-        postInfo.setText(category + " ･ " + mPost.getInsertDate());
+        postInfo.setText(category + " ･ " + mPost.getRelativeTime());
 
         Button btn_chat = bottomToolbar.findViewById(R.id.btn_chatting);
         btn_chat.setOnClickListener(v -> {
@@ -261,7 +262,7 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
     public void setRecipeFreePostDetail() {
         /*댓글 설정*/
         rv_comment = findViewById(R.id.rv_comment);
-        postInfo.setText(mPost.getInsertDate());
+        postInfo.setText(mPost.getRelativeTime());
         scrollView = findViewById(R.id.scroll);
         rv_comment.setNestedScrollingEnabled(false);
 
@@ -370,7 +371,21 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
         profile = post_common.findViewById(R.id.iv_user_profile);
         profile.setBackground(new ShapeDrawable(new OvalShape()));
         profile.setClipToOutline(true);
-        profile.setImageBitmap(mPost.getUserProfile());
+
+        DocumentReference documentReference = FirebaseFirestore.getInstance().collection("users")
+                .document(mPost.getUserHashId());
+        documentReference
+                .get()
+                .addOnCompleteListener(task -> {
+                    DocumentSnapshot snapshot = task.getResult();
+                    if(!snapshot.get("userPhotoUri").equals("")) {
+
+                        Glide
+                                .with(mContext)
+                                .load(snapshot.get("userPhotoUri"))
+                                .into(profile);
+                    }
+                });
 
         userId = post_common.findViewById(R.id.tv_user_id);
         userId.setText(AES256Util.aesDecode(mPost.getUserHashId()));
@@ -390,6 +405,7 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
         setBroadPostImages(mPost.getInsertDate());
     }
 
+    /*조찬아 @TODO 수정 모드일 때 Null pointer 오류 수정할 것*/
     private void setBroadPostImages(String date) {
         disposable = Observable.fromCallable((Callable<Object>) () -> {
             for(int i=0;i<4;i++) {
