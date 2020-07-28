@@ -102,10 +102,10 @@ public class IntroActivity extends AppCompatActivity {
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(result -> {
+                        Intent main = new Intent(IntroActivity.this, MainActivity.class);
+                        startActivity(main);
                     });
 
-            Intent main = new Intent(IntroActivity.this, MainActivity.class);
-            startActivity(main);
         });
 
         btn_login = findViewById(R.id.btn_login);

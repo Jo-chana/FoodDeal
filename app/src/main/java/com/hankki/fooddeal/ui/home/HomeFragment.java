@@ -3,6 +3,7 @@ package com.hankki.fooddeal.ui.home;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -27,6 +28,15 @@ import com.hankki.fooddeal.ui.home.community.FreeCommunity;
 import com.hankki.fooddeal.ui.home.community.RecipeShare;
 import com.hankki.fooddeal.ui.map.MapActivity;
 import com.hankki.fooddeal.ux.viewpager.viewPagerAdapter;
+
+import java.util.concurrent.Callable;
+
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
+
 /**홈 화면*/
 public class HomeFragment extends Fragment {
     ViewPager2 viewpager;
@@ -41,6 +51,8 @@ public class HomeFragment extends Fragment {
     Button btn_filter;
     Button btn_location;
     Button btn_map;
+
+    Disposable disposable;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState){
@@ -58,6 +70,22 @@ public class HomeFragment extends Fragment {
         setTabLayout();
         setMapButtonOnClickLisetener();
 //        filterButtonClickListener();
+
+        disposable = Observable.fromCallable(new Callable<Object>() {
+            @Override
+            public Object call() throws Exception { return false; }
+        })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<Object>() {
+                    @Override
+                    public void accept(Object result) throws Exception {
+                        tv_location.setText(PreferenceManager.getString(getContext(),"region3Depth"));
+                        Log.d("########", "여기 실행!");
+                        Log.d("########", PreferenceManager.getString(getContext(),"region3Depth"));
+                        disposable.dispose();
+                    }
+                });
 
 
         /* @TODO 앱 새로 깔았을 때 동이 바로 뜨지 않는 문제 */
@@ -89,7 +117,7 @@ public class HomeFragment extends Fragment {
 
     public void setLocation(){
         tv_location = view.findViewById(R.id.tv_location);
-        tv_location.setText(PreferenceManager.getString(getContext(),"region3Depth"));
+
         tv_location.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
