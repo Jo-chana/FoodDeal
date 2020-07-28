@@ -37,6 +37,8 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.Callable;
 
 import io.reactivex.Observable;
@@ -76,6 +78,9 @@ public class AddressActivity extends AppCompatActivity {
     private ArrayList<String> longitudeList;
     private ArrayList<String> latitudeList;
 
+    private Timer timer = new Timer();
+    private final long DELAY = 1000; // in ms
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -96,11 +101,26 @@ public class AddressActivity extends AppCompatActivity {
             }
             @Override
             public void onTextChanged(CharSequence s, int starht, int before, int count) {
-                searchAddressFromEditText();
+                if(timer != null)
+                    timer.cancel();
             }
             @Override
             public void afterTextChanged(Editable s) {
-                searchAddressFromEditText();
+                if (s.length() >= 2) {
+                    timer = new Timer();
+                    timer.schedule(new TimerTask() {
+                        @Override
+                        public void run() {
+                            // TODO: do what you need here (refresh list)
+                            // you will probably need to use
+                            // runOnUiThread(Runnable action) for some specific
+                            // actions
+                            searchAddressFromEditText();
+                        }
+
+                    }, DELAY);
+                }
+
             }
         };
         et_address.addTextChangedListener(addressWatcher);
@@ -148,10 +168,13 @@ public class AddressActivity extends AppCompatActivity {
 
                         for (int i = 0; i < jsonArray.length(); i++) {
                             jsonObject = jsonArray.getJSONObject(i);
-                            currentAddressList.add(jsonObject.getString("address_name"));
-                            current1depthAddressList.add(jsonObject.getString("region_1depth_name"));
-                            current2depthAddressList.add(jsonObject.getString("region_2depth_name"));
-                            current3depthAddressList.add(jsonObject.getString("region_3depth_name"));
+
+                            if (jsonObject.getString("region_type").equals("B")) {
+                                currentAddressList.add(jsonObject.getString("address_name"));
+                                current1depthAddressList.add(jsonObject.getString("region_1depth_name"));
+                                current2depthAddressList.add(jsonObject.getString("region_2depth_name"));
+                                current3depthAddressList.add(jsonObject.getString("region_3depth_name"));
+                            }
                         }
                     }
                 } catch (IOException | JSONException e) {
@@ -197,17 +220,18 @@ public class AddressActivity extends AppCompatActivity {
 
     /* @TODO 리스트 여러 번 보이는 현상 해결 */
     public void searchAddressFromEditText() {
-        addressList = new ArrayList<String>();
-        region1depthAddressList = new ArrayList<>();
-        region2depthAddressList = new ArrayList<>();
-        region3depthAddressList = new ArrayList<>();
-        longitudeList = new ArrayList<>();
-        latitudeList = new ArrayList<>();
-
         disposable = Observable.fromCallable(new Callable<Object>() {
             @Override
             public Object call() throws Exception {
                 Call<ResponseBody> addressSearchCall = apiInterface.getAddress(et_address.getText().toString());
+
+                addressList = new ArrayList<String>();
+                region1depthAddressList = new ArrayList<>();
+                region2depthAddressList = new ArrayList<>();
+                region3depthAddressList = new ArrayList<>();
+                longitudeList = new ArrayList<>();
+                latitudeList = new ArrayList<>();
+
                 try {
                     ResponseBody responseBody = addressSearchCall.execute().body();
 
@@ -218,14 +242,12 @@ public class AddressActivity extends AppCompatActivity {
                         for (int i = 0; i < jsonArray.length(); i++) {
                             jsonObject = jsonArray.getJSONObject(i);
                             addressList.add(jsonObject.getString("address_name"));
+                            region1depthAddressList.add(jsonObject.getJSONObject("address").getString("region_1depth_name"));
+                            region2depthAddressList.add(jsonObject.getJSONObject("address").getString("region_2depth_name"));
 
                             if (jsonObject.getJSONObject("address").getString("region_3depth_name").equals("")) {
-                                region1depthAddressList.add(jsonObject.getJSONObject("address").getString("region_1depth_name"));
-                                region2depthAddressList.add(jsonObject.getJSONObject("address").getString("region_2depth_name"));
                                 region3depthAddressList.add(jsonObject.getJSONObject("address").getString("region_3depth_h_name"));
                             } else {
-                                region1depthAddressList.add(jsonObject.getJSONObject("address").getString("region_1depth_name"));
-                                region2depthAddressList.add(jsonObject.getJSONObject("address").getString("region_2depth_name"));
                                 region3depthAddressList.add(jsonObject.getJSONObject("address").getString("region_3depth_name"));
                             }
 

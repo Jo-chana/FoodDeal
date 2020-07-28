@@ -13,14 +13,17 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="right"
-        android:text="둘러보기"
-        android:textSize="18sp" />
+        android:text="둘러보고 시작하기"
+        android:textColor="@color/grey_500"
+        android:textSize="18sp"
+        android:textStyle="bold" />
 
-    <ImageView
+    <TextView
+        android:id="@+id/textView7"
         android:layout_width="match_parent"
-        android:layout_height="296dp"
-        android:background="#FFFFFF"
-        app:srcCompat="@drawable/logo_food_deal" />
+        android:layout_height="wrap_content"
+        android:layout_marginTop="64dp"
+        android:text="푸드딜 사용" />
 
     <Button
         android:id="@+id/btn_login"

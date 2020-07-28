@@ -107,6 +107,24 @@ public class HomeFragment extends Fragment {
                 p.show();
             }
         });
+
+        btn_location.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                PopupMenu p = new PopupMenu(getContext(),v);
+                ((MainActivity)MainActivity.mainContext).getMenuInflater().inflate(R.menu.menu_location,p.getMenu());
+                p.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        Intent intent = new Intent(getActivity(), AddressActivity.class);
+                        startActivity(intent);
+
+                        return false;
+                    }
+                });
+                p.show();
+            }
+        });
     }
 
     /**탭으로 구성할 Fragments 리스트*/
