@@ -15,12 +15,18 @@
         android:indeterminateTint="@color/original_primary"
         android:visibility="gone"/>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_free"
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/srl_free"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginLeft="20dp"
-        android:layout_marginRight="10dp"/>
+        android:layout_marginRight="10dp">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_free"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cv_post"

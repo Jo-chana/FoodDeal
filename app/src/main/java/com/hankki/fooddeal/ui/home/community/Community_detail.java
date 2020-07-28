@@ -118,7 +118,7 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
 
     CommentAdapter mAdapter;
     Context mContext;
-
+    View trickView;
     NestedScrollView scrollView;
 
     ArrayList<Bitmap> postImages;
@@ -142,8 +142,6 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mContext = this;
-
-//        customAnimationDialog = new CustomAnimationDialog(this);
 
         postImages = new ArrayList<>();
 
@@ -343,6 +341,9 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
     public void setPostCommon() {
         progressBar = findViewById(R.id.customDialog_progressBar);
         vp_image = findViewById(R.id.vp_image);
+        vp_image.setVisibility(View.GONE);
+        trickView = findViewById(R.id.trick);
+        trickView.getLayoutParams().height = 100;
         tl_dots = findViewById(R.id.tl_dots);
 
         topToolbar = findViewById(R.id.top_toolbar);
@@ -440,9 +441,7 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
                 .subscribe(result -> {
 //                        disposable.dispose();
 //                    customAnimationDialog.dismiss();
-                    if(!mPost.getThumbnailUrl().equals("NONE")) {
-                        setImageViewPager();
-                    }
+                    setImageViewPager();
                     progressBar.setVisibility(View.GONE);
                     Log.e("#########", "setImageViewPager 실행");
                 });
@@ -552,21 +551,13 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
     }
 
     public void setImageViewPager() {
-        ConstraintLayout main = findViewById(R.id.main_layout);
-        if (postImages == null) {
-            main.removeView(vp_image);
-            View view = findViewById(R.id.trick);
-            view.getLayoutParams().height = 120;
-            return;
-        } else if (postImages.size() == 0) {
-            main.removeView(vp_image);
-            View view = findViewById(R.id.trick);
-            view.getLayoutParams().height = 120;
-            return;
+        if(postImages != null && postImages.size() > 0) {
+            vp_image.setVisibility(View.VISIBLE);
+            trickView.setVisibility(View.GONE);
+            galleryAdapter = new GalleryAdapter(this, postImages);
+            tl_dots.setupWithViewPager(vp_image, true);
+            vp_image.setAdapter(galleryAdapter);
         }
-        galleryAdapter = new GalleryAdapter(this, postImages);
-        tl_dots.setupWithViewPager(vp_image, true);
-        vp_image.setAdapter(galleryAdapter);
     }
 
     public void setCommentList() {
@@ -582,32 +573,6 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
             }
         });
         rv_comment.setAdapter(mAdapter);
-    }
-
-    @Override
-    public void onBackPressed() {
-//        if (tag.equals("Main")) {
-//            /*게시글 리스트로 돌아갈 경우 변경사항 즉각 Update*/
-//            NavHostFragment navHostFragment = (NavHostFragment) ((MainActivity) MainActivity.mainContext)
-//                    .getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
-//            assert navHostFragment != null;
-//            List<Fragment> fragments = navHostFragment.getChildFragmentManager().getFragments().get(0)
-//                    .getChildFragmentManager().getFragments();
-//
-//            Fragment fragment = fragments.get(page);
-//            switch (page) {
-//                case 0:
-//                    ((ExchangeAndShare) fragment).setRecyclerView();
-//                    break;
-//                case 1:
-//                    ((RecipeShare) fragment).setRecyclerView();
-//                    break;
-//                case 2:
-//                    ((FreeCommunity) fragment).setRecyclerView();
-//                    break;
-//            }
-//        }
-        super.onBackPressed();
     }
 
     @Override

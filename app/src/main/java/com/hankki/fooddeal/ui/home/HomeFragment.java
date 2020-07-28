@@ -5,11 +5,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -21,12 +19,11 @@ import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.hankki.fooddeal.R;
 import com.hankki.fooddeal.data.PreferenceManager;
-import com.hankki.fooddeal.ui.MainActivity;
-import com.hankki.fooddeal.ui.address.AddressActivity;
 import com.hankki.fooddeal.ui.home.community.ExchangeAndShare;
 import com.hankki.fooddeal.ui.home.community.FreeCommunity;
 import com.hankki.fooddeal.ui.home.community.RecipeShare;
 import com.hankki.fooddeal.ui.map.MapActivity;
+import com.hankki.fooddeal.ux.dialog.HomeLocationDialog;
 import com.hankki.fooddeal.ux.viewpager.viewPagerAdapter;
 
 import java.util.concurrent.Callable;
@@ -68,7 +65,7 @@ public class HomeFragment extends Fragment {
         setLocation();
         setViewPager();
         setTabLayout();
-        setMapButtonOnClickLisetener();
+        setMapButtonOnClickListener();
 //        filterButtonClickListener();
 
         disposable = Observable.fromCallable(new Callable<Object>() {
@@ -103,7 +100,7 @@ public class HomeFragment extends Fragment {
         tv_location.setText(location);
     }
 
-    public void setMapButtonOnClickLisetener() {
+    public void setMapButtonOnClickListener() {
         btn_map.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -121,18 +118,9 @@ public class HomeFragment extends Fragment {
         tv_location.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                PopupMenu p = new PopupMenu(getContext(),v);
-                ((MainActivity)MainActivity.mainContext).getMenuInflater().inflate(R.menu.menu_location,p.getMenu());
-                p.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
-                        Intent intent = new Intent(getActivity(), AddressActivity.class);
-                        startActivity(intent);
-
-                        return false;
-                    }
-                });
-                p.show();
+                HomeLocationDialog dialog = new HomeLocationDialog(getContext());
+                dialog.setCanceledOnTouchOutside(false);
+                dialog.show();
             }
         });
 

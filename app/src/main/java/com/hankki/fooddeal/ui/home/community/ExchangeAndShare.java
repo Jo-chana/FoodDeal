@@ -18,6 +18,7 @@ import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.hankki.fooddeal.R;
@@ -51,6 +52,7 @@ public class ExchangeAndShare extends Fragment {
 
     View view;
     RecyclerView recyclerView;
+    SwipeRefreshLayout swipeRefreshLayout;
     CardView cv_postWrite, cv_showExchange, cv_showShare;
     FrameLayout fl_exchange, fl_share;
     Button btn_filter;
@@ -70,6 +72,7 @@ public class ExchangeAndShare extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState){
+
         view = inflater.inflate(R.layout.fragment_exchange, container, false);
 
         progressBar = view.findViewById(R.id.customDialog_progressBar);
@@ -86,6 +89,7 @@ public class ExchangeAndShare extends Fragment {
                 .subscribe(new Consumer<Object>() {
                     @Override
                     public void accept(Object result) throws Exception {
+                        updatePostItems();
                         if(pageFrom.equals("Main")) {
                             setShowLists();
                             setRecyclerView();
@@ -94,6 +98,7 @@ public class ExchangeAndShare extends Fragment {
                             setMyPostOption();
                             setShowLists();
                         }
+                        setRefresh();
                         filterButtonClickListener();
                         progressBar.setVisibility(View.GONE);
 //                        customAnimationDialog.dismiss();
@@ -123,8 +128,6 @@ public class ExchangeAndShare extends Fragment {
             cv_postWrite.setVisibility(View.INVISIBLE);
         }
         setRecyclerViewOption = new SetRecyclerViewOption(recyclerView, cv_postWrite,view,getContext(),R.layout.community_item);
-
-        postItems = BoardController.getBoardList(getContext(), category);
         setRecyclerViewOption.setPostItems(postItems);
         setRecyclerViewOption.setTag("Main");
         setRecyclerViewOption.build(0);
@@ -159,10 +162,18 @@ public class ExchangeAndShare extends Fragment {
                             @Override
                             public void accept(Object result) throws Exception {
                                 if(pageFrom.equals("Main")) {
-                                    setRecyclerView();
+                                    updatePostItems();
+                                    while(postItems==null);
+                                    setRecyclerViewOption.setPostItems(postItems);
+                                    setRecyclerViewOption.setTag(pageFrom);
+                                    setRecyclerViewOption.build(0);
                                 }
                                 else {
-                                    setMyPostOption();
+                                    updatePostItems();
+                                    while(postItems==null);
+                                    setRecyclerViewOption.setPostItems(postItems);
+                                    setRecyclerViewOption.setTag(pageFrom);
+                                    setRecyclerViewOption.build(0);
                                 }
                                 progressBar.setVisibility(View.GONE);
 //                                customAnimationDialog.dismiss();
@@ -194,10 +205,18 @@ public class ExchangeAndShare extends Fragment {
                             @Override
                             public void accept(Object result) throws Exception {
                                 if(pageFrom.equals("Main")) {
-                                    setRecyclerView();
+                                    updatePostItems();
+                                    while(postItems==null);
+                                    setRecyclerViewOption.setPostItems(postItems);
+                                    setRecyclerViewOption.setTag(pageFrom);
+                                    setRecyclerViewOption.build(0);
                                 }
                                 else {
-                                    setMyPostOption();
+                                    updatePostItems();
+                                    while(postItems==null);
+                                    setRecyclerViewOption.setPostItems(postItems);
+                                    setRecyclerViewOption.setTag(pageFrom);
+                                    setRecyclerViewOption.build(0);
                                 }
                                 progressBar.setVisibility(View.GONE);
 //                                customAnimationDialog.dismiss();
@@ -238,11 +257,7 @@ public class ExchangeAndShare extends Fragment {
 
         recyclerView = view.findViewById(R.id.rv_exchange);
         setRecyclerViewOption = new SetRecyclerViewOption(recyclerView, null,view,getContext(),R.layout.community_item);
-        if(pageFrom.equals("My")) {
-            setRecyclerViewOption.setPostItems(BoardController.getExchangeShareBoardWriteList(getContext(),category));
-        }
-        else if (pageFrom.equals("Dib"))
-            setRecyclerViewOption.setPostItems(BoardController.getExchangeShareBoardLikeList(getContext(),category));
+        setRecyclerViewOption.setPostItems(postItems);
         setRecyclerViewOption.setTag(pageFrom);
         setRecyclerViewOption.build(0);
     }
@@ -293,6 +308,29 @@ public class ExchangeAndShare extends Fragment {
 
     public ArrayList<PostItem> getPostItems(){
         return postItems;
+    }
+
+    public void updatePostItems(){
+        postItems = null;
+        if(pageFrom.equals("Main")){
+            postItems = BoardController.getBoardList(getContext(),category);
+        } else if (pageFrom.equals("My")) {
+            postItems = BoardController.getExchangeShareBoardWriteList(getContext(),category);
+        } else {
+            postItems = BoardController.getExchangeShareBoardLikeList(getContext(),category);
+        }
+    }
+
+    public void setRefresh(){
+        swipeRefreshLayout = view.findViewById(R.id.srl_exchange);
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+            updatePostItems();
+            while(postItems==null);
+            setRecyclerViewOption.setPostItems(postItems);
+            setRecyclerViewOption.setTag(pageFrom);
+            setRecyclerViewOption.build(0);
+            swipeRefreshLayout.setRefreshing(false);
+        });
     }
 
 }

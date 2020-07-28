@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.hankki.fooddeal.R;
@@ -32,11 +33,13 @@ public class FreeCommunity extends Fragment {
     RecyclerView recyclerView;
     CardView cv_post;
     View view;
+    SwipeRefreshLayout swipeRefreshLayout;
     SetRecyclerViewOption setRecyclerViewOption;
     String category = "FREE";
 
     /**@Enum pageFrom {Main, My, Dib}*/
     String pageFrom = "Main";
+    ArrayList<PostItem> postItems;
 
     Disposable disposable;
 
@@ -62,12 +65,14 @@ public class FreeCommunity extends Fragment {
                 .subscribe(new Consumer<Object>() {
                     @Override
                     public void accept(Object result) throws Exception {
+                        updatePostItems();
                         if(pageFrom.equals("Main")) {
                             setRecyclerView();
                             setPostWrite();
                         } else {
                             setMyPostOption();
                         }
+                        setRefresh();
                         progressBar.setVisibility(View.GONE);
 //                        customAnimationDialog.dismiss();
                         disposable.dispose();
@@ -93,7 +98,7 @@ public class FreeCommunity extends Fragment {
         }
         setRecyclerViewOption = new SetRecyclerViewOption(
                 recyclerView, cv_post, view, getContext(), R.layout.community_item );
-        setRecyclerViewOption.setPostItems(BoardController.getBoardList(getContext(),category));
+        setRecyclerViewOption.setPostItems(postItems);
         setRecyclerViewOption.setTag("Main");
         setRecyclerViewOption.build(2);
     }
@@ -126,10 +131,10 @@ public class FreeCommunity extends Fragment {
         recyclerView = view.findViewById(R.id.rv_free);
         setRecyclerViewOption = new SetRecyclerViewOption(recyclerView, null,view,getContext(),R.layout.community_item);
         if(pageFrom.equals("My")) {
-            setRecyclerViewOption.setPostItems(BoardController.getFreeBoardWriteList(getContext()));
+            setRecyclerViewOption.setPostItems(postItems);
         }
         else if (pageFrom.equals("Dib"))
-            setRecyclerViewOption.setPostItems(BoardController.getFreeBoardLikeList(getContext()));
+            setRecyclerViewOption.setPostItems(postItems);
         setRecyclerViewOption.setTag(pageFrom);
         setRecyclerViewOption.build(2);
     }
@@ -139,6 +144,29 @@ public class FreeCommunity extends Fragment {
         super.onResume();
         if(pageFrom.equals("Main"))
             setRecyclerViewOption.update();
+    }
+
+    public void updatePostItems(){
+        postItems = null;
+        if(pageFrom.equals("Main")){
+            postItems = BoardController.getBoardList(getContext(),category);
+        } else if (pageFrom.equals("My")){
+            postItems = BoardController.getFreeBoardWriteList(getContext());
+        } else {
+            postItems = BoardController.getFreeBoardLikeList(getContext());
+        }
+    }
+
+    public void setRefresh(){
+        swipeRefreshLayout = view.findViewById(R.id.srl_free);
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+            updatePostItems();
+            while(postItems==null);
+            setRecyclerViewOption.setPostItems(postItems);
+            setRecyclerViewOption.setTag(pageFrom);
+            setRecyclerViewOption.build(2);
+            swipeRefreshLayout.setRefreshing(false);
+        });
     }
 
 }

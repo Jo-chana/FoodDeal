@@ -161,7 +161,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostViewHolder> {
         this.page = page;
     }
 
-    public void distanceFitering(int distance) {
+    public void distanceFiltering(int distance) {
 
     }
 

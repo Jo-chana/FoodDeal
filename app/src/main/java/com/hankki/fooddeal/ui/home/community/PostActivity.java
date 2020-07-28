@@ -18,6 +18,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -27,13 +28,6 @@ import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.FileProvider;
-import androidx.fragment.app.Fragment;
-import androidx.navigation.fragment.NavHostFragment;
 
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -50,9 +44,11 @@ import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.TedPermission;
 import com.hankki.fooddeal.R;
 import com.hankki.fooddeal.data.PostItem;
+import com.hankki.fooddeal.data.PreferenceManager;
 import com.hankki.fooddeal.data.retrofit.BoardController;
 import com.hankki.fooddeal.ui.MainActivity;
 import com.hankki.fooddeal.ux.dialog.CustomDialog;
+import com.hankki.fooddeal.ux.dialog.CustomPostImageDialog;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -87,10 +83,9 @@ public class PostActivity extends AppCompatActivity {
 
     ArrayList<Bitmap> postImages = new ArrayList<>();
     int[] imageResources = new int[]{R.id.image_1,R.id.image_2,R.id.image_3,R.id.image_4};
-    int[] imageTexts = new int[]{R.id.tv_image_num,R.id.tv_image_num2, R.id.tv_image_num3, R.id.tv_image_num4};
     ImageView[] imageViews = new ImageView[4];
-    TextView[] textViews = new TextView[4];
-
+    ImageView clear0, clear1, clear2, clear3;
+    ImageView[] clearImages = new ImageView[4];
 
     Context mContext;
 
@@ -122,7 +117,15 @@ public class PostActivity extends AppCompatActivity {
         ll_choice = findViewById(R.id.ll_choice);
         toolbarView = findViewById(R.id.post_toolbar);
         toolbarTextView = toolbarView.findViewById(R.id.toolbar_title);
-        backButton = toolbarView.findViewById(R.id.btn_back);
+        clear0 = findViewById(R.id.iv_clear0);
+        clear1 = findViewById(R.id.iv_clear);
+        clear2 = findViewById(R.id.iv_clear2);
+        clear3 = findViewById(R.id.iv_clear3);
+        clearImages[0] = clear0;
+        clearImages[1] = clear1;
+        clearImages[2] = clear2;
+        clearImages[3] = clear3;
+        backButton = toolbarView.findViewById(R.id.back_button);
 
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -142,9 +145,7 @@ public class PostActivity extends AppCompatActivity {
 
         for (int i = 0; i < 4; i++) {
             imageViews[i] = findViewById(imageResources[i]);
-            textViews[i] = findViewById(imageTexts[i]);
         }
-        textViews[0].setText("0/4");
 
         if (mode.equals("revise")) {
             toolbarTextView.setText("수정하기");
@@ -160,23 +161,23 @@ public class PostActivity extends AppCompatActivity {
     public void setExchangeAndShareComponents(){
         if(category.equals("INGREDIENT EXCHANGE")){
             select_exchange.setBackgroundResource(R.drawable.textview_selector);
-            select_exchange.setTextColor(getResources().getColor(R.color.original_white));
+            select_exchange.setTextColor(getResources().getColor(R.color.original_primary));
             select_share.setBackgroundResource(R.drawable.textview_unselector);
-            select_share.setTextColor(getResources().getColor(R.color.outFocus));
+            select_share.setTextColor(getResources().getColor(R.color.original_black));
         } else {
             select_share.setBackgroundResource(R.drawable.textview_selector);
-            select_share.setTextColor(getResources().getColor(R.color.original_white));
+            select_share.setTextColor(getResources().getColor(R.color.original_primary));
             select_exchange.setBackgroundResource(R.drawable.textview_unselector);
-            select_exchange.setTextColor(getResources().getColor(R.color.outFocus));
+            select_exchange.setTextColor(getResources().getColor(R.color.original_black));
         }
 
         select_exchange.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 select_exchange.setBackgroundResource(R.drawable.textview_selector);
-                select_exchange.setTextColor(getResources().getColor(R.color.original_white));
+                select_exchange.setTextColor(getResources().getColor(R.color.original_primary));
                 select_share.setBackgroundResource(R.drawable.textview_unselector);
-                select_share.setTextColor(getResources().getColor(R.color.outFocus));
+                select_share.setTextColor(getResources().getColor(R.color.original_black));
                 category = "INGREDIENT EXCHANGE";
             }
         });
@@ -184,9 +185,9 @@ public class PostActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 select_share.setBackgroundResource(R.drawable.textview_selector);
-                select_share.setTextColor(getResources().getColor(R.color.original_white));
+                select_share.setTextColor(getResources().getColor(R.color.original_primary));
                 select_exchange.setBackgroundResource(R.drawable.textview_unselector);
-                select_exchange.setTextColor(getResources().getColor(R.color.outFocus));
+                select_exchange.setTextColor(getResources().getColor(R.color.original_black));
                 category = "INGREDIENT SHARE";
             }
         });
@@ -199,6 +200,8 @@ public class PostActivity extends AppCompatActivity {
 
     public void setLocation(){
         /**위치정보 입력*/
+        TextView tv_location = findViewById(R.id.tv_location);
+        tv_location.setText(PreferenceManager.getString(mContext, "region3Depth"));
     }
 
     public void setImageWrite(){
@@ -222,25 +225,9 @@ public class PostActivity extends AppCompatActivity {
                 @Override
                 /**이미지 삽입*/
                 public void onClick(View v) {
-                    PopupMenu p = new PopupMenu(mContext, v);
-                    p.getMenuInflater().inflate(R.menu.post_photo_menu, p.getMenu());
-                    p.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                        @Override
-                        public boolean onMenuItemClick(MenuItem item) {
-                            switch(item.getItemId()){
-                                case R.id.gallery:
-                                    tedPermission();
-                                    return true;
-                                case R.id.camera:
-                                    dispatchTakePictureIntent();
-                                    return true;
-                                case R.id.cancel:
-                                    return true;
-                            }
-                            return false;
-                        }
-                    });
-                    p.show();
+                    CustomPostImageDialog dialog = new CustomPostImageDialog(mContext);
+                    dialog.setCanceledOnTouchOutside(false);
+                    dialog.show();
                 }
             });
         }
@@ -267,6 +254,10 @@ public class PostActivity extends AppCompatActivity {
                     item.setBoardTitle(et_title.getText().toString());
                     item.setCategory(category);
 
+//                    /**테스트*/
+//                    PreferenceManager.setString(mContext,"Latitude","37.4758562");
+//                    PreferenceManager.setString(mContext,"Longitude","127.1482274");
+
                     if(BoardController.boardWrite(mContext,item)){
                         // 이현준 이미지 Firebase 업로드 추가
                         final ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -289,9 +280,8 @@ public class PostActivity extends AppCompatActivity {
                     } else {
                         Toast.makeText(mContext,"실패!",Toast.LENGTH_SHORT).show();
                     }
-
+                    finish();
                 }
-                finish();
             }
         });
     }
@@ -406,15 +396,17 @@ public class PostActivity extends AppCompatActivity {
         for(int i=0;i<4;i++){
             if(i<postImages.size()){
                 imageViews[i].setImageBitmap(postImages.get(i));
-                textViews[i].setText(null);
+                clearImages[i].setImageResource(R.drawable.ic_icon_clear);
             }
             else if(i==postImages.size()) {
-                imageViews[i].setImageResource(R.drawable.camera_test);
-                textViews[i].setText(String.valueOf(i)+"/4");
+                imageViews[i].setBackgroundResource(R.drawable.cardview_image_select);
+                imageViews[i].setImageResource(R.drawable.ic_icon_camera);
+                clearImages[i].setImageBitmap(null);
             }
             else{
+                imageViews[i].setBackground(null);
                 imageViews[i].setImageBitmap(null);
-                textViews[i].setText(null);
+                clearImages[i].setImageBitmap(null);
             }
         }
         setImageWrite();
@@ -447,7 +439,7 @@ public class PostActivity extends AppCompatActivity {
 
     static final int REQUEST_IMAGE_CAPTURE = 1;
 
-    private void dispatchTakePictureIntent() {
+    public void dispatchTakePictureIntent() {
         PermissionListener permissionListener = new PermissionListener() {
             @Override
             public void onPermissionGranted() {

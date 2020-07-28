@@ -333,7 +333,7 @@ public class PostItem implements Comparable<PostItem>, Parcelable {
                 relativeTime = String.valueOf((int)second/60) + "분 전";
             }
         } else {
-            relativeTime = String.valueOf(second) + "초 전";
+            relativeTime = "방금 전";
         }
         return relativeTime;
     }

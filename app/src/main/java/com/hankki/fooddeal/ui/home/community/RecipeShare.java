@@ -11,9 +11,11 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.hankki.fooddeal.R;
+import com.hankki.fooddeal.data.PostItem;
 import com.hankki.fooddeal.data.retrofit.BoardController;
 import com.hankki.fooddeal.ux.recyclerview.SetRecyclerViewOption;
 
@@ -25,15 +27,19 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
+import java.util.ArrayList;
+
 public class RecipeShare extends Fragment {
     View view;
     RecyclerView recyclerView;
+    SwipeRefreshLayout swipeRefreshLayout;
     CardView cv_post;
     SetRecyclerViewOption setRecyclerViewOption;
     String category = "RECIPE";
 
     /**@Enum pageFrom {Main, My, Dib}*/
     String pageFrom = "Main";
+    ArrayList<PostItem> postItems;
 
     Disposable disposable;
 
@@ -59,12 +65,14 @@ public class RecipeShare extends Fragment {
                 .subscribe(new Consumer<Object>() {
                     @Override
                     public void accept(Object result) throws Exception {
+                        updatePostItems();
                         if(pageFrom.equals("Main")) {
                             setRecyclerView();
                             setPostWrite();
                         } else {
                             setMyPostOption();
                         }
+                        setRefresh();
                         progressBar.setVisibility(View.GONE);
 //                        customAnimationDialog.dismiss();
                         disposable.dispose();
@@ -90,7 +98,7 @@ public class RecipeShare extends Fragment {
         }
         setRecyclerViewOption = new SetRecyclerViewOption(
                 recyclerView, cv_post, view, getContext(), R.layout.community_item );
-        setRecyclerViewOption.setPostItems(BoardController.getBoardList(getContext(),category));
+        setRecyclerViewOption.setPostItems(postItems);
         setRecyclerViewOption.setTag("Main");
         setRecyclerViewOption.build(1);
     }
@@ -122,12 +130,7 @@ public class RecipeShare extends Fragment {
 
         recyclerView = view.findViewById(R.id.rv_recipe);
         setRecyclerViewOption = new SetRecyclerViewOption(recyclerView, null,view,getContext(),R.layout.community_item);
-        if(pageFrom.equals("My")) {
-            setRecyclerViewOption.setPostItems(BoardController.getRecipeBoardWriteList(getContext()));
-        }
-        else if (pageFrom.equals("Dib")) {
-            setRecyclerViewOption.setPostItems(BoardController.getRecipeBoardLikeList(getContext()));
-        }
+        setRecyclerViewOption.setPostItems(postItems);
         setRecyclerViewOption.setTag(pageFrom);
         setRecyclerViewOption.build(1);
     }
@@ -137,5 +140,29 @@ public class RecipeShare extends Fragment {
         super.onResume();
         if(pageFrom.equals("Main"))
             setRecyclerViewOption.update();
+    }
+
+    public void updatePostItems(){
+        if(pageFrom.equals("Main")){
+            postItems = BoardController.getBoardList(getContext(), category);
+        } else if (pageFrom.equals("My")){
+            postItems = BoardController.getRecipeBoardWriteList(getContext());
+        } else {
+            postItems = BoardController.getRecipeBoardLikeList(getContext());
+        }
+    }
+
+    public void setRefresh(){
+        postItems = null;
+        swipeRefreshLayout = view.findViewById(R.id.srl_recipe);
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+            updatePostItems();
+            while(postItems==null);
+            setRecyclerViewOption.setPostItems(postItems);
+            setRecyclerViewOption.setTag(pageFrom);
+            setRecyclerViewOption.build(1);
+
+            swipeRefreshLayout.setRefreshing(false);
+        });
     }
 }
