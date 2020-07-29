@@ -229,7 +229,7 @@ public class ChatRoomFragment extends Fragment {
             }
 
             roomViewHolder.itemView.setOnClickListener(v -> {
-                List<String> userList = chatRoomModel.getRoomUserList();
+                List<String> userList = new ArrayList<String>(chatRoomModel.getRoomUserList());
                 userList.remove(sUID);
                 String otherUser = userList.get(0);
                 Intent intent = new Intent(v.getContext(), ChatActivity.class);
