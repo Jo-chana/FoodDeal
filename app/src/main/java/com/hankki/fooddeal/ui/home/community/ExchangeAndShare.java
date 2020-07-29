@@ -77,8 +77,6 @@ public class ExchangeAndShare extends Fragment {
 
         progressBar = view.findViewById(R.id.customDialog_progressBar);
         progressBar.setVisibility(View.VISIBLE);
-//        customAnimationDialog = new CustomAnimationDialog(getContext());
-//        customAnimationDialog.show();
 
         disposable = Observable.fromCallable(new Callable<Object>() {
             @Override
@@ -104,21 +102,10 @@ public class ExchangeAndShare extends Fragment {
                         setRefresh();
                         filterButtonClickListener();
                         progressBar.setVisibility(View.GONE);
-//                        customAnimationDialog.dismiss();
+
                         disposable.dispose();
                     }
                 });
-
-        // 다이얼로그 전 버전
-        /*if(pageFrom.equals("Main")) {
-            setShowLists();
-            setRecyclerView();
-            setPostWrite();
-        } else {
-            setMyPostOption();
-            setShowLists();
-        }
-        filterButtonClickListener();*/
 
         return view;
     }
@@ -168,25 +155,11 @@ public class ExchangeAndShare extends Fragment {
                         .subscribe(new Consumer<Object>() {
                             @Override
                             public void accept(Object result) throws Exception {
-                                /*if(pageFrom.equals("Main")) {
-                                    updatePostItems();
-                                    while(postItems==null);
-                                    setRecyclerViewOption.setPostItems(postItems);
-                                    setRecyclerViewOption.setTag(pageFrom);
-                                    setRecyclerViewOption.build(0);
-                                }
-                                else {
-                                    updatePostItems();
-                                    while(postItems==null);
-                                    setRecyclerViewOption.setPostItems(postItems);
-                                    setRecyclerViewOption.setTag(pageFrom);
-                                    setRecyclerViewOption.build(0);
-                                }*/
                                 setRecyclerViewOption.setPostItems(postItems);
                                 setRecyclerViewOption.setTag(pageFrom);
                                 setRecyclerViewOption.build(0);
                                 progressBar.setVisibility(View.GONE);
-//                                customAnimationDialog.dismiss();
+
                                 disposable.dispose();
                             }
                         });

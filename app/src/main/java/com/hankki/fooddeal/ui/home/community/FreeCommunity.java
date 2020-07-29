@@ -78,18 +78,11 @@ public class FreeCommunity extends Fragment {
                         }
                         setRefresh();
                         progressBar.setVisibility(View.GONE);
-//                        customAnimationDialog.dismiss();
+
                         disposable.dispose();
                     }
                 });
 
-        // 다이얼로그 이전 버전
-        /*if(pageFrom.equals("Main")) {
-            setRecyclerView();
-            setPostWrite();
-        } else {
-            setMyPostOption();
-        }*/
         return view;
     }
 
@@ -142,13 +135,6 @@ public class FreeCommunity extends Fragment {
         setRecyclerViewOption.setTag(pageFrom);
         setRecyclerViewOption.build(2);
     }
-
-//    @Override
-//    public void onResume() {
-//        super.onResume();
-//        if(pageFrom.equals("Main"))
-//            setRecyclerViewOption.update();
-//    }
 
     public void updatePostItems(){
         postItems = null;
