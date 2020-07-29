@@ -301,29 +301,6 @@ public class PostActivity extends AppCompatActivity {
                 if(BoardController.boardRevise(mContext, mPost)){
                     Toast.makeText(mContext, "수정을 완료하였습니다", Toast.LENGTH_SHORT).show();
                     /**게시글 수정 후, 해당 커뮤니티에서 즉각적으로 Update*/
-                    try {
-                        NavHostFragment navHostFragment = (NavHostFragment) ((MainActivity) MainActivity.mainContext)
-                                .getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
-                        List<Fragment> fragments = navHostFragment.getChildFragmentManager().getFragments().get(0)
-                                .getChildFragmentManager().getFragments();
-
-                        Fragment fragment = fragments.get(page);
-                        switch (page) {
-                            case 0:
-                                ((ExchangeAndShare) fragment).setRecyclerView();
-                                break;
-                            case 1:
-                                ((RecipeShare) fragment).setRecyclerView();
-                                break;
-                            case 2:
-                                ((FreeCommunity) fragment).setRecyclerView();
-                                break;
-                        }
-                    } catch (Exception e){
-                        /**내가 쓴 글 페이지에서 수정할 경우
-                         * 위의 코드는 Out of Index Error
-                         * @TODO 새로고침 코드로 대체 등 해결방법 강구*/
-                    }
                 } else {
                     Toast.makeText(mContext, "실패!", Toast.LENGTH_SHORT).show();
                 }
