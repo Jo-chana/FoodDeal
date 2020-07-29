@@ -6,20 +6,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.Manifest;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
-import android.graphics.drawable.ShapeDrawable;
-import android.graphics.drawable.shapes.OvalShape;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -31,7 +22,6 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
-import com.google.android.gms.tasks.OnCanceledListener;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -42,27 +32,20 @@ import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.ListenerRegistration;
-import com.google.firebase.firestore.MetadataChanges;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.firestore.WriteBatch;
-import com.google.firebase.storage.FileDownloadTask;
 import com.hankki.fooddeal.R;
 import com.hankki.fooddeal.data.security.AES256Util;
 import com.hankki.fooddeal.ui.chatting.chatDTO.ChatModel;
 import com.hankki.fooddeal.ui.chatting.chatDTO.Message;
 
-import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -79,7 +62,7 @@ public class ChatActivity extends AppCompatActivity {
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
     private SimpleDateFormat dateFormatDay = new SimpleDateFormat("yyyy-MM-dd");
     private SimpleDateFormat dateFormatHour = new SimpleDateFormat("aa hh:mm");
-    private String roomId, roomTitle, uid, hostUID;
+    private String roomId, roomTitle, uid, otherUID, otherUserPhotoUrl = "";
     private Integer userTotal;
     private View toolbar;
     private TextView toolbar_title;
@@ -100,8 +83,19 @@ public class ChatActivity extends AppCompatActivity {
             userTotal = getIntent().getIntExtra("userTotal", -1);
             // 각 채팅마다 안 읽은 사람을 표시하기 위해 필요한 건데 채팅을 하다가 새로운 사람이 들어온 경우를
             // 처리못하기 때문에 메시지 리스너에서 userTotal을 계속 처리해줘야할듯
-            hostUID = getIntent().getStringExtra("hostHashId");
+            otherUID = getIntent().getStringExtra("otherUID");
         }
+
+        final DocumentReference documentReference = FirebaseFirestore.getInstance().collection("users").document(AES256Util.aesEncode(otherUID));
+        documentReference
+                .get()
+                .addOnCompleteListener(task -> {
+                    if(task.isSuccessful()) {
+                        DocumentSnapshot snapshot = task.getResult();
+                        otherUserPhotoUrl = snapshot.get("userPhotoUri").toString();
+                    }
+                });
+
         uid = AES256Util.aesDecode(FirebaseAuth.getInstance().getCurrentUser().getUid());
         firestore = FirebaseFirestore.getInstance();
 //        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
@@ -466,7 +460,23 @@ public class ChatActivity extends AppCompatActivity {
 
             if (!uid.equals(message.getMessageSenderUid())) {
                 messageViewHolder.msg_name.setText(message.getMessageSenderUid());
-                try {
+                if(otherUserPhotoUrl != null) {
+                    if(!otherUserPhotoUrl.equals("")) {
+                        Glide
+                                .with(getApplicationContext())
+                                .load(otherUserPhotoUrl)
+                                .into(messageViewHolder.user_photo);
+                        messageViewHolder.user_photo.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                        messageViewHolder.user_photo.setClipToOutline(true);
+                    } else {
+                        messageViewHolder.user_photo.setImageResource(R.drawable.ic_group_rec_60dp);
+                        messageViewHolder.user_photo.setScaleType(ImageView.ScaleType.FIT_XY);
+                        messageViewHolder.user_photo.setClipToOutline(true);
+                    }
+                }
+
+
+                /*try {
                     DocumentReference documentReference = FirebaseFirestore.getInstance().collection("users")
                             .document(hostUID);
                     documentReference
@@ -487,7 +497,7 @@ public class ChatActivity extends AppCompatActivity {
                     messageViewHolder.user_photo.setImageResource(R.drawable.ic_group_rec_60dp);
                     messageViewHolder.user_photo.setScaleType(ImageView.ScaleType.FIT_XY);
                     messageViewHolder.user_photo.setClipToOutline(true);
-                }
+                }*/
                 /*if (userModel.getUserphoto() == null) {
                     Glide.with(getContext()).load(R.drawable.user)
                             .apply(requestOptions)

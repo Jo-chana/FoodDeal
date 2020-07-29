@@ -232,7 +232,7 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
                                 intent.putExtra("roomID", roomId);
                                 intent.putExtra("roomTitle", newRoomTitle);
                                 intent.putExtra("userTotal", 2);
-                                intent.putExtra("hostHashId",mPost.getUserHashId());
+                                intent.putExtra("otherUID", AES256Util.aesDecode(mPost.getUserHashId()));
                                 startActivity(intent);
                             }
                             // 없는 채팅방이면 생성 후 참가
@@ -259,7 +259,7 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
                         intent.putExtra("roomID", roomID);
                         intent.putExtra("roomTitle", roomTitle);
                         intent.putExtra("userTotal", 2);
-                        intent.putExtra("hostHashId",mPost.getUserHashId());
+                        intent.putExtra("otherUID", AES256Util.aesDecode(mPost.getUserHashId()));
                         startActivity(intent);
                     }
                 })

@@ -229,10 +229,14 @@ public class ChatRoomFragment extends Fragment {
             }
 
             roomViewHolder.itemView.setOnClickListener(v -> {
+                List<String> userList = chatRoomModel.getRoomUserList();
+                userList.remove(sUID);
+                String otherUser = userList.get(0);
                 Intent intent = new Intent(v.getContext(), ChatActivity.class);
                 intent.putExtra("roomID", chatRoomModel.getRoomId());
                 intent.putExtra("roomTitle", chatRoomModel.getRoomTitle());
                 intent.putExtra("userTotal", chatRoomModel.getRoomUserList().size());
+                intent.putExtra("otherUID", otherUser);
                 startActivity(intent);
             });
         }
