@@ -105,7 +105,6 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentViewHolder> {
                     }
                 });
 
-        holder.iv_profile.setScaleType(ImageView.ScaleType.CENTER_CROP);
         holder.tv_reply.setOnClickListener(v -> {
 
             holder.tv_reply.setTextColor(context.getResources().getColor(R.color.original_primary));

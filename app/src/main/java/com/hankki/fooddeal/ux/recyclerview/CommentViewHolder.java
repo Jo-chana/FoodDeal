@@ -30,6 +30,7 @@ public class CommentViewHolder extends RecyclerView.ViewHolder{
         tv_btn_delete = itemView.findViewById(R.id.tv_btn_delete);
         commentView = itemView.findViewById(R.id.comment_item);
         iv_profile.setBackground(new ShapeDrawable(new OvalShape()));
+        iv_profile.setScaleType(ImageView.ScaleType.CENTER_CROP);
         iv_profile.setClipToOutline(true);
         if(type.equals("Parent")){
             tv_reply = itemView.findViewById(R.id.tv_reply);
