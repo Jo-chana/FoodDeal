@@ -5,9 +5,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -19,6 +21,8 @@ import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.hankki.fooddeal.R;
 import com.hankki.fooddeal.data.PreferenceManager;
+import com.hankki.fooddeal.ui.MainActivity;
+import com.hankki.fooddeal.ui.address.AddressActivity;
 import com.hankki.fooddeal.ui.home.community.ExchangeAndShare;
 import com.hankki.fooddeal.ui.home.community.FreeCommunity;
 import com.hankki.fooddeal.ui.home.community.RecipeShare;
@@ -59,12 +63,14 @@ public class HomeFragment extends Fragment {
         btn_filter = view.findViewById(R.id.btn_filter);
         btn_location = view.findViewById(R.id.btn_location);
         btn_map = view.findViewById(R.id.btn_map);
+        tv_location = view.findViewById(R.id.tv_location);
 
         setFragments();
         setLocation();
         setViewPager();
         setTabLayout();
         setMapButtonOnClickListener();
+//        filterButtonClickListener();
 
         disposable = Observable.fromCallable(new Callable<Object>() {
             @Override
@@ -81,7 +87,11 @@ public class HomeFragment extends Fragment {
                         disposable.dispose();
                     }
                 });
-//        filterButtonClickListener();
+
+
+        /* @TODO 앱 새로 깔았을 때 동이 바로 뜨지 않는 문제 */
+        setLocation();
+
         return view;
     }
 
@@ -105,6 +115,24 @@ public class HomeFragment extends Fragment {
                 HomeLocationDialog dialog = new HomeLocationDialog(getContext());
                 dialog.setCanceledOnTouchOutside(false);
                 dialog.show();
+            }
+        });
+
+        btn_location.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                PopupMenu p = new PopupMenu(getContext(),v);
+                ((MainActivity)MainActivity.mainContext).getMenuInflater().inflate(R.menu.menu_location,p.getMenu());
+                p.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        Intent intent = new Intent(getActivity(), AddressActivity.class);
+                        startActivity(intent);
+
+                        return false;
+                    }
+                });
+                p.show();
             }
         });
     }
