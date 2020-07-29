@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -57,6 +58,7 @@ public class MyPageFragment extends Fragment {
     Button btn_profile_revise;
     CustomPostImageDialog dialog;
     String uid;
+    ProgressBar progressBar;
 
     View view;
 
@@ -81,6 +83,7 @@ public class MyPageFragment extends Fragment {
         iv_my_profile = view.findViewById(R.id.iv_my_profile);
         iv_my_profile.setBackground(new ShapeDrawable(new OvalShape()));
         iv_my_profile.setClipToOutline(true);
+        iv_my_profile.setScaleType(ImageView.ScaleType.CENTER_CROP);
 
         tv_my_name = view.findViewById(R.id.tv_my_name);
 //        tv_my_name.setText(user.getName());
@@ -175,8 +178,6 @@ public class MyPageFragment extends Fragment {
 
                     uploadUserProfilePhoto(imageData);
 
-                    iv_my_profile.setImageBitmap(img);
-                    iv_my_profile.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -189,7 +190,6 @@ public class MyPageFragment extends Fragment {
     private void uploadUserProfilePhoto(byte[] imageData) {
         final StorageReference storageReference = FirebaseStorage.getInstance().getReference().child("userPhoto/" + uid + ".jpg");
         UploadTask uploadTask = storageReference.putBytes(imageData);
-
         Task<Uri> urlTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
             @Override
             public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
@@ -210,6 +210,7 @@ public class MyPageFragment extends Fragment {
                 } else {
                     Toast.makeText(getContext(), "이미지 다운로드 URL 저장 실패", Toast.LENGTH_SHORT).show();
                 }
+                setUserProfile();
             }
         });
     }
@@ -236,7 +237,7 @@ public class MyPageFragment extends Fragment {
     private void setUserProfile() {
         Glide
                 .with(getContext())
-                .load(R.drawable.ic_user)
+                .load(R.drawable.ic_group_60dp)
                 .into(iv_my_profile);
 
         if(!uid.equals("")) {

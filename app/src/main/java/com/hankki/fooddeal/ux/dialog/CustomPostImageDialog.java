@@ -19,7 +19,6 @@ public class CustomPostImageDialog extends BottomSheetDialog {
     Context context;
     Button btn_gallary, btn_camera, btn_cancel;
     String pageFrom = "post";
-    boolean galleryTag = false;
     View.OnClickListener listener;
 
     @Override
@@ -60,9 +59,5 @@ public class CustomPostImageDialog extends BottomSheetDialog {
     public CustomPostImageDialog(@NonNull Context context) {
         super(context);
         this.context = context;
-    }
-
-    public boolean isGalleryTag() {
-        return galleryTag;
     }
 }

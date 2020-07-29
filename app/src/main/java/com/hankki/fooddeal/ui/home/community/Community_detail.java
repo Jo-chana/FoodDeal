@@ -382,6 +382,7 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
         profile = post_common.findViewById(R.id.iv_user_profile);
         profile.setBackground(new ShapeDrawable(new OvalShape()));
         profile.setClipToOutline(true);
+        profile.setScaleType(ImageView.ScaleType.CENTER_CROP);
 
         DocumentReference documentReference = FirebaseFirestore.getInstance().collection("users")
                 .document(mPost.getUserHashId());
