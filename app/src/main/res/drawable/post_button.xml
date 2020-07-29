@@ -6,7 +6,7 @@
                 android:radius="5dp"
                 />
             <solid
-                android:color="@color/original_primary"
+                android:color="@color/grey_300"
                 />
             <padding
                 android:left="0dp"
@@ -16,14 +16,13 @@
                 />
         </shape>
     </item>
-
     <item android:state_pressed="false">
         <shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle" >
             <corners
                 android:radius="5dp"
                 />
             <solid
-                android:color="@color/grey_300"
+                android:color="@color/original_primary"
                 />
             <padding
                 android:left="0dp"

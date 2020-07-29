@@ -82,14 +82,17 @@ public class ExchangeAndShare extends Fragment {
 
         disposable = Observable.fromCallable(new Callable<Object>() {
             @Override
-            public Object call() throws Exception { return false; }
+            public Object call() throws Exception {
+                updatePostItems();
+
+                return false;
+            }
         })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<Object>() {
                     @Override
                     public void accept(Object result) throws Exception {
-                        updatePostItems();
                         if(pageFrom.equals("Main")) {
                             setShowLists();
                             setRecyclerView();
@@ -154,14 +157,18 @@ public class ExchangeAndShare extends Fragment {
                 /**교환 게시글 필터링*/
                 disposable = Observable.fromCallable(new Callable<Object>() {
                     @Override
-                    public Object call() throws Exception { return false; }
+                    public Object call() throws Exception {
+                        updatePostItems();
+
+                        return false;
+                    }
                 })
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(new Consumer<Object>() {
                             @Override
                             public void accept(Object result) throws Exception {
-                                if(pageFrom.equals("Main")) {
+                                /*if(pageFrom.equals("Main")) {
                                     updatePostItems();
                                     while(postItems==null);
                                     setRecyclerViewOption.setPostItems(postItems);
@@ -174,7 +181,10 @@ public class ExchangeAndShare extends Fragment {
                                     setRecyclerViewOption.setPostItems(postItems);
                                     setRecyclerViewOption.setTag(pageFrom);
                                     setRecyclerViewOption.build(0);
-                                }
+                                }*/
+                                setRecyclerViewOption.setPostItems(postItems);
+                                setRecyclerViewOption.setTag(pageFrom);
+                                setRecyclerViewOption.build(0);
                                 progressBar.setVisibility(View.GONE);
 //                                customAnimationDialog.dismiss();
                                 disposable.dispose();
@@ -197,27 +207,20 @@ public class ExchangeAndShare extends Fragment {
                 /**나눔 게시글 필터링*/
                 disposable = Observable.fromCallable(new Callable<Object>() {
                     @Override
-                    public Object call() throws Exception { return false; }
+                    public Object call() throws Exception {
+                        updatePostItems();
+
+                        return false;
+                    }
                 })
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(new Consumer<Object>() {
                             @Override
                             public void accept(Object result) throws Exception {
-                                if(pageFrom.equals("Main")) {
-                                    updatePostItems();
-                                    while(postItems==null);
-                                    setRecyclerViewOption.setPostItems(postItems);
-                                    setRecyclerViewOption.setTag(pageFrom);
-                                    setRecyclerViewOption.build(0);
-                                }
-                                else {
-                                    updatePostItems();
-                                    while(postItems==null);
-                                    setRecyclerViewOption.setPostItems(postItems);
-                                    setRecyclerViewOption.setTag(pageFrom);
-                                    setRecyclerViewOption.build(0);
-                                }
+                                setRecyclerViewOption.setPostItems(postItems);
+                                setRecyclerViewOption.setTag(pageFrom);
+                                setRecyclerViewOption.build(0);
                                 progressBar.setVisibility(View.GONE);
 //                                customAnimationDialog.dismiss();
                                 disposable.dispose();
@@ -311,7 +314,7 @@ public class ExchangeAndShare extends Fragment {
     }
 
     public void updatePostItems(){
-        postItems = null;
+//        postItems = null;
         if(pageFrom.equals("Main")){
             postItems = BoardController.getBoardList(getContext(),category);
         } else if (pageFrom.equals("My")) {
@@ -324,12 +327,27 @@ public class ExchangeAndShare extends Fragment {
     public void setRefresh(){
         swipeRefreshLayout = view.findViewById(R.id.srl_exchange);
         swipeRefreshLayout.setOnRefreshListener(() -> {
-            updatePostItems();
-            while(postItems==null);
-            setRecyclerViewOption.setPostItems(postItems);
-            setRecyclerViewOption.setTag(pageFrom);
-            setRecyclerViewOption.build(0);
-            swipeRefreshLayout.setRefreshing(false);
+            disposable = Observable.fromCallable(new Callable<Object>() {
+                @Override
+                public Object call() throws Exception {
+                    updatePostItems();
+
+                    return false;
+                }
+            })
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Consumer<Object>() {
+                        @Override
+                        public void accept(Object result) throws Exception {
+                            setRecyclerViewOption.setPostItems(postItems);
+                            setRecyclerViewOption.setTag(pageFrom);
+                            setRecyclerViewOption.build(0);
+                            swipeRefreshLayout.setRefreshing(false);
+
+                            disposable.dispose();
+                        }
+                    });
         });
     }
 

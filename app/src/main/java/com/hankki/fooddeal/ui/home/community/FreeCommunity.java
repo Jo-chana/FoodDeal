@@ -57,7 +57,11 @@ public class FreeCommunity extends Fragment {
 
         disposable = Observable.fromCallable(new Callable<Object>() {
             @Override
-            public Object call() throws Exception { return false; }
+            public Object call() throws Exception {
+                updatePostItems();
+
+                return false;
+            }
         })
 
                 .subscribeOn(Schedulers.io())
@@ -65,7 +69,7 @@ public class FreeCommunity extends Fragment {
                 .subscribe(new Consumer<Object>() {
                     @Override
                     public void accept(Object result) throws Exception {
-                        updatePostItems();
+
                         if(pageFrom.equals("Main")) {
                             setRecyclerView();
                             setPostWrite();
@@ -139,12 +143,12 @@ public class FreeCommunity extends Fragment {
         setRecyclerViewOption.build(2);
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        if(pageFrom.equals("Main"))
-            setRecyclerViewOption.update();
-    }
+//    @Override
+//    public void onResume() {
+//        super.onResume();
+//        if(pageFrom.equals("Main"))
+//            setRecyclerViewOption.update();
+//    }
 
     public void updatePostItems(){
         postItems = null;
@@ -158,14 +162,30 @@ public class FreeCommunity extends Fragment {
     }
 
     public void setRefresh(){
+        postItems = null;
         swipeRefreshLayout = view.findViewById(R.id.srl_free);
         swipeRefreshLayout.setOnRefreshListener(() -> {
-            updatePostItems();
-            while(postItems==null);
-            setRecyclerViewOption.setPostItems(postItems);
-            setRecyclerViewOption.setTag(pageFrom);
-            setRecyclerViewOption.build(2);
-            swipeRefreshLayout.setRefreshing(false);
+            disposable = Observable.fromCallable(new Callable<Object>() {
+                @Override
+                public Object call() throws Exception {
+                    updatePostItems();
+
+                    return false;
+                }
+            })
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Consumer<Object>() {
+                        @Override
+                        public void accept(Object result) throws Exception {
+                            setRecyclerViewOption.setPostItems(postItems);
+                            setRecyclerViewOption.setTag(pageFrom);
+                            setRecyclerViewOption.build(2);
+                            swipeRefreshLayout.setRefreshing(false);
+
+                            disposable.dispose();
+                        }
+                    });
         });
     }
 

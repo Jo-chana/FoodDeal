@@ -219,21 +219,12 @@ public class ChatActivity extends AppCompatActivity {
                             if (!uid.equals(key))
                                 unreadUserCountMap.put(key, unreadUserCountMap.get(key) + 1);
                         }
-                        documentSnapshot.getReference().update("unreadMemberCountMap", unreadUserCountMap);
-
-                        batch.commit()
-                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        documentSnapshot.getReference()
+                                .update("unreadMemberCountMap", unreadUserCountMap)
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
-                                    public void onComplete(@NonNull Task<Void> task) {
-                                        if (task.isSuccessful()) {
-//                                            sendBtn.setEnabled(true);
-                                        }
-                                    }
-                                })
-                                .addOnCanceledListener(new OnCanceledListener() {
-                                    @Override
-                                    public void onCanceled() {
-                                        Toast.makeText(getApplicationContext(), "캔슬", Toast.LENGTH_LONG).show();
+                                    public void onSuccess(Void aVoid) {
+                                        batch.commit();
                                     }
                                 })
                                 .addOnFailureListener(new OnFailureListener() {
@@ -242,6 +233,28 @@ public class ChatActivity extends AppCompatActivity {
                                         Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_LONG).show();
                                     }
                                 });
+
+//                        batch.commit()
+//                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+//                                    @Override
+//                                    public void onComplete(@NonNull Task<Void> task) {
+//                                        if (task.isSuccessful()) {
+////                                            sendBtn.setEnabled(true);
+//                                        }
+//                                    }
+//                                })
+//                                .addOnCanceledListener(new OnCanceledListener() {
+//                                    @Override
+//                                    public void onCanceled() {
+//                                        Toast.makeText(getApplicationContext(), "캔슬", Toast.LENGTH_LONG).show();
+//                                    }
+//                                })
+//                                .addOnFailureListener(new OnFailureListener() {
+//                                    @Override
+//                                    public void onFailure(@NonNull Exception e) {
+//                                        Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_LONG).show();
+//                                    }
+//                                });
                     }
                 });
     }
@@ -409,7 +422,7 @@ public class ChatActivity extends AppCompatActivity {
 
         @Override
         public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-            // TODO messageType이 String 형식임을 주의!
+            // messageType이 String 형식임을 주의!
             final MessageViewHolder messageViewHolder = (MessageViewHolder) holder;
             final Message message = messageList.get(position);
 

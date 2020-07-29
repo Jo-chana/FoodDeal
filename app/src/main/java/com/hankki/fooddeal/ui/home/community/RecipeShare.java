@@ -57,15 +57,18 @@ public class RecipeShare extends Fragment {
 
         disposable = Observable.fromCallable(new Callable<Object>() {
             @Override
-            public Object call() throws Exception { return false; }
-        })
+            public Object call() throws Exception {
+                updatePostItems();
 
+                return false;
+            }
+        })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<Object>() {
                     @Override
                     public void accept(Object result) throws Exception {
-                        updatePostItems();
+
                         if(pageFrom.equals("Main")) {
                             setRecyclerView();
                             setPostWrite();
@@ -74,18 +77,10 @@ public class RecipeShare extends Fragment {
                         }
                         setRefresh();
                         progressBar.setVisibility(View.GONE);
-//                        customAnimationDialog.dismiss();
                         disposable.dispose();
                     }
                 });
 
-        // 다이얼로그 이전 버전
-        /*if(pageFrom.equals("Main")) {
-            setRecyclerView();
-            setPostWrite();
-        } else {
-            setMyPostOption();
-        }*/
         return view;
     }
 
@@ -135,14 +130,8 @@ public class RecipeShare extends Fragment {
         setRecyclerViewOption.build(1);
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        if(pageFrom.equals("Main"))
-            setRecyclerViewOption.update();
-    }
-
     public void updatePostItems(){
+        postItems = null;
         if(pageFrom.equals("Main")){
             postItems = BoardController.getBoardList(getContext(), category);
         } else if (pageFrom.equals("My")){
@@ -156,13 +145,27 @@ public class RecipeShare extends Fragment {
         postItems = null;
         swipeRefreshLayout = view.findViewById(R.id.srl_recipe);
         swipeRefreshLayout.setOnRefreshListener(() -> {
-            updatePostItems();
-            while(postItems==null);
-            setRecyclerViewOption.setPostItems(postItems);
-            setRecyclerViewOption.setTag(pageFrom);
-            setRecyclerViewOption.build(1);
+            disposable = Observable.fromCallable(new Callable<Object>() {
+                @Override
+                public Object call() throws Exception {
+                    updatePostItems();
 
-            swipeRefreshLayout.setRefreshing(false);
+                    return false;
+                }
+            })
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Consumer<Object>() {
+                        @Override
+                        public void accept(Object result) throws Exception {
+                            setRecyclerViewOption.setPostItems(postItems);
+                            setRecyclerViewOption.setTag(pageFrom);
+                            setRecyclerViewOption.build(1);
+                            swipeRefreshLayout.setRefreshing(false);
+
+                            disposable.dispose();
+                        }
+                    });
         });
     }
 }

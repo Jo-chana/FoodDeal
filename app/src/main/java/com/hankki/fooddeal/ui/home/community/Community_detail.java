@@ -134,7 +134,7 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
 
     Disposable disposable;
 
-    ProgressBar progressBar;
+//    ProgressBar progressBar;
 
 //    CustomAnimationDialog customAnimationDialog;
 
@@ -339,7 +339,7 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
 
     @SuppressLint("SetTextI18n")
     public void setPostCommon() {
-        progressBar = findViewById(R.id.customDialog_progressBar);
+//        progressBar = findViewById(R.id.customDialog_progressBar);
         vp_image = findViewById(R.id.vp_image);
         vp_image.setVisibility(View.GONE);
         trickView = findViewById(R.id.trick);
@@ -417,7 +417,7 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
     /*조찬아 @TODO 수정 모드일 때 Null pointer 오류 수정할 것*/
     private void setBroadPostImages(String date) {
 //        customAnimationDialog.show();
-        progressBar.setVisibility(View.VISIBLE);
+//        progressBar.setVisibility(View.VISIBLE);
         disposable = Observable.fromCallable((Callable<Object>) () -> {
             for(int i=0;i<4;i++) {
                 StorageReference downloadImageRef = FirebaseStorage.getInstance().getReference().child("PostPhotos/" + date + "/" + Integer.toString(i) + ".jpg");
@@ -442,7 +442,7 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
 //                        disposable.dispose();
 //                    customAnimationDialog.dismiss();
                     setImageViewPager();
-                    progressBar.setVisibility(View.GONE);
+//                    progressBar.setVisibility(View.GONE);
                     Log.e("#########", "setImageViewPager 실행");
                 });
     }

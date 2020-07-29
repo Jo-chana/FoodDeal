@@ -99,7 +99,6 @@ public class HomeFragment extends Fragment {
 
     public void setLocation(){
         tv_location = view.findViewById(R.id.tv_location);
-        tv_location.setText(PreferenceManager.getString(getContext(),"region3Depth"));
         tv_location.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -134,20 +133,4 @@ public class HomeFragment extends Fragment {
                 (tab, position) -> tab.setText(names[position])
         ).attach();
     }
-
-//    public void filterButtonClickListener(){
-//        btn_filter.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                NavHostFragment navHostFragment = (NavHostFragment) ((MainActivity) MainActivity.mainContext)
-//                        .getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
-//                List<Fragment> fragments = navHostFragment.getChildFragmentManager().getFragments().get(0)
-//                        .getChildFragmentManager().getFragments();
-//                ((ExchangeAndShare) fragments.get(0)).distanceSorting();
-//                ((RecipeShare)fragments.get(1)).distanceSorting();
-//                ((FreeCommunity)fragments.get(2)).distanceSorting();
-//            }
-//        });
-//    }
-
 }

@@ -66,10 +66,7 @@ public class BoardController {
                             String url = getThumbnailUrl(boardResponse.getInsertDate());
                             PostItem item = new PostItem();
                             item.onBindBoardApi(context, boardResponse, url);
-
-                            if (!boardResponse.getDelYn().equals("Y")) {
-                                postItems.add(0,item);
-                            }
+                            postItems.add(0,item);
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -189,10 +186,7 @@ public class BoardController {
                         for (CommentListResponse.CommentResponse comment : commentResponses) {
                             CommentItem item = new CommentItem();
                             item.onBindCommentApi(comment);
-
-                            if(item.getDelYn().equals("N")){
-                                items.add(item);
-                            }
+                            items.add(item);
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -370,9 +364,7 @@ public class BoardController {
                             for (BoardListResponse.BoardResponse boardResponse : boardResponses) {
                                 PostItem item = new PostItem();
                                 item.onBindBoardApi(context, boardResponse, getThumbnailUrl(boardResponse.getInsertDate()));
-                                if (!item.getDelYN().equals("Y")) {
-                                    items.add(item);
-                                }
+                                items.add(item);
                             }
                         }
                     } catch (IOException | ParseException e) {
@@ -404,10 +396,8 @@ public class BoardController {
                             for (BoardListResponse.BoardResponse boardResponse : boardResponses) {
                                 PostItem item = new PostItem();
                                 item.onBindBoardApi(context, boardResponse, getThumbnailUrl(boardResponse.getInsertDate()));
-                                if (!item.getDelYN().equals("Y")) {
-                                    if (item.getCategory().equals(category))
-                                        items.add(0,item);
-                                }
+                                if (item.getCategory().equals(category))
+                                    items.add(0,item);
                             }
                         }
                     } catch (IOException | ParseException e) {
@@ -439,7 +429,7 @@ public class BoardController {
                             for (BoardListResponse.BoardResponse boardResponse : boardResponses) {
                                 PostItem item = new PostItem();
                                 item.onBindBoardApi(context, boardResponse, getThumbnailUrl(boardResponse.getInsertDate()));
-                                if (!item.getDelYN().equals("Y") && item.getCategory().equals("RECIPE")) {
+                                if (item.getCategory().equals("RECIPE")) {
                                     items.add(0,item);
                                 }
                             }
@@ -473,7 +463,7 @@ public class BoardController {
                             for (BoardListResponse.BoardResponse boardResponse : boardResponses) {
                                 PostItem item = new PostItem();
                                 item.onBindBoardApi(context, boardResponse, getThumbnailUrl(boardResponse.getInsertDate()));
-                                if (!item.getDelYN().equals("Y") && item.getCategory().equals("FREE")) {
+                                if (item.getCategory().equals("FREE")) {
                                     items.add(0,item);
                                 }
                             }
@@ -507,9 +497,7 @@ public class BoardController {
                             for (BoardListResponse.BoardResponse boardResponse : boardResponses) {
                                 PostItem item = new PostItem();
                                 item.onBindBoardApi(context, boardResponse, getThumbnailUrl(boardResponse.getInsertDate()));
-                                if (!item.getDelYN().equals("Y")) {
-                                    items.add(0,item);
-                                }
+                                items.add(0,item);
                             }
                         }
                     } catch (IOException | ParseException e) {
@@ -541,10 +529,8 @@ public class BoardController {
                             for (BoardListResponse.BoardResponse boardResponse : boardResponses) {
                                 PostItem item = new PostItem();
                                 item.onBindBoardApi(context, boardResponse, getThumbnailUrl(boardResponse.getInsertDate()));
-                                if (!item.getDelYN().equals("Y")) {
-                                    if (item.getCategory().equals(category))
-                                        items.add(0,item);
-                                }
+                                if (item.getCategory().equals(category))
+                                    items.add(0,item);
                             }
                         }
                     } catch (IOException | ParseException e) {
@@ -576,7 +562,7 @@ public class BoardController {
                             for (BoardListResponse.BoardResponse boardResponse : boardResponses) {
                                 PostItem item = new PostItem();
                                 item.onBindBoardApi(context, boardResponse, getThumbnailUrl(boardResponse.getInsertDate()));
-                                if (!item.getDelYN().equals("Y") && item.getCategory().equals("RECIPE")) {
+                                if (item.getCategory().equals("RECIPE")) {
                                     items.add(0,item);
                                 }
                             }
@@ -610,7 +596,7 @@ public class BoardController {
                             for (BoardListResponse.BoardResponse boardResponse : boardResponses) {
                                 PostItem item = new PostItem();
                                 item.onBindBoardApi(context, boardResponse, getThumbnailUrl(boardResponse.getInsertDate()));
-                                if (!item.getDelYN().equals("Y") && item.getCategory().equals("FREE")) {
+                                if (item.getCategory().equals("FREE")) {
                                     items.add(0,item);
                                 }
                             }
