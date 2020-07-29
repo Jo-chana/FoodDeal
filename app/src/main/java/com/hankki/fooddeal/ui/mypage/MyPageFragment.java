@@ -55,7 +55,7 @@ public class MyPageFragment extends Fragment {
     ImageView iv_my_profile;
     TextView tv_my_name;
     Button btn_profile_revise;
-
+    CustomPostImageDialog dialog;
     String uid;
 
     View view;
@@ -94,8 +94,7 @@ public class MyPageFragment extends Fragment {
         btn_profile_revise.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CustomPostImageDialog dialog = new CustomPostImageDialog(getContext());
-                dialog.setMyPageMode();
+                dialog = new CustomPostImageDialog(getContext(), "my",galleryListener);
                 dialog.setCanceledOnTouchOutside(false);
                 dialog.show();
             }
@@ -264,4 +263,12 @@ public class MyPageFragment extends Fragment {
             tv_my_name.setText("게스트");
         }
     }
+
+    public View.OnClickListener galleryListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            tedPermission();
+            dialog.dismiss();
+        }
+    };
 }
