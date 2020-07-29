@@ -306,6 +306,7 @@ public class ExchangeAndShare extends Fragment {
 
     public void setRefresh(){
         swipeRefreshLayout = view.findViewById(R.id.srl_exchange);
+        swipeRefreshLayout.setDistanceToTriggerSync(400);
         swipeRefreshLayout.setOnRefreshListener(() -> {
             disposable = Observable.fromCallable(new Callable<Object>() {
                 @Override

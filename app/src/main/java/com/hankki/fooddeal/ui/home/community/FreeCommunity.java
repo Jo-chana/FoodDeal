@@ -150,6 +150,7 @@ public class FreeCommunity extends Fragment {
     public void setRefresh(){
         postItems = null;
         swipeRefreshLayout = view.findViewById(R.id.srl_free);
+        swipeRefreshLayout.setDistanceToTriggerSync(400);
         swipeRefreshLayout.setOnRefreshListener(() -> {
             disposable = Observable.fromCallable(new Callable<Object>() {
                 @Override

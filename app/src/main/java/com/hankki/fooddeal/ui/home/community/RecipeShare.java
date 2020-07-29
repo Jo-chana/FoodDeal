@@ -144,6 +144,7 @@ public class RecipeShare extends Fragment {
     public void setRefresh(){
         postItems = null;
         swipeRefreshLayout = view.findViewById(R.id.srl_recipe);
+        swipeRefreshLayout.setDistanceToTriggerSync(400);
         swipeRefreshLayout.setOnRefreshListener(() -> {
             disposable = Observable.fromCallable(new Callable<Object>() {
                 @Override
