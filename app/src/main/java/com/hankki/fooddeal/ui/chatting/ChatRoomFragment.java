@@ -277,7 +277,7 @@ public class ChatRoomFragment extends Fragment {
         }
     }
 
-    // TODO 이걸 게시판 상세페이지 채팅하기 버튼이나 공동구매 시작하기 버튼 이벤트로 달아주면 됨
+    // 이걸 게시판 상세페이지 채팅하기 버튼이나 공동구매 시작하기 버튼 이벤트로 달아주면 됨
 //    private void createChattingRoom(final DocumentReference room, String roomID, List<String> userList, HashMap<String, Integer> unreadUserCountMap) {
 ////        String uid = AES256Util.aesDecode(FirebaseAuth.getInstance().getCurrentUser().getUid());
 //

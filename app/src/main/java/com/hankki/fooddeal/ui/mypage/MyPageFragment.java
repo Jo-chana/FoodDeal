@@ -9,6 +9,7 @@ import android.graphics.drawable.shapes.OvalShape;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,6 +29,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -45,6 +47,12 @@ import com.hankki.fooddeal.ux.dialog.CustomPostImageDialog;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.List;
+import java.util.concurrent.Callable;
+
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
@@ -59,6 +67,7 @@ public class MyPageFragment extends Fragment {
     CustomPostImageDialog dialog;
     String uid;
     ProgressBar progressBar;
+    Disposable disposable;
 
     View view;
 
@@ -73,13 +82,14 @@ public class MyPageFragment extends Fragment {
             uid = "";
         }
 
+        progressBar = view.findViewById(R.id.customDialog_progressBar);
+
         setViewComponents();
 
         return view;
     }
 
     public void setViewComponents(){
-
         iv_my_profile = view.findViewById(R.id.iv_my_profile);
         iv_my_profile.setBackground(new ShapeDrawable(new OvalShape()));
         iv_my_profile.setClipToOutline(true);
@@ -129,7 +139,6 @@ public class MyPageFragment extends Fragment {
             }
         });
 
-        // 사용자 닉네임도 필요할듯?
         setUserProfile();
     }
 
@@ -162,25 +171,32 @@ public class MyPageFragment extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 0) {
             if (resultCode == RESULT_OK) {
-                try {
-                    InputStream in = getContext().getContentResolver().openInputStream(data.getData());
+                progressBar.setVisibility(View.VISIBLE);
+                disposable = Observable.fromCallable((Callable<Object>) () -> {
+                    try {
+                        InputStream in = getContext().getContentResolver().openInputStream(data.getData());
 
-                    Bitmap img = BitmapFactory.decodeStream(in);
-                    in.close();
-//                    iv_my_profile.setImageBitmap(img);
-//                    iv_my_profile.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                    /**내 프로필 사진 DB 반영*/
+                        Bitmap img = BitmapFactory.decodeStream(in);
+                        in.close();
 
+                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                        img.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                        byte[] imageData = baos.toByteArray();
 
-                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                    img.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-                    byte[] imageData = baos.toByteArray();
+                        uploadUserProfilePhoto(imageData);
 
-                    uploadUserProfilePhoto(imageData);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
 
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                    return false;
+                })
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(result -> {
+                            disposable.dispose();
+                        });
+
             } else if (resultCode == RESULT_CANCELED) {
                 Toast.makeText(getContext(), "사진 선택 취소", Toast.LENGTH_LONG).show();
             }
@@ -194,7 +210,7 @@ public class MyPageFragment extends Fragment {
             @Override
             public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
                 if (!task.isSuccessful()) {
-                    throw task.getException();
+                    Toast.makeText(getContext(), "이미지 저장 실패", Toast.LENGTH_SHORT).show();
                 }
 
                 return storageReference.getDownloadUrl();
@@ -205,7 +221,6 @@ public class MyPageFragment extends Fragment {
                 if(task.isSuccessful()) {
                     Uri downloadUri = task.getResult();
 
-                    Toast.makeText(getContext(), "이미지 저장 성공 및 URL 리턴 성공", Toast.LENGTH_SHORT).show();
                     updateUserProfilePhoto(downloadUri);
                 } else {
                     Toast.makeText(getContext(), "이미지 다운로드 URL 저장 실패", Toast.LENGTH_SHORT).show();
@@ -223,13 +238,13 @@ public class MyPageFragment extends Fragment {
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        Toast.makeText(getContext(), "이미지 업로드 및 이미지 URL 업데이트 성공", Toast.LENGTH_SHORT).show();
+                        progressBar.setVisibility(View.GONE);
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(getContext(), "이미지 URL 업데이트 실패", Toast.LENGTH_SHORT).show();
+                        progressBar.setVisibility(View.GONE);
                     }
                 });
     }
