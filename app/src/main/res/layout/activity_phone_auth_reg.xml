@@ -182,7 +182,7 @@
         android:id="@+id/login_button"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="@drawable/main_color_button_style"
+        android:background="@drawable/phoneauth_btn_background"
         android:enabled="false"
         android:text="@string/activity_phone_auth_post_button"
         android:textStyle="bold"
