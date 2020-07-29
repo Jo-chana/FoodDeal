@@ -10,6 +10,8 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.shapes.OvalShape;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -77,8 +79,11 @@ public class ChatActivity extends AppCompatActivity {
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
     private SimpleDateFormat dateFormatDay = new SimpleDateFormat("yyyy-MM-dd");
     private SimpleDateFormat dateFormatHour = new SimpleDateFormat("aa hh:mm");
-    private String roomId, roomTitle, uid;
+    private String roomId, roomTitle, uid, hostUID;
     private Integer userTotal;
+    private View toolbar;
+    private TextView toolbar_title;
+    private ImageView back_button;
 
     private ListenerRegistration messageListenerRegistration;
 
@@ -91,9 +96,11 @@ public class ChatActivity extends AppCompatActivity {
         setContentView(R.layout.activity_chat);
         if (getIntent() != null) {
             roomId = getIntent().getStringExtra("roomID");
-            roomTitle = getIntent().getStringExtra("roomTitle");                    // 채팅방의 이름으로 쓸 게시글 타이틀
-            userTotal = getIntent().getIntExtra("userTotal", -1);        // 각 채팅마다 안 읽은 사람을 표시하기 위해 필요한 건데 채팅을 하다가 새로운 사람이 들어온 경우를
+            roomTitle = getIntent().getStringExtra("roomTitle");              // 채팅방의 이름으로 쓸 게시글 타이틀
+            userTotal = getIntent().getIntExtra("userTotal", -1);
+            // 각 채팅마다 안 읽은 사람을 표시하기 위해 필요한 건데 채팅을 하다가 새로운 사람이 들어온 경우를
             // 처리못하기 때문에 메시지 리스너에서 userTotal을 계속 처리해줘야할듯
+            hostUID = getIntent().getStringExtra("hostHashId");
         }
         uid = AES256Util.aesDecode(FirebaseAuth.getInstance().getCurrentUser().getUid());
         firestore = FirebaseFirestore.getInstance();
@@ -112,6 +119,15 @@ public class ChatActivity extends AppCompatActivity {
                 msg_input.setText("");
             }
         });
+
+        toolbar = findViewById(R.id.toolbar);
+        toolbar_title = toolbar.findViewById(R.id.toolbar_title);
+        toolbar_title.setText(roomTitle);
+        back_button = toolbar.findViewById(R.id.back_button);
+        back_button.setOnClickListener(v -> {
+            onBackPressed();
+        });
+
 
         recyclerView = findViewById(R.id.recyclerView);
         linearLayoutManager = new LinearLayoutManager(getApplicationContext());
@@ -450,12 +466,28 @@ public class ChatActivity extends AppCompatActivity {
 
             if (!uid.equals(message.getMessageSenderUid())) {
                 messageViewHolder.msg_name.setText(message.getMessageSenderUid());
+                try {
+                    DocumentReference documentReference = FirebaseFirestore.getInstance().collection("users")
+                            .document(hostUID);
+                    documentReference
+                            .get()
+                            .addOnCompleteListener(task -> {
+                                DocumentSnapshot snapshot = task.getResult();
+                                if (!snapshot.get("userPhotoUri").equals("")) {
 
-                Glide
-                        .with(getApplicationContext())
-                        .load(R.drawable.ic_user)
-                        .apply(requestOptions)
-                        .into(messageViewHolder.user_photo);
+                                    Glide
+                                            .with(getApplicationContext())
+                                            .load(snapshot.get("userPhotoUri"))
+                                            .into(messageViewHolder.user_photo);
+                                    messageViewHolder.user_photo.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                                    messageViewHolder.user_photo.setClipToOutline(true);
+                                }
+                            });
+                } catch (Exception e){
+                    messageViewHolder.user_photo.setImageResource(R.drawable.ic_group_rec_60dp);
+                    messageViewHolder.user_photo.setScaleType(ImageView.ScaleType.FIT_XY);
+                    messageViewHolder.user_photo.setClipToOutline(true);
+                }
                 /*if (userModel.getUserphoto() == null) {
                     Glide.with(getContext()).load(R.drawable.user)
                             .apply(requestOptions)

@@ -113,25 +113,28 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentViewHolder> {
 
         });
 
-        if(!item.getUserHashId().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())){
-            holder.tv_btn_delete.setVisibility(View.GONE);
-        } else {
-            holder.tv_btn_delete.setOnClickListener(v -> {
-                AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                builder.setMessage("댓글을 삭제하시겠습니까?");
-                builder.setPositiveButton("네", ((dialog, which) -> {
-                    if(BoardController.commentDelete(context,item)){
-                        Toast.makeText(context, "댓글을 삭제했습니다.", Toast.LENGTH_SHORT).show();
-                        holder.commentView.setVisibility(View.GONE);
-                        holder.commentView.getLayoutParams().height=0;
-                    } else {
-                        Toast.makeText(context, "실패!", Toast.LENGTH_SHORT).show();
-                    }
-                })).setNegativeButton("아니오",(dialog, which) -> {});
+        if(FirebaseAuth.getInstance().getCurrentUser()!=null) {
+            if (!item.getUserHashId().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
+                holder.tv_btn_delete.setVisibility(View.GONE);
+            } else {
+                holder.tv_btn_delete.setOnClickListener(v -> {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                    builder.setMessage("댓글을 삭제하시겠습니까?");
+                    builder.setPositiveButton("네", ((dialog, which) -> {
+                        if (BoardController.commentDelete(context, item)) {
+                            Toast.makeText(context, "댓글을 삭제했습니다.", Toast.LENGTH_SHORT).show();
+                            holder.commentView.setVisibility(View.GONE);
+                            holder.commentView.getLayoutParams().height = 0;
+                        } else {
+                            Toast.makeText(context, "실패!", Toast.LENGTH_SHORT).show();
+                        }
+                    })).setNegativeButton("아니오", (dialog, which) -> {
+                    });
 
-                AlertDialog dialog = builder.create();
-                dialog.show();
-            });
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
+                });
+            }
         }
 
         if(childCommentList.get(item.getCommentSeq())!=null &&

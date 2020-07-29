@@ -1,6 +1,8 @@
 package com.hankki.fooddeal.ui.chatting;
 
 import android.content.Intent;
+import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.shapes.OvalShape;
 import android.os.Bundle;
 
 import android.view.LayoutInflater;
@@ -27,6 +29,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -59,6 +62,7 @@ public class ChatRoomFragment extends Fragment {
     private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("hh:mm a", Locale.KOREA);
     private String roomId;
     private String sUID;
+    private String hostUID;
 
     private FirebaseFirestore firestore;
 
@@ -66,6 +70,13 @@ public class ChatRoomFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_chatroom, container, false);
+
+        View toolbar = view.findViewById(R.id.top_toolbar);
+        ImageView backButton = toolbar.findViewById(R.id.back_button);
+        backButton.setVisibility(View.INVISIBLE);
+        TextView title = toolbar.findViewById(R.id.toolbar_title);
+        title.setText("채팅방");
+
 
         if(FirebaseAuth.getInstance().getCurrentUser() != null) {
             sUID = AES256Util.aesDecode(FirebaseAuth.getInstance().getCurrentUser().getUid());
@@ -180,9 +191,27 @@ public class ChatRoomFragment extends Fragment {
 
             roomViewHolder.last_time.setText(simpleDateFormat.format(chatRoomModel.getLastMessageTime()));
 
-            Glide.with(getActivity()).load(R.drawable.ic_user)
-                    .apply(requestOptions)
-                    .into(roomViewHolder.room_image);
+//            Glide.with(getActivity()).load(R.drawable.ic_user)
+//                    .apply(requestOptions)
+//                    .into(roomViewHolder.room_image);
+            try {
+                DocumentReference documentReference = FirebaseFirestore.getInstance().collection("users")
+                        .document(hostUID);
+                documentReference
+                        .get()
+                        .addOnCompleteListener(task -> {
+                            DocumentSnapshot snapshot = task.getResult();
+                            if (!snapshot.get("userPhotoUri").equals("")) {
+
+                                Glide
+                                        .with(getContext())
+                                        .load(snapshot.get("userPhotoUri"))
+                                        .into(roomViewHolder.room_image);
+                            }
+                        });
+            } catch (Exception e){
+                roomViewHolder.room_image.setImageResource(R.drawable.ic_group_rec_60dp);
+            }
 
             if (chatRoomModel.getRoomUserList().size() > 2) {
                 roomViewHolder.room_count.setText(Integer.toString(chatRoomModel.getRoomUserList().size()));
@@ -224,6 +253,7 @@ public class ChatRoomFragment extends Fragment {
             RoomViewHolder(View view) {
                 super(view);
                 room_image = view.findViewById(R.id.room_image);
+                room_image.setClipToOutline(true);
                 room_title = view.findViewById(R.id.room_title);
                 last_msg = view.findViewById(R.id.last_msg);
                 last_time = view.findViewById(R.id.last_time);

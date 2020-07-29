@@ -17,4 +17,5 @@
     <color name="grey_50">#fafafa</color>
     <color name="original_third">#5856d6</color>
     <color name="original_green">#4cd964</color>
+    <color name="transparent">#00000000</color>
 </resources>

@@ -14,11 +14,13 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.hankki.fooddeal.R;
 import com.hankki.fooddeal.data.PreferenceManager;
 
+import java.util.Objects;
+
 public class MySettingActivity extends AppCompatActivity {
 
     View toolbarView;
     TextView toolbarTextView;
-    ImageView iv_logout, iv_bye_bye;
+    ImageView iv_logout, iv_bye_bye, back_button;
     Context mContext;
 
     @Override
@@ -33,57 +35,39 @@ public class MySettingActivity extends AppCompatActivity {
         toolbarView = findViewById(R.id.top_toolbar);
         toolbarTextView = toolbarView.findViewById(R.id.toolbar_title);
         toolbarTextView.setText("설정");
+        back_button = toolbarView.findViewById(R.id.back_button);
+        back_button.setOnClickListener(v -> onBackPressed());
 
         iv_logout = findViewById(R.id.iv_logout);
         iv_bye_bye = findViewById(R.id.iv_bye_bye);
 
-        iv_logout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(mContext);
-                builder.setMessage("로그아웃 하시겠습니까?");
-                builder.setPositiveButton("확인", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        PreferenceManager.removeKey(mContext,"userToken");
-                        FirebaseAuth.getInstance().signOut();
-                        finishAffinity();
-                    }
-                }).setNegativeButton("취소", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        return;
-                    }
-                });
-                AlertDialog alertDialog = builder.create();
-                alertDialog.show();
-            }
+        iv_logout.setOnClickListener(v -> {
+            AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+            builder.setMessage("로그아웃 하시겠습니까?");
+            builder.setPositiveButton("확인", (dialog, which) -> {
+                PreferenceManager.removeKey(mContext,"userToken");
+                FirebaseAuth.getInstance().signOut();
+                finishAffinity();
+            }).setNegativeButton("취소", (dialog, which) -> {
+            });
+            AlertDialog alertDialog = builder.create();
+            alertDialog.show();
         });
 
-        iv_bye_bye.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                /**회원탈퇴*/
-                androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(mContext);
-                builder.setMessage("가지마요...우리 좋았잖아");
-                builder.setPositiveButton("잘있어", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        AlertDialog alertDialog = builder.create();
-                        alertDialog.show();
-                        PreferenceManager.removeKey(mContext,"userToken");
-                        FirebaseAuth.getInstance().getCurrentUser().delete();
-                        finishAffinity();
-                    }
-                }).setNegativeButton("안갈게", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        return;
-                    }
-                });
+        iv_bye_bye.setOnClickListener(v -> {
+            /**회원탈퇴*/
+            AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+            builder.setMessage("가지마요...우리 좋았잖아");
+            builder.setPositiveButton("잘있어", (dialog, which) -> {
                 AlertDialog alertDialog = builder.create();
                 alertDialog.show();
-            }
+                PreferenceManager.removeKey(mContext,"userToken");
+                Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).delete();
+                finishAffinity();
+            }).setNegativeButton("안갈게", (dialog, which) -> {
+            });
+            AlertDialog alertDialog = builder.create();
+            alertDialog.show();
         });
     }
 }

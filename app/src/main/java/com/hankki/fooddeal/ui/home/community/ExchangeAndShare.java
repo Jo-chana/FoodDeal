@@ -219,6 +219,12 @@ public class ExchangeAndShare extends Fragment {
     }
 
     public void distanceSorting(){
+        BoardController.option = "distance";
+        setRecyclerViewOption.sortPostItems();
+    }
+
+    public void timeSorting(){
+        BoardController.option = "time";
         setRecyclerViewOption.sortPostItems();
     }
 
@@ -256,6 +262,7 @@ public class ExchangeAndShare extends Fragment {
                         String title = item.getTitle().toString();
                         if(title.equals("시간순 정렬")){
                             Toast.makeText(getContext(),"최근의 게시글을 먼저 보여줍니다", Toast.LENGTH_SHORT).show();
+                            timeSorting();
                         } else if (title.equals("거리순 정렬")){
                             Toast.makeText(getContext(), "가까운 곳의 게시글을 먼저 보여줍니다", Toast.LENGTH_SHORT).show();
                             distanceSorting();

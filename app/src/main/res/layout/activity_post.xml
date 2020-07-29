@@ -139,7 +139,7 @@
                 <EditText
                     android:id="@+id/et_post_title"
                     android:lines="1"
-                    android:background="@drawable/round_edittext"
+                    android:background="@drawable/post_edittext_background"
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
                     android:paddingLeft="15dp"
@@ -181,7 +181,7 @@
 
                 <EditText
                     android:id="@+id/et_post_post"
-                    android:background="@drawable/round_edittext"
+                    android:background="@drawable/post_edittext_background"
                     android:layout_width="match_parent"
                     android:layout_height="200dp"
                     android:padding="15dp"

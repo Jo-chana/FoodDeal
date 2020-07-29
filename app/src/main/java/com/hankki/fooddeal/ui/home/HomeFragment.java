@@ -2,6 +2,7 @@ package com.hankki.fooddeal.ui.home;
 
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,6 +14,8 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
 
@@ -31,6 +34,7 @@ import com.hankki.fooddeal.ux.dialog.HomeLocationDialog;
 import com.hankki.fooddeal.ux.viewpager.viewPagerAdapter;
 
 import java.util.concurrent.Callable;
+import java.util.zip.Inflater;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -109,32 +113,18 @@ public class HomeFragment extends Fragment {
 
     public void setLocation(){
         tv_location = view.findViewById(R.id.tv_location);
-        tv_location.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                HomeLocationDialog dialog = new HomeLocationDialog(getContext());
-                dialog.setCanceledOnTouchOutside(false);
-                dialog.show();
-            }
+
+        btn_location.setOnClickListener(v -> {
+            HomeLocationDialog dialog = new HomeLocationDialog(getContext());
+            dialog.setCanceledOnTouchOutside(false);
+            dialog.show();
+        });
+        tv_location.setOnClickListener(v -> {
+            HomeLocationDialog dialog = new HomeLocationDialog(getContext());
+            dialog.setCanceledOnTouchOutside(false);
+            dialog.show();
         });
 
-        btn_location.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                PopupMenu p = new PopupMenu(getContext(),v);
-                ((MainActivity)MainActivity.mainContext).getMenuInflater().inflate(R.menu.menu_location,p.getMenu());
-                p.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
-                        Intent intent = new Intent(getActivity(), AddressActivity.class);
-                        startActivity(intent);
-
-                        return false;
-                    }
-                });
-                p.show();
-            }
-        });
     }
 
     /**탭으로 구성할 Fragments 리스트*/

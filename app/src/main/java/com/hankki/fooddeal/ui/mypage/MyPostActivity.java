@@ -7,6 +7,7 @@ import androidx.viewpager2.widget.ViewPager2;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.android.material.tabs.TabLayout;
@@ -26,6 +27,7 @@ public class MyPostActivity extends AppCompatActivity {
     viewPagerAdapter viewPagerAdapter;
     View toolbarView;
     TextView toolbarTextView;
+    ImageView back_button;
     Intent intent;
     String tag;
 
@@ -45,6 +47,10 @@ public class MyPostActivity extends AppCompatActivity {
     public void setMyPosts(){
         toolbarView = findViewById(R.id.post_toolbar);
         toolbarTextView = toolbarView.findViewById(R.id.toolbar_title);
+        back_button = toolbarView.findViewById(R.id.back_button);
+        back_button.setOnClickListener(v -> {
+            onBackPressed();
+        });
 
         String mode = intent.getStringExtra("Mode");
         if(mode.equals("my_post")) {

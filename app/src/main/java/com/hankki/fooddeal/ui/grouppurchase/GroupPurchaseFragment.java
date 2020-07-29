@@ -122,6 +122,11 @@ public class GroupPurchaseFragment extends Fragment {
         item1.setJoinNum(3);
         item1.setOriginPrice(15000);
         item1.setTitle("[보배농장] 꿀맛 청송사과 2KG 5KG 10KG 공동구매");
+        item1.setDetailInfo("중량 2 ~ 10 KG");
+        item1.setSender("대한통운");
+        item1.setTimeToReceive("3일 내 배송완료");
+        item1.setAbsoluteTime(180000);
+        item1.setDistance(100);
 
         PurchaseItem item2 = new PurchaseItem();
         item2.setImageUrl("https://thumbnail9.coupangcdn.com/thumbnails/remote/492x492ex/image/vendor_inventory/9d69/4be6b630db857401a52a9e0ada1a006d5b45aa317fcf37acf0a30b00c235.jpg");
@@ -130,6 +135,11 @@ public class GroupPurchaseFragment extends Fragment {
         item2.setJoinNum(2);
         item2.setOriginPrice(21500);
         item2.setTitle("켈로그 콘푸로스트 30g X 25개 아침 식사 대용 시리얼 콘프로스트 대용량");
+        item2.setDetailInfo("중량 30g X 25");
+        item2.setSender("쿠팡 로켓배송");
+        item2.setTimeToReceive("1일 내 배송완료");
+        item2.setAbsoluteTime(360000);
+        item2.setDistance(20);
 
         PurchaseItem item3 = new PurchaseItem();
         item3.setImageUrl("https://thumbnail6.coupangcdn.com/thumbnails/remote/492x492ex/image/product/image/vendoritem/2019/03/22/3081976223/98fb84c9-1d8a-461a-bbce-34042c4a1ed9.jpg");
@@ -138,6 +148,11 @@ public class GroupPurchaseFragment extends Fragment {
         item3.setJoinNum(4);
         item3.setOriginPrice(60000);
         item3.setTitle("크라운 츄러스 스낵");
+        item3.setDetailInfo("중량 2KG");
+        item3.setSender("한진택배");
+        item3.setTimeToReceive("2~3일 내 배송완료");
+        item3.setAbsoluteTime(1581000);
+        item3.setDistance(120);
 
         purchaseItems.add(item1);
         purchaseItems.add(item2);

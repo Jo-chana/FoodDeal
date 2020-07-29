@@ -42,6 +42,7 @@ import retrofit2.Call;
 
 public class BoardController {
     public static APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
+    public static String option = "distance";
 
     public static ArrayList<PostItem> getBoardList(Context context, String boardCode) {
         Log.d("############", "getBoardList Start");

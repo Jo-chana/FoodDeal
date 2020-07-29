@@ -150,13 +150,13 @@ public class LoginActivity extends AppCompatActivity {
                         int selection = passwordEditText.getSelectionEnd();
                         if (isPasswordVisible) {
                             // set drawable image
-                            passwordEditText.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_password_eye_close, 0);
+                            passwordEditText.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_icon_visibility_off, 0);
                             // hide Password
                             passwordEditText.setTransformationMethod(PasswordTransformationMethod.getInstance());
                             isPasswordVisible = false;
                         } else {
                             // set drawable image
-                            passwordEditText.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_password_eye_open, 0);
+                            passwordEditText.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_icon_visibility_on, 0);
                             // show Password
                             passwordEditText.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
                             isPasswordVisible = true;

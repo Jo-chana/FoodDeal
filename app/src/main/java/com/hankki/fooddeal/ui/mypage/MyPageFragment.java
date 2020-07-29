@@ -39,6 +39,7 @@ import com.gun0912.tedpermission.TedPermission;
 import com.hankki.fooddeal.R;
 import com.hankki.fooddeal.data.PreferenceManager;
 import com.hankki.fooddeal.data.security.AES256Util;
+import com.hankki.fooddeal.ux.dialog.CustomPostImageDialog;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -93,7 +94,10 @@ public class MyPageFragment extends Fragment {
         btn_profile_revise.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                tedPermission();
+                CustomPostImageDialog dialog = new CustomPostImageDialog(getContext());
+                dialog.setMyPageMode();
+                dialog.setCanceledOnTouchOutside(false);
+                dialog.show();
             }
         });
 

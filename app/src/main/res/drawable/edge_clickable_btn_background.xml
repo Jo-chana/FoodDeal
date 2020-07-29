@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-<item android:state_focused="true">
+<item android:state_pressed="true">
 
-    <shape xmlns:android="http://schemas.android.com/apk/res/android"
+    <shape
         android:padding="10dp"
         android:shape="rectangle" >
 
@@ -24,9 +24,9 @@
 </item>
 
 
-<item android:state_focused="false">
+<item android:state_pressed="false">
 
-    <shape xmlns:android="http://schemas.android.com/apk/res/android"
+    <shape
         android:padding="10dp"
         android:shape="rectangle" >
 
@@ -34,7 +34,10 @@
             android:radius="10dp"
             />
 
-        <solid android:color="@color/grey_200" />
+        <solid android:color="@color/original_white" />
+
+        <stroke android:color="@color/grey_400"
+            android:width="2sp"/>
 
 
     </shape>

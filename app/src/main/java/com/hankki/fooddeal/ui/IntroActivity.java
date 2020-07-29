@@ -14,6 +14,7 @@ import com.hankki.fooddeal.data.retrofit.APIInterface;
 import com.hankki.fooddeal.ui.address.GPSTracker;
 import com.hankki.fooddeal.ui.login.LoginActivity;
 import com.hankki.fooddeal.ui.register.PhoneAuthActivity;
+import com.hankki.fooddeal.ui.register.RegisterActivity;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -104,8 +105,8 @@ public class IntroActivity extends AppCompatActivity {
                         Intent main = new Intent(IntroActivity.this, MainActivity.class);
                         startActivity(main);
                     });
-
         });
+
 
         btn_login = findViewById(R.id.btn_login);
         btn_login.setOnClickListener(v -> {

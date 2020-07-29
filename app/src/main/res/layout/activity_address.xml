@@ -24,7 +24,7 @@
         android:id="@+id/btn_current_position"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/main_color_button_style"
+        android:background="@drawable/edge_clickable_btn_background"
         android:text="현위치로 주소 설정"
         android:textColor="#000000"
         android:textSize="14sp"

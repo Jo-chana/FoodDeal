@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
+    android:id="@+id/item_view"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:android="http://schemas.android.com/apk/res/android"
@@ -18,10 +19,38 @@
             android:layout_height="wrap_content"
             app:cardElevation="0dp">
 
-            <LinearLayout
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/tv_purchase_time"
+                    android:background="@drawable/purchase_text_background"
+                    android:text="3분 전"
+                    android:textSize="15sp"
+                    android:textAlignment="center"
+                    android:textColor="@color/original_white"
+                    android:layout_width="70dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginLeft="20dp"
+                    android:paddingTop="5dp"
+                    android:paddingBottom="5dp" />
+
+                <TextView
+                    android:id="@+id/tv_purchase_distance"
+                    android:text="80m"
+                    android:textColor="@color/original_white"
+                    android:textSize="15sp"
+                    android:background="@drawable/purchase_text_background_grey"
+                    android:layout_width="70dp"
+                    android:layout_height="wrap_content"
+                    android:layout_toRightOf="@id/tv_purchase_time"
+                    android:textAlignment="center"
+                    android:paddingTop="5dp"
+                    android:paddingBottom="5dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginLeft="10dp"/>
 
                 <ImageView
                     android:id="@+id/iv_purchase"
@@ -30,6 +59,7 @@
 
 
                 <RelativeLayout
+                    android:layout_below="@id/iv_purchase"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
@@ -105,7 +135,7 @@
                         android:layout_marginLeft="10dp"
                         android:layout_marginBottom="20dp"/>
                 </RelativeLayout>
-            </LinearLayout>
+            </RelativeLayout>
 
         </androidx.cardview.widget.CardView>
     </FrameLayout>

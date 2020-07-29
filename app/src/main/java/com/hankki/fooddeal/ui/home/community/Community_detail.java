@@ -218,8 +218,8 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
 
             // id에 글 등록 시간과 유저리스트가 포함되어 있기 때문에 나중에 해당 게시글의 채팅 참여하기 버튼으로 해당 채팅방 접근 가능
             String roomId = HashMsgUtil.getSHARoomID(mPost.getInsertDate(), roomUserList);
-            String newRoomTitle = "[" + category + "] " + mPost.getBoardTitle();
-
+//            String newRoomTitle = "[" + category + "] " + mPost.getBoardTitle();
+            String newRoomTitle = mPost.getBoardTitle();
             DocumentReference docRef = FirebaseFirestore.getInstance().collection("rooms").document(roomId);
             docRef
                     .get()
@@ -232,6 +232,7 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
                                 intent.putExtra("roomID", roomId);
                                 intent.putExtra("roomTitle", newRoomTitle);
                                 intent.putExtra("userTotal", 2);
+                                intent.putExtra("hostHashId",mPost.getUserHashId());
                                 startActivity(intent);
                             }
                             // 없는 채팅방이면 생성 후 참가
@@ -258,6 +259,7 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
                         intent.putExtra("roomID", roomID);
                         intent.putExtra("roomTitle", roomTitle);
                         intent.putExtra("userTotal", 2);
+                        intent.putExtra("hostHashId",mPost.getUserHashId());
                         startActivity(intent);
                     }
                 })

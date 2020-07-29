@@ -162,6 +162,7 @@ public class PhoneAuthActivity extends AppCompatActivity {
                     authNumCheckButton.setEnabled(true);
                     authNumSendButton.setText("재전송");
                     authNumEditText.requestFocus();
+                    authNumCheckButton.setEnabled(true);
 
                     body.clear();
                 } else { Toast.makeText(getApplicationContext(), "이미 등록된 휴대폰 번호입니다", Toast.LENGTH_LONG).show(); }

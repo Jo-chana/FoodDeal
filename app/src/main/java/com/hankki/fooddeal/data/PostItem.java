@@ -8,6 +8,7 @@ import android.location.Location;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.hankki.fooddeal.data.retrofit.BoardController;
 import com.hankki.fooddeal.data.retrofit.retrofitDTO.BoardListResponse;
 import com.hankki.fooddeal.data.security.AES256Util;
 
@@ -230,7 +231,11 @@ public class PostItem implements Comparable<PostItem>, Parcelable {
 
     @Override
     public int compareTo(PostItem o) {
-        return this.getDistance() - o.getDistance();
+        if(BoardController.option.equals("distance")) {
+            return this.getDistance() - o.getDistance();
+        } else {
+            return (int)this.getAbsoluteTime() - (int)o.getAbsoluteTime();
+        }
     }
 
 

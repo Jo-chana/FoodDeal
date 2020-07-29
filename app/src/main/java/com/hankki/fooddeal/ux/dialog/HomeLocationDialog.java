@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.hankki.fooddeal.R;
+import com.hankki.fooddeal.ui.MainActivity;
 import com.hankki.fooddeal.ui.address.AddressActivity;
 
 public class HomeLocationDialog extends BottomSheetDialog {
