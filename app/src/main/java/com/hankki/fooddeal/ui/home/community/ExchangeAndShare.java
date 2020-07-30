@@ -304,6 +304,16 @@ public class ExchangeAndShare extends Fragment {
         }
     }
 
+    public ArrayList<PostItem> getMapPostItems(){
+        ArrayList<PostItem> items = postItems;
+        if(category.equals("INGREDIENT EXCHANGE")) {
+            items.addAll(BoardController.getBoardList(getContext(),"INGREDIENT SHARE"));
+        } else {
+            items.addAll(BoardController.getBoardList(getContext(),"INGREDIENT EXCHANGE"));
+        }
+        return items;
+    }
+
     public void setRefresh(){
         swipeRefreshLayout = view.findViewById(R.id.srl_exchange);
         swipeRefreshLayout.setDistanceToTriggerSync(400);

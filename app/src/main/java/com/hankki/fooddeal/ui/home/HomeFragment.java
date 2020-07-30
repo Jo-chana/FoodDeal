@@ -105,7 +105,7 @@ public class HomeFragment extends Fragment {
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), MapActivity.class);
                 intent.putParcelableArrayListExtra("Items",
-                        ((ExchangeAndShare)getChildFragmentManager().getFragments().get(0)).getPostItems());
+                        ((ExchangeAndShare)getChildFragmentManager().getFragments().get(0)).getMapPostItems());
                 startActivity(intent);
             }
         });

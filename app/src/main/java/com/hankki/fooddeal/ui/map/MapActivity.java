@@ -15,6 +15,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.hankki.fooddeal.R;
 import com.hankki.fooddeal.data.PostItem;
@@ -28,6 +29,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     private GoogleMap map;
     private ArrayList<PostItem> postItems = new ArrayList<>();
+    private ArrayList<Marker> markers = new ArrayList<>();
     Context mContext;
 
     @Override
@@ -58,10 +60,12 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         markerOptions.position(currentPostion);
         markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_icon_current));
         markerOptions.title("현재 위치");
+        markerOptions.anchor((float)0.5,(float)0.5);
         markerOptions.snippet(PreferenceManager.getString(this, "region1Depth") + " " +
                 PreferenceManager.getString(this, "region2Depth") + " " +
                 PreferenceManager.getString(this, "region3Depth"));
         map.addMarker(markerOptions);
+
 
         CircleOptions circle1KM = new CircleOptions().center(currentPostion) // 원점
                 .radius(500)      // 반지름 단위 : m
@@ -79,12 +83,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 markerOptions = new MarkerOptions();
                 markerOptions.position(position);
 
-                /*@TODO markerOption.icon 설정*/
-                markerOptions.title(postItem.getBoardTitle());
-                markerOptions.snippet("information");
-                markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_icon_marker));
-
-                map.addMarker(markerOptions);
                 int page;
                 String category;
                 if(postItem.getCategory().equals("RECIPE")) {
@@ -105,20 +103,23 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
                 /*@TODO markerOption.icon 설정*/
                 markerOptions.title(postItem.getBoardTitle());
+                markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_icon_marker));
                 markerOptions.snippet(category);
-                map.addMarker(markerOptions);
+                markers.add(map.addMarker(markerOptions));
 
-                map.setOnInfoWindowClickListener(marker -> {
-                    Intent intent = new Intent(MapActivity.this, Community_detail.class);
-                    intent.putExtra("page",page);
-                    intent.putExtra("Tag","Main");
-                    intent.putExtra("item",postItem);
-                    startActivity(intent);
-                });
             } catch (Exception ignored){
 
             }
         }
+
+        map.setOnInfoWindowClickListener(marker -> {
+            int index = markers.indexOf(marker);
+            Intent intent = new Intent(MapActivity.this, Community_detail.class);
+            intent.putExtra("page",0);
+            intent.putExtra("Tag","Main");
+            intent.putExtra("item",postItems.get(index));
+            startActivity(intent);
+        });
 
         map.animateCamera(CameraUpdateFactory.newLatLngZoom(currentPostion, 15));
     }

@@ -222,64 +222,10 @@
                     android:textSize="18sp"
                     android:textStyle="bold"
                     android:textColor="#ffffff"
-                    android:background="@drawable/post_button"
+                    android:background="@drawable/main_color_button_style"
                     android:layout_width="match_parent"
                     android:layout_height="60dp"/>
             </LinearLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
-    <!--    <TextView-->
-    <!--        android:text="제목"-->
-    <!--        android:id="@+id/title"-->
-    <!--        android:layout_width="0dp"-->
-    <!--        android:layout_height="wrap_content"-->
-    <!--        app:layout_constraintBaseline_toBaselineOf="@id/et_post_title"-->
-    <!--        app:layout_constraintLeft_toLeftOf="parent"-->
-    <!--        app:layout_constraintTop_toTopOf="parent"/>-->
-
-
-
-    <!--    <com.google.android.material.textfield.TextInputEditText-->
-    <!--        android:id="@+id/et_post_post"-->
-    <!--        android:layout_width="match_parent"-->
-    <!--        android:layout_height="wrap_content"-->
-    <!--        app:layout_constraintTop_toBottomOf="@id/et_post_title"/>-->
-
-    <!--        <LinearLayout-->
-    <!--            android:layout_width="wrap_content"-->
-    <!--            android:layout_height="wrap_content"-->
-    <!--            android:orientation="horizontal"-->
-    <!--            app:layout_constraintLeft_toLeftOf="parent"-->
-    <!--            app:layout_constraintTop_toBottomOf="@id/et_post_post">-->
-
-    <!--        </LinearLayout>-->
-
-
-    <!--    <Button-->
-    <!--        android:id="@+id/btn_post_image"-->
-    <!--        android:text="이미지 첨부하기"-->
-    <!--        android:layout_width="match_parent"-->
-    <!--        android:layout_height="wrap_content"-->
-    <!--        app:layout_constraintBottom_toTopOf="@id/btn_post_location"/>-->
-
-    <!--    <Button-->
-    <!--        android:id="@+id/btn_post_location"-->
-    <!--        android:layout_width="match_parent"-->
-    <!--        android:layout_height="wrap_content"-->
-    <!--        android:text="위치 설정하기"-->
-    <!--        app:layout_constraintBottom_toTopOf="@id/btn_post_write"/>-->
-
-    <!--    <Button-->
-    <!--        android:id="@+id/btn_post_write"-->
-    <!--        android:text="글쓰기"-->
-    <!--        android:layout_width="match_parent"-->
-    <!--        android:layout_height="wrap_content"-->
-    <!--        app:layout_constraintBottom_toBottomOf="parent"/>-->
-
-    <!--    <EditText-->
-    <!--        android:id="@+id/et_distance"-->
-    <!--        android:layout_width="match_parent"-->
-    <!--        android:layout_height="wrap_content"-->
-    <!--        app:layout_constraintBottom_toTopOf="@id/btn_post_image"/>-->
-
 </androidx.constraintlayout.widget.ConstraintLayout>
