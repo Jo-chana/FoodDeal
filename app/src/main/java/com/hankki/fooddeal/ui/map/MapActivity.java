@@ -12,13 +12,13 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.hankki.fooddeal.R;
 import com.hankki.fooddeal.data.PostItem;
 import com.hankki.fooddeal.data.PreferenceManager;
-import com.hankki.fooddeal.data.retrofit.BoardController;
 import com.hankki.fooddeal.ui.home.community.Community_detail;
 
 import java.util.ArrayList;
@@ -56,6 +56,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.position(currentPostion);
+        markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_icon_current));
         markerOptions.title("현재 위치");
         markerOptions.snippet(PreferenceManager.getString(this, "region1Depth") + " " +
                 PreferenceManager.getString(this, "region2Depth") + " " +
@@ -81,6 +82,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 /*@TODO markerOption.icon 설정*/
                 markerOptions.title(postItem.getBoardTitle());
                 markerOptions.snippet("information");
+                markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_icon_marker));
+
                 map.addMarker(markerOptions);
                 int page;
                 if(postItem.getCategory().equals("RECIPE"))
@@ -103,4 +106,5 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         map.animateCamera(CameraUpdateFactory.newLatLngZoom(currentPostion, 15));
     }
+
 }
