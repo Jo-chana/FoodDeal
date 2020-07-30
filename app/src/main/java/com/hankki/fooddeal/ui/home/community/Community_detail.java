@@ -341,7 +341,8 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
 
     @SuppressLint("SetTextI18n")
     public void setPostCommon() {
-//        progressBar = findViewById(R.id.customDialog_progressBar);
+        Log.e("#########", "setPostCommon 실행");
+
         vp_image = findViewById(R.id.vp_image);
         vp_image.setVisibility(View.GONE);
         trickView = findViewById(R.id.trick);
@@ -431,7 +432,6 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
                     byte[] imageBytes = Tasks.await(task);
                     Bitmap bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
                     postImages.add(bitmap);
-                    Log.e("#########", "postImages에 비트맵 추가");
                 } catch (Exception e) {
                     Log.e("#########", e.toString());
                 }
@@ -442,11 +442,7 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(result -> {
-//                        disposable.dispose();
-//                    customAnimationDialog.dismiss();
                     setImageViewPager();
-//                    progressBar.setVisibility(View.GONE);
-                    Log.e("#########", "setImageViewPager 실행");
                 });
     }
 
