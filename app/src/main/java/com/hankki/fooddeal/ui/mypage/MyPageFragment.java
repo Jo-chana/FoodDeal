@@ -9,7 +9,6 @@ import android.graphics.drawable.shapes.OvalShape;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,7 +28,6 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -40,7 +38,6 @@ import com.google.firebase.storage.UploadTask;
 import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.TedPermission;
 import com.hankki.fooddeal.R;
-import com.hankki.fooddeal.data.PreferenceManager;
 import com.hankki.fooddeal.data.security.AES256Util;
 import com.hankki.fooddeal.ux.dialog.CustomPostImageDialog;
 
@@ -60,6 +57,7 @@ import static android.app.Activity.RESULT_OK;
 /**마이페이지 화면*/
 public class MyPageFragment extends Fragment {
 
+    View view_my_post, view_notification, view_like, view_setting;
     ImageView arrow_my_post, arrow_notification, arrow_like, arrow_setting;
     ImageView iv_my_profile;
     TextView tv_my_name;
@@ -104,6 +102,11 @@ public class MyPageFragment extends Fragment {
         arrow_like = view.findViewById(R.id.arrow_like);
         arrow_setting = view.findViewById(R.id.arrow_setting);
 
+        view_my_post = view.findViewById(R.id.view_my_post);
+        view_notification = view.findViewById(R.id.view_notification);
+        view_like = view.findViewById(R.id.view_like);
+        view_setting = view.findViewById(R.id.view_setting);
+
         btn_profile_revise.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -113,7 +116,7 @@ public class MyPageFragment extends Fragment {
             }
         });
 
-        arrow_my_post.setOnClickListener(new View.OnClickListener() {
+        view_my_post.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getContext(),MyPostActivity.class);
@@ -122,7 +125,7 @@ public class MyPageFragment extends Fragment {
             }
         });
 
-        arrow_like.setOnClickListener(new View.OnClickListener() {
+        view_like.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getContext(),MyPostActivity.class);
@@ -131,7 +134,7 @@ public class MyPageFragment extends Fragment {
             }
         });
 
-        arrow_setting.setOnClickListener(new View.OnClickListener() {
+        view_setting.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getContext(), MySettingActivity.class);
