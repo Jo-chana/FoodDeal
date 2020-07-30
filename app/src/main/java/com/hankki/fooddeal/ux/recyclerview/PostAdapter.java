@@ -103,7 +103,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostViewHolder> {
         holder.mTime.setText(item.getRelativeTime());
 
         // 썸네일로 쓸 내용이 있으면 표시 없으면 빈 값
-        if (!item.getThumbnailUrl().equals("NONE")) {
+        if (item.getThumbnailUrl() != null) {
             holder.mImage.setScaleType(ImageView.ScaleType.FIT_XY);
 
             Glide
@@ -113,7 +113,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostViewHolder> {
                     .into(holder.mImage);
             holder.mImage.setClipToOutline(true);
         } else {
-            holder.mImage.setBackground(null);
+            holder.mImage.setImageBitmap(null);
             holder.mImage.getLayoutParams().width = 0;
         }
 

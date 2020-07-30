@@ -506,7 +506,7 @@ public class PostActivity extends AppCompatActivity {
 
 	    bufW.write(format.format(date) + "\n");*/
     /**
-    이현준
+     이현준
      Firebase Storage에 등록하고 얻은 Uri들을 FireStore의 PostPhotos 컬렉션에다가 글이 등록된 시간별로 분류된 문서 안에 List를 저장
      (시간을 밀스초단위로 쪼개서 저장하는게 좋을듯)
      각각의 파일마다 이 함수 한번씩 써야함 (Firebase 파일 업로드 기능에 여러개를 보내는게 없음)
