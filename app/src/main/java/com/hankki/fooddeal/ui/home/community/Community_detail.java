@@ -206,10 +206,10 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
             docRef
                     .get()
                     .addOnCompleteListener(task -> {
-                        if(task.isSuccessful()) {
+                        if (task.isSuccessful()) {
                             DocumentSnapshot documentSnapshot = task.getResult();
                             // 이미 있는 채팅방은 바로 참가
-                            if(documentSnapshot.exists()) {
+                            if (documentSnapshot.exists()) {
                                 Intent intent = new Intent(getApplicationContext(), ChatActivity.class);
                                 intent.putExtra("roomID", roomId);
                                 intent.putExtra("roomTitle", newRoomTitle);
@@ -235,7 +235,7 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
         room
                 .set(chatRoomModel)
                 .addOnCompleteListener(task -> {
-                    if(task.isSuccessful()) {
+                    if (task.isSuccessful()) {
                         // 채팅방 참여
                         Intent intent = new Intent(getApplicationContext(), ChatActivity.class);
                         intent.putExtra("roomID", roomID);
@@ -372,7 +372,7 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
                 .get()
                 .addOnCompleteListener(task -> {
                     DocumentSnapshot snapshot = task.getResult();
-                    if(!snapshot.get("userPhotoUri").equals("")) {
+                    if (!snapshot.get("userPhotoUri").equals("")) {
 
                         Glide
                                 .with(mContext)
@@ -404,7 +404,7 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
 //        customAnimationDialog.show();
 //        progressBar.setVisibility(View.VISIBLE);
         disposable = Observable.fromCallable((Callable<Object>) () -> {
-            for(int i=0;i<4;i++) {
+            for (int i = 0; i < 4; i++) {
                 StorageReference downloadImageRef = FirebaseStorage.getInstance().getReference().child("PostPhotos/" + date + "/" + Integer.toString(i) + ".jpg");
 
                 final long MAX_SIZE = 1024 * 1024 * 15;
@@ -487,12 +487,12 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
 
     public void deletePhotoImage(Context mContext, String insertDate) {
         disposable = Observable.fromCallable((Callable<Object>) () -> {
-            for(int i=0;i<postImages.size();i++) {
+            for (int i = 0; i < postImages.size(); i++) {
                 StorageReference deleteImageRef = FirebaseStorage.getInstance().getReference().child("PostPhotos/" + insertDate + "/" + Integer.toString(i) + ".jpg");
                 deleteImageRef
                         .delete()
                         .addOnSuccessListener(aVoid -> {
-                            })
+                        })
                         .addOnFailureListener(e -> {
                             Log.e("###########", e.toString(), e);
                         });
@@ -508,7 +508,7 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
     }
 
     public void deleteDownloadUrl(Context mContext, String insertDate) {
-        if(postImages != null && postImages.size() > 0) {
+        if (postImages != null && postImages.size() > 0) {
             FirebaseFirestore
                     .getInstance()
                     .collection("postPhotos")
@@ -520,7 +520,7 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
                     .addOnFailureListener(e -> {
                         Log.e("###########", e.toString(), e);
                     });
-        } else  {
+        } else {
             Log.i("#########", "이미지를 가지고 있지 않습니다");
             refreshFragmentAndFinish();
         }
@@ -535,22 +535,11 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
             AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
             builder.setMessage("글을 삭제 하시겠습니까?");
             builder.setPositiveButton("확인", (dialog, which) -> {
-                progressBar.setVisibility(View.VISIBLE);
-                disposable = Observable.fromCallable((Callable<Object>) () -> {
-                    if (BoardController.boardDelete(mContext, mPost)) {
-                        deleteDownloadUrl(mContext, mPost.getInsertDate());
-                    } else {
-                        Toast.makeText(mContext, "AWS 데이터 삭제 실패", Toast.LENGTH_SHORT).show();
-                    }
-
-                    return false;
-                })
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(result -> {
-                            disposable.dispose();
-                            progressBar.setVisibility(View.GONE);
-                        });
+                if (BoardController.boardDelete(mContext, mPost)) {
+                    deleteDownloadUrl(mContext, mPost.getInsertDate());
+                } else {
+                    Toast.makeText(mContext, "AWS 데이터 삭제 실패", Toast.LENGTH_SHORT).show();
+                }
             }).setNegativeButton("취소", (dialog, which) -> {
             });
             AlertDialog alertDialog = builder.create();
@@ -592,7 +581,7 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
     }
 
     public void setImageViewPager() {
-        if(postImages != null && postImages.size() > 0) {
+        if (postImages != null && postImages.size() > 0) {
             vp_image.setVisibility(View.VISIBLE);
             trickView.setVisibility(View.GONE);
             galleryAdapter = new GalleryAdapter(this, postImages);
@@ -633,7 +622,7 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
         markerOptions.position(latlng);
 
         markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_icon_home));
-        markerOptions.anchor((float)0.5,(float)0.5);
+        markerOptions.anchor((float) 0.5, (float) 0.5);
 
         mapPost.addMarker(markerOptions);
 
