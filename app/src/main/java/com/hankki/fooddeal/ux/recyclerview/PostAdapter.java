@@ -64,7 +64,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostViewHolder> {
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.e("#########", "게시글 클릭");
+                Log.d("#########", "게시글 클릭");
                 Intent intent = new Intent(holder.mView.getContext(), Community_detail.class);
                 intent.putExtra("page", page);
                 intent.putExtra("Tag", tag);
