@@ -1,6 +1,7 @@
 package com.hankki.fooddeal.ui.map;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 
@@ -17,6 +18,7 @@ import com.hankki.fooddeal.R;
 import com.hankki.fooddeal.data.PostItem;
 import com.hankki.fooddeal.data.PreferenceManager;
 import com.hankki.fooddeal.data.retrofit.BoardController;
+import com.hankki.fooddeal.ui.home.community.Community_detail;
 
 import java.util.ArrayList;
 
@@ -71,7 +73,25 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
                 markerOptions = new MarkerOptions();
                 markerOptions.position(position);
+
+                /*@TODO markerOption.icon 설정*/
+                markerOptions.title(postItem.getBoardTitle());
+                markerOptions.snippet("information");
                 map.addMarker(markerOptions);
+                int page;
+                if(postItem.getCategory().equals("RECIPE"))
+                    page = 1;
+                else if(postItem.getCategory().equals("FREE"))
+                    page = 2;
+                else
+                    page = 0;
+                map.setOnInfoWindowClickListener(marker -> {
+                    Intent intent = new Intent(MapActivity.this, Community_detail.class);
+                    intent.putExtra("page",page);
+                    intent.putExtra("Tag","Main");
+                    intent.putExtra("item",postItem);
+                    startActivity(intent);
+                });
             } catch (Exception ignored){
 
             }
