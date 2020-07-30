@@ -19,7 +19,7 @@ import java.util.Objects;
 public class MySettingActivity extends AppCompatActivity {
 
     View toolbarView;
-    TextView toolbarTextView;
+    TextView toolbarTextView, tv_logout, tv_bye_bye;
     ImageView iv_logout, iv_bye_bye, back_button;
     Context mContext;
 
@@ -39,9 +39,20 @@ public class MySettingActivity extends AppCompatActivity {
         back_button.setOnClickListener(v -> onBackPressed());
 
         iv_logout = findViewById(R.id.iv_logout);
+        tv_logout = findViewById(R.id.tv_logout);
         iv_bye_bye = findViewById(R.id.iv_bye_bye);
+        tv_bye_bye = findViewById(R.id.tv_sign_out);
 
-        iv_logout.setOnClickListener(v -> {
+        iv_logout.setOnClickListener(logout);
+        tv_logout.setOnClickListener(logout);
+
+        iv_bye_bye.setOnClickListener(signOut);
+        tv_bye_bye.setOnClickListener(signOut);
+    }
+
+    View.OnClickListener logout = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
             AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
             builder.setMessage("로그아웃 하시겠습니까?");
             builder.setPositiveButton("확인", (dialog, which) -> {
@@ -52,9 +63,12 @@ public class MySettingActivity extends AppCompatActivity {
             });
             AlertDialog alertDialog = builder.create();
             alertDialog.show();
-        });
+        }
+    };
 
-        iv_bye_bye.setOnClickListener(v -> {
+    View.OnClickListener signOut = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
             /**회원탈퇴*/
             AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
             builder.setMessage("가지마요...우리 좋았잖아");
@@ -68,6 +82,6 @@ public class MySettingActivity extends AppCompatActivity {
             });
             AlertDialog alertDialog = builder.create();
             alertDialog.show();
-        });
-    }
+        }
+    };
 }
