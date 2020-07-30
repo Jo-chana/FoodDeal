@@ -172,6 +172,50 @@ public class ChatActivity extends AppCompatActivity {
 
         final DocumentReference documentReference = firestore.collection("rooms").document(roomId);
         documentReference
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if (!task.isSuccessful()) return;
+
+                        WriteBatch batch = firestore.batch();
+
+                        // 내가 읽었다는걸 표시, rooms의 unreadUserCount는 내가 보내면서 읽은것으로 처리되기 때문에 건드릴필요 X
+                        List<String> readUserList = new ArrayList<>();
+                        readUserList.add(uid);
+
+                        // 메시지 리스트에 들어갈 내용 정리
+                        Message newMessage = new Message(uid, msg, date, msgType, readUserList);
+//                        String messageDocument = date.toString() + " " + AES256Util.aesEncode(uid);
+//                        batch.set(documentReference.collection("messages").document(messageDocument), newMessage);
+                        batch.set(documentReference.collection("messages").document(), newMessage);
+                        batch.commit();
+
+                        // 다른 사람들의 unreadUserCountMap 추가
+                        DocumentSnapshot documentSnapshot = task.getResult();
+                        // int로 저장했지만 불러올때는 long으로 불러오기때문에 이렇게 처리
+                        Map<String, Long> unreadUserCountMap = (Map<String, Long>) documentSnapshot.get("unreadMemberCountMap");
+
+                        for (String key : unreadUserCountMap.keySet()) {
+                            if (!uid.equals(key))
+                                unreadUserCountMap.put(key, unreadUserCountMap.get(key) + 1);
+                        }
+                        documentSnapshot.getReference()
+                                .update("unreadMemberCountMap", unreadUserCountMap)
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                       Log.d("########", "Send Message Success");
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_LONG).show();
+                                    }
+                                });
+
+        documentReference
                 .update("lastMessageContent", msg)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
@@ -200,49 +244,6 @@ public class ChatActivity extends AppCompatActivity {
                         Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_SHORT).show();
                     }
                 });
-
-        documentReference
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                        if (!task.isSuccessful()) return;
-
-                        WriteBatch batch = firestore.batch();
-
-                        // 내가 읽었다는걸 표시, rooms의 unreadUserCount는 내가 보내면서 읽은것으로 처리되기 때문에 건드릴필요 X
-                        List<String> readUserList = new ArrayList<>();
-                        readUserList.add(uid);
-
-                        // 메시지 리스트에 들어갈 내용 정리
-                        Message newMessage = new Message(uid, msg, date, msgType, readUserList);
-//                        String messageDocument = date.toString() + " " + AES256Util.aesEncode(uid);
-//                        batch.set(documentReference.collection("messages").document(messageDocument), newMessage);
-                        batch.set(documentReference.collection("messages").document(), newMessage);
-
-                        // 다른 사람들의 unreadUserCountMap 추가
-                        DocumentSnapshot documentSnapshot = task.getResult();
-                        // int로 저장했지만 불러올때는 long으로 불러오기때문에 이렇게 처리
-                        Map<String, Long> unreadUserCountMap = (Map<String, Long>) documentSnapshot.get("unreadMemberCountMap");
-
-                        for (String key : unreadUserCountMap.keySet()) {
-                            if (!uid.equals(key))
-                                unreadUserCountMap.put(key, unreadUserCountMap.get(key) + 1);
-                        }
-                        documentSnapshot.getReference()
-                                .update("unreadMemberCountMap", unreadUserCountMap)
-                                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
-                                        batch.commit();
-                                    }
-                                })
-                                .addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_LONG).show();
-                                    }
-                                });
 
 //                        batch.commit()
 //                                .addOnCompleteListener(new OnCompleteListener<Void>() {
