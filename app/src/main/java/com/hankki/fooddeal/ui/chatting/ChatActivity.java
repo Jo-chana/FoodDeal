@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -77,6 +78,15 @@ public class ChatActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
+
+        View view = getWindow().getDecorView();
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+            if(view != null){
+                view.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+                getWindow().setStatusBarColor(getResources().getColor(R.color.grey_100));
+            }
+        }
+
         if (getIntent() != null) {
             roomId = getIntent().getStringExtra("roomID");
             roomTitle = getIntent().getStringExtra("roomTitle");              // 채팅방의 이름으로 쓸 게시글 타이틀

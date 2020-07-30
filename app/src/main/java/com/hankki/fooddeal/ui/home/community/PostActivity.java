@@ -263,29 +263,25 @@ public class PostActivity extends AppCompatActivity {
                         // 이현준 이미지 Firebase 업로드 추가
                         final ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-                        if(postImages.size()>0) {
-                            for (int i = 0; i < postImages.size(); i++) {
-                                postImages.get(i).compress(Bitmap.CompressFormat.JPEG, 20, baos);
-                                byte[] data = baos.toByteArray();
+                        for(int i=0;i<postImages.size();i++) {
+                            postImages.get(i).compress(Bitmap.CompressFormat.JPEG, 20, baos);
+                            byte[] data = baos.toByteArray();
 
-                                uploadPostPhoto(data, item.getInsertDate(), Integer.toString(i), postImages.size());
-                                baos.reset();
-                            }
-                            try {
-                                baos.flush();
-                                baos.close();
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        } else {
-                            updateRecyclerView();
-                            finish();
+                            uploadPostPhoto(data, item.getInsertDate(), Integer.toString(i), postImages.size());
+                            baos.reset();
+                        }
+
+                        try {
+                            baos.flush();
+                            baos.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
                         }
                         // 이현준 이미지 Firebase 업로드 끝
                     } else {
                         Toast.makeText(mContext,"실패!",Toast.LENGTH_SHORT).show();
                     }
-
+                    finish();
                 }
             }
         });
@@ -552,7 +548,6 @@ public class PostActivity extends AppCompatActivity {
                     public void onSuccess(Void aVoid) {
                         if(index.equals(size.toString())) {
                             updateRecyclerView();
-                            finish();
                         }
                     }
                 })
@@ -586,5 +581,6 @@ public class PostActivity extends AppCompatActivity {
                 ((FreeCommunity) fragment).setRecyclerView();
                 break;
         }
+        finish();
     }
 }
