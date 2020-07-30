@@ -7,6 +7,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="30dp"/>
+
     <FrameLayout
         android:background="@drawable/background_cardview"
         android:layout_width="match_parent"
@@ -14,7 +18,7 @@
         android:padding="1dp">
 
         <androidx.cardview.widget.CardView
-            app:cardCornerRadius="10dp"
+            app:cardCornerRadius="5dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:cardElevation="0dp">
@@ -72,30 +76,30 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="20dp"
-                        android:layout_marginLeft="20dp"/>
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginRight="20dp"/>
 
                     <TextView
                         android:id="@+id/tv_hotprice"
                         android:text="딜가 1,500원"
                         android:textColor="@color/original_black"
-                        android:textSize="15sp"
+                        android:textSize="18sp"
                         android:textStyle="bold"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_below="@id/tv_purchase"
-                        android:layout_marginTop="10dp"
+                        android:layout_marginTop="5dp"
                         android:layout_marginLeft="20dp"/>
 
                     <TextView
                         android:id="@+id/tv_originprice"
                         android:text="4,000원"
                         android:textColor="@color/grey_500"
-                        android:textSize="15sp"
+                        android:textSize="18sp"
                         android:textStyle="bold"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_below="@id/tv_purchase"
-                        android:layout_marginTop="10dp"
                         android:layout_toRightOf="@id/tv_hotprice"
                         android:layout_marginLeft="10dp"/>
 
@@ -103,7 +107,7 @@
                         android:id="@+id/tv_join_num"
                         android:text="3명 참여"
                         android:textColor="@color/original_primary"
-                        android:textSize="15sp"
+                        android:textSize="18sp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_below="@id/tv_hotprice"
@@ -126,7 +130,7 @@
                         android:id="@+id/tv_all_num"
                         android:text="4명 모집"
                         android:textColor="@color/grey_500"
-                        android:textSize="15sp"
+                        android:textSize="18sp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_below="@id/tv_hotprice"
