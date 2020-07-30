@@ -492,8 +492,7 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
                 deleteImageRef
                         .delete()
                         .addOnSuccessListener(aVoid -> {
-                            Toast.makeText(mContext, "이미지 디렉터리를 삭제하였습니다.", Toast.LENGTH_SHORT).show();
-                        })
+                            })
                         .addOnFailureListener(e -> {
                             Log.e("###########", e.toString(), e);
                         });
@@ -516,7 +515,6 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
                     .document(insertDate)
                     .delete()
                     .addOnSuccessListener(aVoid -> {
-                        Toast.makeText(mContext, "이미지 다운로드 URL을 삭제하였습니다.", Toast.LENGTH_SHORT).show();
                         deletePhotoImage(mContext, insertDate);
                     })
                     .addOnFailureListener(e -> {
@@ -572,12 +570,15 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
             Fragment fragment = fragments.get(page);
             switch (page) {
                 case 0:
+                    ((ExchangeAndShare) fragment).updatePostItems();
                     ((ExchangeAndShare) fragment).setRecyclerView();
                     break;
                 case 1:
+                    ((RecipeShare) fragment).updatePostItems();
                     ((RecipeShare) fragment).setRecyclerView();
                     break;
                 case 2:
+                    ((FreeCommunity) fragment).updatePostItems();
                     ((FreeCommunity) fragment).setRecyclerView();
                     break;
             }

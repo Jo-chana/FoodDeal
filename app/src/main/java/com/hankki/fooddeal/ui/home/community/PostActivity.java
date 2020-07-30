@@ -568,12 +568,15 @@ public class PostActivity extends AppCompatActivity {
         Fragment fragment = fragments.get(page);
         switch (page) {
             case 0:
+                ((ExchangeAndShare) fragment).updatePostItems();
                 ((ExchangeAndShare) fragment).setRecyclerView();
                 break;
             case 1:
+                ((RecipeShare) fragment).updatePostItems();
                 ((RecipeShare) fragment).setRecyclerView();
                 break;
             case 2:
+                ((FreeCommunity) fragment).updatePostItems();
                 ((FreeCommunity) fragment).setRecyclerView();
                 break;
         }
