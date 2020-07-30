@@ -171,35 +171,6 @@ public class ChatActivity extends AppCompatActivity {
         }*/
 
         final DocumentReference documentReference = firestore.collection("rooms").document(roomId);
-        documentReference
-                .update("lastMessageContent", msg)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d("######", "Last Message Content Update Success");
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_SHORT).show();
-                    }
-                });
-
-        documentReference
-                .update("lastMessageTime", date)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d("######", "Last Message Time Update Success");
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_SHORT).show();
-                    }
-                });
 
         documentReference
                 .get()
@@ -243,6 +214,38 @@ public class ChatActivity extends AppCompatActivity {
                                         Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_LONG).show();
                                     }
                                 });
+
+        documentReference
+                .update("lastMessageContent", msg)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d("######", "Last Message Content Update Success");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+        documentReference
+                .update("lastMessageTime", date)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d("######", "Last Message Time Update Success");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+
 
 //                        batch.commit()
 //                                .addOnCompleteListener(new OnCompleteListener<Void>() {
