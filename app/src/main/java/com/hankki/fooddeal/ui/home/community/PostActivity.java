@@ -237,6 +237,7 @@ public class PostActivity extends AppCompatActivity {
         btn_write.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                btn_write.setVisibility(View.GONE);
                 if(page==0&&(postImages.size()==0 || et_title.getText().toString().equals(""))){
                     customDialog = new CustomDialog(mContext,"사진과 제목은 필수 입력 사항입니다!");
                     customDialog.setCanceledOnTouchOutside(false);
@@ -262,25 +263,29 @@ public class PostActivity extends AppCompatActivity {
                         // 이현준 이미지 Firebase 업로드 추가
                         final ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-                        for(int i=0;i<postImages.size();i++) {
-                            postImages.get(i).compress(Bitmap.CompressFormat.JPEG, 20, baos);
-                            byte[] data = baos.toByteArray();
+                        if(postImages.size()>0) {
+                            for (int i = 0; i < postImages.size(); i++) {
+                                postImages.get(i).compress(Bitmap.CompressFormat.JPEG, 20, baos);
+                                byte[] data = baos.toByteArray();
 
-                            uploadPostPhoto(data, item.getInsertDate(), Integer.toString(i), postImages.size());
-                            baos.reset();
-                        }
-
-                        try {
-                            baos.flush();
-                            baos.close();
-                        } catch (IOException e) {
-                            e.printStackTrace();
+                                uploadPostPhoto(data, item.getInsertDate(), Integer.toString(i), postImages.size());
+                                baos.reset();
+                            }
+                            try {
+                                baos.flush();
+                                baos.close();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        } else {
+                            updateRecyclerView();
+                            finish();
                         }
                         // 이현준 이미지 Firebase 업로드 끝
                     } else {
                         Toast.makeText(mContext,"실패!",Toast.LENGTH_SHORT).show();
                     }
-                    finish();
+
                 }
             }
         });
@@ -547,6 +552,7 @@ public class PostActivity extends AppCompatActivity {
                     public void onSuccess(Void aVoid) {
                         if(index.equals(size.toString())) {
                             updateRecyclerView();
+                            finish();
                         }
                     }
                 })
@@ -580,7 +586,5 @@ public class PostActivity extends AppCompatActivity {
                 ((FreeCommunity) fragment).setRecyclerView();
                 break;
         }
-
-        finish();
     }
 }
