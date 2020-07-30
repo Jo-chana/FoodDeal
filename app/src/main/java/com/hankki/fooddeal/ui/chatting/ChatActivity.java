@@ -205,7 +205,7 @@ public class ChatActivity extends AppCompatActivity {
                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {
-                                       Log.d("########", "Send Message Success");
+                                        Log.d("########", "Send Message Success");
                                     }
                                 })
                                 .addOnFailureListener(new OnFailureListener() {
@@ -215,35 +215,35 @@ public class ChatActivity extends AppCompatActivity {
                                     }
                                 });
 
-        documentReference
-                .update("lastMessageContent", msg)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d("######", "Last Message Content Update Success");
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_SHORT).show();
-                    }
-                });
+                        documentReference
+                                .update("lastMessageContent", msg)
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        Log.d("######", "Last Message Content Update Success");
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_SHORT).show();
+                                    }
+                                });
 
-        documentReference
-                .update("lastMessageTime", date)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d("######", "Last Message Time Update Success");
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_SHORT).show();
-                    }
-                });
+                        documentReference
+                                .update("lastMessageTime", date)
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        Log.d("######", "Last Message Time Update Success");
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_SHORT).show();
+                                    }
+                                });
 
 //                        batch.commit()
 //                                .addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -311,7 +311,6 @@ public class ChatActivity extends AppCompatActivity {
                                         documentSnapshot.getReference().update("unreadMemberCountMap", unreadUserCountMap);
                                     }
                                 });
-
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
