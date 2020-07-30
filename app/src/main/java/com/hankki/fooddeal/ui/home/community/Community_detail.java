@@ -11,6 +11,7 @@ import android.graphics.drawable.shapes.OvalShape;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -39,6 +40,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
@@ -119,6 +121,9 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
         mContext = this;
 
         postImages = new ArrayList<>();
@@ -567,6 +572,7 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
 
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.position(latlng);
+
         markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_icon_home));
         markerOptions.anchor((float)0.5,(float)0.5);
 
@@ -581,6 +587,9 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
 
         cameraUpdate = CameraUpdateFactory.newLatLng(latlng);
         mapPost.animateCamera(CameraUpdateFactory.newLatLngZoom(latlng, 17));
+
+        UiSettings uiSettings = googleMap.getUiSettings();
+        uiSettings.setZoomGesturesEnabled(false);
     }
 
     @Override
