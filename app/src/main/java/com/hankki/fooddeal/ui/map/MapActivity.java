@@ -3,6 +3,7 @@ package com.hankki.fooddeal.ui.map;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.view.WindowManager;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -16,7 +17,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.hankki.fooddeal.R;
 import com.hankki.fooddeal.data.PostItem;
 import com.hankki.fooddeal.data.PreferenceManager;
-import com.hankki.fooddeal.data.retrofit.BoardController;
 
 import java.util.ArrayList;
 
@@ -37,6 +37,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment)getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
     }
 
     @Override
