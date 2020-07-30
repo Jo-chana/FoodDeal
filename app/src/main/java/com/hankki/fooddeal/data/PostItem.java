@@ -282,8 +282,10 @@ public class PostItem implements Comparable<PostItem>, Parcelable {
         body.put("BOARD_TITLE",this.getBoardTitle());
         body.put("BOARD_CONTENT",this.getBoardContent());
         body.put("INSERT_DATE",this.getInsertDate());
-        body.put("USER_LAT",AES256Util.aesEncode(PreferenceManager.getString(context, "Latitude")));
-        body.put("USER_LON",AES256Util.aesEncode(PreferenceManager.getString(context,"Longitude")));
+//        body.put("USER_LAT",AES256Util.aesEncode(PreferenceManager.getString(context, "Latitude")));
+//        body.put("USER_LON",AES256Util.aesEncode(PreferenceManager.getString(context,"Longitude")));
+        body.put("USER_LAT",AES256Util.aesEncode(String.valueOf(37.546175)));
+        body.put("USER_LON",AES256Util.aesEncode(String.valueOf(127.074282)));
         body.put("REGION_1DEPTH_NAME",PreferenceManager.getString(context, "region1Depth"));
         body.put("REGION_2DEPTH_NAME",PreferenceManager.getString(context, "region2Depth"));
         body.put("REGION_3DEPTH_NAME",PreferenceManager.getString(context, "region3Depth"));

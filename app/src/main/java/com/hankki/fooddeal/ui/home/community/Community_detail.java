@@ -568,6 +568,7 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.position(latlng);
         markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_icon_home));
+        markerOptions.anchor((float)0.5,(float)0.5);
 
         mapPost.addMarker(markerOptions);
 
