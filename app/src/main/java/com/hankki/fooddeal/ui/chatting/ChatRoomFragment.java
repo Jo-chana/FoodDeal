@@ -182,10 +182,14 @@ public class ChatRoomFragment extends Fragment {
                                         .into(roomViewHolder.room_image);
                             } else {
                                 roomViewHolder.room_image.setImageResource(R.drawable.ic_group_rec_60dp);
+                                roomViewHolder.room_image.setClipToOutline(true);
+                                roomViewHolder.room_image.setScaleType(ImageView.ScaleType.CENTER_CROP);
                             }
                         });
             } catch (Exception e){
                 roomViewHolder.room_image.setImageResource(R.drawable.ic_group_rec_60dp);
+                roomViewHolder.room_image.setClipToOutline(true);
+                roomViewHolder.room_image.setScaleType(ImageView.ScaleType.CENTER_CROP);
             }
 
             if (chatRoomModel.getRoomUserList().size() > 2) {
