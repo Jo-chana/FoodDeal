@@ -17,7 +17,7 @@ public class CommentViewHolder extends RecyclerView.ViewHolder{
     public TextView tv_username;
     public TextView tv_message;
     public TextView tv_time;
-    public TextView tv_reply, tv_btn_reply, tv_btn_delete;
+    public TextView tv_reply, tv_btn_delete;
     public ImageView iv_profile;
     public RecyclerView rl_comment;
 
