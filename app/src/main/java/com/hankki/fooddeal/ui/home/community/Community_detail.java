@@ -8,7 +8,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.OvalShape;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -19,12 +18,10 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -42,60 +39,41 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.StorageTask;
 import com.hankki.fooddeal.R;
-import com.hankki.fooddeal.data.PreferenceManager;
-import com.hankki.fooddeal.data.retrofit.BoardController;
 import com.hankki.fooddeal.data.CommentItem;
 import com.hankki.fooddeal.data.PostItem;
+import com.hankki.fooddeal.data.retrofit.BoardController;
 import com.hankki.fooddeal.data.security.AES256Util;
 import com.hankki.fooddeal.data.security.HashMsgUtil;
 import com.hankki.fooddeal.ui.MainActivity;
-import com.hankki.fooddeal.ui.address.AddressActivity;
 import com.hankki.fooddeal.ui.chatting.ChatActivity;
-import com.hankki.fooddeal.ui.chatting.ChatRoomFragment;
 import com.hankki.fooddeal.ui.chatting.chatDTO.ChatRoomModel;
-import com.hankki.fooddeal.ux.dialog.CustomAnimationDialog;
-import com.hankki.fooddeal.ux.recyclerview.AddressAdapter;
 import com.hankki.fooddeal.ux.recyclerview.CommentAdapter;
 import com.hankki.fooddeal.ux.viewpager.GalleryAdapter;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.Callable;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
-import okhttp3.ResponseBody;
-import retrofit2.Call;
 
 public class Community_detail extends AppCompatActivity implements OnMapReadyCallback {
     ViewPager vp_image; // 이미지 뷰페이저
@@ -589,6 +567,7 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
 
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.position(latlng);
+        markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_icon_home));
 
         mapPost.addMarker(markerOptions);
 
