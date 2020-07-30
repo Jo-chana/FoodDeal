@@ -11,6 +11,7 @@ import android.graphics.drawable.shapes.OvalShape;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -120,6 +121,9 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
         mContext = this;
 
         postImages = new ArrayList<>();
