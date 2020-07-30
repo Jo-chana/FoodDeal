@@ -78,17 +78,29 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 markerOptions = new MarkerOptions();
                 markerOptions.position(position);
 
+                int page;
+                String category;
+                if(postItem.getCategory().equals("RECIPE")) {
+                    page = 1;
+                    category = "레시피 게시판";
+                }
+                else if(postItem.getCategory().equals("FREE")) {
+                    page = 2;
+                    category = "자유 게시판";
+                }
+                else {
+                    page = 0;
+                    if(postItem.getCategory().equals("INGREDIENT EXCHANGE"))
+                        category = "식재 교환";
+                    else
+                        category = "식재 나눔";
+                }
+
                 /*@TODO markerOption.icon 설정*/
                 markerOptions.title(postItem.getBoardTitle());
-                markerOptions.snippet("information");
+                markerOptions.snippet(category);
                 map.addMarker(markerOptions);
-                int page;
-                if(postItem.getCategory().equals("RECIPE"))
-                    page = 1;
-                else if(postItem.getCategory().equals("FREE"))
-                    page = 2;
-                else
-                    page = 0;
+
                 map.setOnInfoWindowClickListener(marker -> {
                     Intent intent = new Intent(MapActivity.this, Community_detail.class);
                     intent.putExtra("page",page);
