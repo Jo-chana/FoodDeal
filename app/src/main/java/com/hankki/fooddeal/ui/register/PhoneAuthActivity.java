@@ -1,13 +1,18 @@
 package com.hankki.fooddeal.ui.register;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.Manifest;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Debug;
+import android.provider.MediaStore;
 import android.telephony.SmsManager;
+import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -16,6 +21,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.gun0912.tedpermission.PermissionListener;
+import com.gun0912.tedpermission.TedPermission;
 import com.hankki.fooddeal.R;
 import com.hankki.fooddeal.data.RegularCheck;
 import com.hankki.fooddeal.data.retrofit.APIClient;
@@ -24,6 +31,7 @@ import com.hankki.fooddeal.data.retrofit.retrofitDTO.MemberResponse;
 import com.hankki.fooddeal.data.security.AES256Util;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -63,6 +71,8 @@ public class PhoneAuthActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_phone_auth_reg);
+
+        tedPermission();
     }
 
     // 초기 UX 자원 할당
@@ -343,5 +353,27 @@ public class PhoneAuthActivity extends AppCompatActivity {
         super.onBackPressed();
         isBackPressed = true;
         finish();
+    }
+
+    // SMS 전송 권한 획득
+    public void tedPermission(){
+        PermissionListener permissionListener = new PermissionListener() {
+            @Override
+            public void onPermissionGranted() {
+                Log.d("SMS 권한", "GRANT");
+            }
+
+            @Override
+            public void onPermissionDenied(List<String> deniedPermissions) {
+                finish();
+            }
+        };
+
+        TedPermission.with(this)
+                .setPermissionListener(permissionListener)
+//                .setRationaleMessage("휴대폰 번호 인증을 위해 SMS 권한이 필요합니다")
+                .setDeniedMessage("SMS 권한이 없는 경우 회원가입을 진행할 수 없습니다")
+                .setPermissions(Manifest.permission.SEND_SMS)
+                .check();
     }
 }

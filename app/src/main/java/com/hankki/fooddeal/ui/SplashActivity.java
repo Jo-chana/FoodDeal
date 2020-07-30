@@ -85,7 +85,7 @@ public class SplashActivity extends AppCompatActivity {
                         finish();
                     }
                 })
-                .addOnFailureListener(activity, e -> e.printStackTrace());
+                .addOnFailureListener(activity, Throwable::printStackTrace);
     }
 
     @Override
@@ -93,15 +93,15 @@ public class SplashActivity extends AppCompatActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         SplashActivityPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
 
-
-        intent = new Intent(SplashActivity.this, IntroActivity.class);
+        // 이거 때문에 인트로가 두번 실행됨
+        /*intent = new Intent(SplashActivity.this, IntroActivity.class);
         Handler handler = new Handler();
         handler.postDelayed(() -> {
             startActivity(intent);
             finish();
-        }, 1000);
+        }, 1000);*/
 
-        return;
+//        return;
     }
 
     @NeedsPermission({Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION})
