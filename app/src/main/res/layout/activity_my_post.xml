@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.mypage.MyPostActivity">
+    tools:context=".ui.mypage.MyPostActivity"
+    android:background="@color/original_white">
 
     <include
         android:id="@+id/post_toolbar"
