@@ -180,6 +180,8 @@ public class ChatRoomFragment extends Fragment {
                                         .with(getContext())
                                         .load(snapshot.get("userPhotoUri"))
                                         .into(roomViewHolder.room_image);
+                            } else {
+                                roomViewHolder.room_image.setImageResource(R.drawable.ic_group_rec_60dp);
                             }
                         });
             } catch (Exception e){
