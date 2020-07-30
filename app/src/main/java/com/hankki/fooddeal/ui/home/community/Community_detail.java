@@ -19,6 +19,7 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -114,9 +115,7 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
 
     Disposable disposable;
 
-//    ProgressBar progressBar;
-
-//    CustomAnimationDialog customAnimationDialog;
+    ProgressBar progressBar;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -324,8 +323,7 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
 
     @SuppressLint("SetTextI18n")
     public void setPostCommon() {
-        Log.e("#########", "setPostCommon 실행");
-
+        progressBar = findViewById(R.id.customDialog_progressBar);
         vp_image = findViewById(R.id.vp_image);
         vp_image.setVisibility(View.GONE);
         trickView = findViewById(R.id.trick);
@@ -340,7 +338,6 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
         if (BoardController.isLikedBoard(mContext, mPost)) {
             iv_like.setChecked(true);
         }
-
 
         iv_like.setOnClickListener(v -> {
             /*유저가 기존에 찜한 게시글이 아닐 경우*/
@@ -485,47 +482,107 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
             reviseIntent.putExtra("item", mPost);
             startActivity(reviseIntent);
             finish();
-            finish();
         });
     }
 
+    public void deletePhotoImage(Context mContext, String insertDate) {
+        disposable = Observable.fromCallable((Callable<Object>) () -> {
+            for(int i=0;i<postImages.size();i++) {
+                StorageReference deleteImageRef = FirebaseStorage.getInstance().getReference().child("PostPhotos/" + insertDate + "/" + Integer.toString(i) + ".jpg");
+                deleteImageRef
+                        .delete()
+                        .addOnSuccessListener(aVoid -> {
+                            Toast.makeText(mContext, "이미지 디렉터리를 삭제하였습니다.", Toast.LENGTH_SHORT).show();
+                        })
+                        .addOnFailureListener(e -> {
+                            Log.e("###########", e.toString(), e);
+                        });
+            }
+            return false;
+        })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(result -> {
+                    refreshFragmentAndFinish();
+                    disposable.dispose();
+                });
+    }
+
+    public void deleteDownloadUrl(Context mContext, String insertDate) {
+        if(postImages != null && postImages.size() > 0) {
+            FirebaseFirestore
+                    .getInstance()
+                    .collection("postPhotos")
+                    .document(insertDate)
+                    .delete()
+                    .addOnSuccessListener(aVoid -> {
+                        Toast.makeText(mContext, "이미지 다운로드 URL을 삭제하였습니다.", Toast.LENGTH_SHORT).show();
+                        deletePhotoImage(mContext, insertDate);
+                    })
+                    .addOnFailureListener(e -> {
+                        Log.e("###########", e.toString(), e);
+                    });
+        } else  {
+            Log.i("#########", "이미지를 가지고 있지 않습니다");
+            refreshFragmentAndFinish();
+        }
+    }
+
+    /*
+    이현준
+    TODO AWS 서버에 있는 게시글 데이터 삭제와 Firebase에 있는 사진 및 DownloadUrl도 같이 삭제하는 코드 필요
+    */
     public void postDelete() {
         ll_delete.setOnClickListener(v -> {
             AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
             builder.setMessage("글을 삭제 하시겠습니까?");
             builder.setPositiveButton("확인", (dialog, which) -> {
-                if (BoardController.boardDelete(mContext, mPost)) {
-                    Toast.makeText(mContext, "글을 삭제하였습니다.", Toast.LENGTH_SHORT).show();
-                    if (tag.equals("Main")) {
-                        /*게시글 리스트로 돌아갈 경우 변경사항 즉각 Update*/
-                        NavHostFragment navHostFragment = (NavHostFragment) ((MainActivity) MainActivity.mainContext)
-                                .getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
-                        assert navHostFragment != null;
-                        List<Fragment> fragments = navHostFragment.getChildFragmentManager().getFragments().get(0)
-                                .getChildFragmentManager().getFragments();
-
-                        Fragment fragment = fragments.get(page);
-                        switch (page) {
-                            case 0:
-                                ((ExchangeAndShare) fragment).setRecyclerView();
-                                break;
-                            case 1:
-                                ((RecipeShare) fragment).setRecyclerView();
-                                break;
-                            case 2:
-                                ((FreeCommunity) fragment).setRecyclerView();
-                                break;
-                        }
+                progressBar.setVisibility(View.VISIBLE);
+                disposable = Observable.fromCallable((Callable<Object>) () -> {
+                    if (BoardController.boardDelete(mContext, mPost)) {
+                        deleteDownloadUrl(mContext, mPost.getInsertDate());
+                    } else {
+                        Toast.makeText(mContext, "AWS 데이터 삭제 실패", Toast.LENGTH_SHORT).show();
                     }
-                } else {
-                    Toast.makeText(mContext, "실패!", Toast.LENGTH_SHORT).show();
-                }
-                finish();
+
+                    return false;
+                })
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(result -> {
+                            disposable.dispose();
+                            progressBar.setVisibility(View.GONE);
+                        });
             }).setNegativeButton("취소", (dialog, which) -> {
             });
             AlertDialog alertDialog = builder.create();
             alertDialog.show();
         });
+    }
+
+    public void refreshFragmentAndFinish() {
+        if (tag.equals("Main")) {
+            /*게시글 리스트로 돌아갈 경우 변경사항 즉각 Update*/
+            NavHostFragment navHostFragment = (NavHostFragment) ((MainActivity) MainActivity.mainContext)
+                    .getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
+            assert navHostFragment != null;
+            List<Fragment> fragments = navHostFragment.getChildFragmentManager().getFragments().get(0)
+                    .getChildFragmentManager().getFragments();
+
+            Fragment fragment = fragments.get(page);
+            switch (page) {
+                case 0:
+                    ((ExchangeAndShare) fragment).setRecyclerView();
+                    break;
+                case 1:
+                    ((RecipeShare) fragment).setRecyclerView();
+                    break;
+                case 2:
+                    ((FreeCommunity) fragment).setRecyclerView();
+                    break;
+            }
+        }
+        finish();
     }
 
     public void setGuestBottomToolbarOption() {
