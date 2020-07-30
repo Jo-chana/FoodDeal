@@ -77,7 +77,6 @@ public class ChatRoomFragment extends Fragment {
         TextView title = toolbar.findViewById(R.id.toolbar_title);
         title.setText("채팅방");
 
-
         if(FirebaseAuth.getInstance().getCurrentUser() != null) {
             sUID = AES256Util.aesDecode(FirebaseAuth.getInstance().getCurrentUser().getUid());
         } else {
@@ -188,7 +187,7 @@ public class ChatRoomFragment extends Fragment {
             }
 
             if (chatRoomModel.getRoomUserList().size() > 2) {
-                roomViewHolder.room_count.setText(Integer.toString(chatRoomModel.getRoomUserList().size()));
+                roomViewHolder.room_count.setText(chatRoomModel.getRoomUserList().size());
                 roomViewHolder.room_count.setVisibility(View.VISIBLE);
             } else {
                 roomViewHolder.room_count.setVisibility(View.INVISIBLE);
