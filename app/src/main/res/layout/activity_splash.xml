@@ -17,4 +17,15 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.407"
         app:srcCompat="@drawable/logo_white" />
+
+    <ProgressBar
+        android:id="@+id/customDialog_progressBar"
+        style="@style/Widget.AppCompat.ProgressBar"
+        android:layout_width="64sp"
+        android:layout_height="64sp"
+        android:indeterminateTint="@color/cardview_light_background"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView" />
 </androidx.constraintlayout.widget.ConstraintLayout>

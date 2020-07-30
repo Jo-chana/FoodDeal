@@ -574,6 +574,9 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
         rv_comment.setAdapter(mAdapter);
     }
 
+    /* 이소연
+    TODO 게시글 상세 페이지에서 카메라가 줌 된 위치 이외에 다른 곳을 보려고 드래그하면 잘 되지 않는 이슈
+    */
     @Override
     public void onMapReady(GoogleMap googleMap) {
         /**지도 설정*/

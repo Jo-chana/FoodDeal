@@ -3,8 +3,14 @@ package com.hankki.fooddeal.ui;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
+import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -14,10 +20,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.hankki.fooddeal.R;
 import com.hankki.fooddeal.data.ForcedTerminationService;
 import com.hankki.fooddeal.data.PreferenceManager;
@@ -25,6 +34,12 @@ import com.hankki.fooddeal.data.retrofit.APIClient;
 import com.hankki.fooddeal.data.retrofit.APIInterface;
 import com.hankki.fooddeal.data.retrofit.retrofitDTO.MemberResponse;
 
+import java.util.concurrent.Callable;
+
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.OnNeverAskAgain;
 import permissions.dispatcher.OnPermissionDenied;
@@ -39,6 +54,8 @@ import retrofit2.Response;
 @RuntimePermissions
 public class SplashActivity extends AppCompatActivity {
 
+    Disposable disposable;
+    ProgressBar progressBar;
 
     Intent intent;
     /*
@@ -53,26 +70,29 @@ public class SplashActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
-        SplashActivityPermissionsDispatcher.showLocationWithPermissionCheck(this);
+        progressBar = findViewById(R.id.customDialog_progressBar);
 
-        // 강제종료 알림 서비스
-        startService(new Intent(this, ForcedTerminationService.class));
+        disposable = Observable.fromCallable((Callable<Object>) () -> {
+            // Firebase 초기 세팅
+            firebaseAuth = FirebaseAuth.getInstance();
+            FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
+                    .setPersistenceEnabled(false)
+                    .build();
+            FirebaseFirestore.getInstance().setFirestoreSettings(settings);
 
-        /**스플래쉬 핸들러 바꾸어야 함.
-         * 메인으로 넘어가기 전 로그인 유지 상태인지, 아닌지 판단하여
-         * 인트로 액티비티 또는 홈 액티비티로 이동*/
+            // 강제종료 알림 서비스
+            startService(new Intent(this, ForcedTerminationService.class));
 
-        /* 이현준
-        로그인 화면에서 로그인 성공 시, 서버에서 JWT 토큰을 세션 유지용도로 내려줌. 
-        이것을 SharedPreferences에 저장한 뒤, 어플 종료시 혹은 마이페이지에서 자동 로그인 해제 시 삭제
-        자동 로그인 설정 후 어플리케이션 재실행 시, 스플래시에서 SharedPreferences에 토큰이 있는지 판단해서 있으면 바로 홈 액티비티 없으면 인트로 액티비티
-        */
-        firebaseAuth = FirebaseAuth.getInstance();
-        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
-                .setPersistenceEnabled(false)
-                .build();
-        FirebaseFirestore.getInstance().setFirestoreSettings(settings);
+            SplashActivityPermissionsDispatcher.showLocationWithPermissionCheck(this);
 
+            return false;
+        })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(result -> {
+                    disposable.dispose();
+                    progressBar.setVisibility(View.VISIBLE);
+                });
     }
 
     // 토큰을 사용한 인증
@@ -92,7 +112,6 @@ public class SplashActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         SplashActivityPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
-
         // 이거 때문에 인트로가 두번 실행됨
         /*intent = new Intent(SplashActivity.this, IntroActivity.class);
         Handler handler = new Handler();
@@ -106,6 +125,11 @@ public class SplashActivity extends AppCompatActivity {
 
     @NeedsPermission({Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION})
     void showLocation() {
+        /* 이현준
+        로그인 화면에서 로그인 성공 시, 서버에서 JWT 토큰을 세션 유지용도로 내려줌.
+        이것을 SharedPreferences에 저장한 뒤, 어플 종료시 혹은 마이페이지에서 자동 로그인 해제 시 삭제
+        자동 로그인 설정 후 어플리케이션 재실행 시, 스플래시에서 SharedPreferences에 토큰이 있는지 판단해서 있으면 바로 홈 액티비티 없으면 인트로 액티비티
+        */
         /*
         이현준
         자동 로그인 구현
@@ -131,12 +155,18 @@ public class SplashActivity extends AppCompatActivity {
             });
         } else {
             /** SharedPreference 기본틀, key 값이나 변수타입은 추후 수정*/
+            /*
+            이현준
+            Rxjava 내부에서 Looper가 돌아갈 수 없기 때문에 Thread.sleep로 변경
+            */
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             intent = new Intent(SplashActivity.this, IntroActivity.class);
-            Handler handler = new Handler();
-            handler.postDelayed(() -> {
-                startActivity(intent);
-                finish();
-            }, 1000);
+            startActivity(intent);
+            finish();
         }
     }
 
