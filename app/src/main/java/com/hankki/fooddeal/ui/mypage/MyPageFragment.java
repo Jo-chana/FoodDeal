@@ -172,6 +172,7 @@ public class MyPageFragment extends Fragment {
         if (requestCode == 0) {
             if (resultCode == RESULT_OK) {
                 progressBar.setVisibility(View.VISIBLE);
+                progressBar.bringToFront();
                 disposable = Observable.fromCallable((Callable<Object>) () -> {
                     try {
                         InputStream in = getContext().getContentResolver().openInputStream(data.getData());
