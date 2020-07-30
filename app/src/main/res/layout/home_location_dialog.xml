@@ -4,13 +4,15 @@
     android:layout_width="match_parent"
     android:layout_height="120dp"
     android:background="@drawable/transparent"
+    android:layout_marginBottom="10dp"
     android:gravity="bottom">
 
     <LinearLayout
         android:id="@+id/ll_dialog"
-        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_width="match_parent"
         android:orientation="vertical">
+
         <Button
             android:id="@+id/btn_location"
             android:background="@drawable/dialog_btn_background"

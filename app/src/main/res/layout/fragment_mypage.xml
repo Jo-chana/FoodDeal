@@ -41,10 +41,10 @@
             android:layout_height="32sp"
             android:indeterminateTint="@color/original_primary"
             android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="@+id/iv_my_profile"
-            app:layout_constraintEnd_toEndOf="@+id/btn_profile_revise"
-            app:layout_constraintStart_toEndOf="@+id/tv_my_name"
-            app:layout_constraintTop_toTopOf="@+id/iv_my_profile" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"/>
 
         <TextView
             android:id="@+id/tv_my_name"
