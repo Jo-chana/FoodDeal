@@ -12,7 +12,6 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -86,12 +85,28 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
                 map.addMarker(markerOptions);
                 int page;
-                if(postItem.getCategory().equals("RECIPE"))
+                String category;
+                if(postItem.getCategory().equals("RECIPE")) {
                     page = 1;
-                else if(postItem.getCategory().equals("FREE"))
+                    category = "레시피 게시판";
+                }
+                else if(postItem.getCategory().equals("FREE")) {
                     page = 2;
-                else
+                    category = "자유 게시판";
+                }
+                else {
                     page = 0;
+                    if(postItem.getCategory().equals("INGREDIENT EXCHANGE"))
+                        category = "식재 교환";
+                    else
+                        category = "식재 나눔";
+                }
+
+                /*@TODO markerOption.icon 설정*/
+                markerOptions.title(postItem.getBoardTitle());
+                markerOptions.snippet(category);
+                map.addMarker(markerOptions);
+
                 map.setOnInfoWindowClickListener(marker -> {
                     Intent intent = new Intent(MapActivity.this, Community_detail.class);
                     intent.putExtra("page",page);

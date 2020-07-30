@@ -77,7 +77,6 @@ public class ChatRoomFragment extends Fragment {
         TextView title = toolbar.findViewById(R.id.toolbar_title);
         title.setText("채팅방");
 
-
         if(FirebaseAuth.getInstance().getCurrentUser() != null) {
             sUID = AES256Util.aesDecode(FirebaseAuth.getInstance().getCurrentUser().getUid());
         } else {
@@ -85,34 +84,6 @@ public class ChatRoomFragment extends Fragment {
         }
 
         firestore = FirebaseFirestore.getInstance();
-//        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
-//                .setPersistenceEnabled(false)
-//                .build();
-//        firestore.setFirestoreSettings(settings);
-
-        /*Button button = view.findViewById(R.id.test);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String uid = "ggj0418";
-                List<String> roomUserList = new ArrayList<>();
-                roomUserList.add(uid);
-                roomUserList.add("dlguwn13");
-                roomUserList.add("gyronnn103");
-                roomUserList.add("cloud1300");
-
-                HashMap<String, Integer> unreadUserCountMap = new HashMap<>();
-                unreadUserCountMap.put(uid, 0);
-                unreadUserCountMap.put("dlguwn13", 0);
-                unreadUserCountMap.put("gyronnn103", 0);
-                unreadUserCountMap.put("cloud1300", 0);
-
-                roomId = HashMsgUtil.getSHARoomID(3, roomUserList);
-
-                DocumentReference newRoom = FirebaseFirestore.getInstance().collection("rooms").document(roomId);
-                createChattingRoom(newRoom, roomId, roomUserList, unreadUserCountMap);
-            }
-        });*/
 
         recyclerView = view.findViewById(R.id.rv_chatroom);
         recyclerView.setLayoutManager(new LinearLayoutManager(inflater.getContext()));
@@ -170,8 +141,13 @@ public class ChatRoomFragment extends Fragment {
 
             final ChatRoomModel chatRoomModel = roomList.get(position);
 
-            if (chatRoomModel.getRoomTitle().length() >= 18) {
-                roomViewHolder.room_title.setText(chatRoomModel.getRoomTitle().substring(0, 18));
+            List<String> userList = new ArrayList<String>(chatRoomModel.getRoomUserList());
+            userList.remove(sUID);
+            String otherUser = userList.get(0);
+
+            if (chatRoomModel.getRoomTitle().length() >= 12) {
+                String changedTitle = chatRoomModel.getRoomTitle().substring(0, 12) + "...";
+                roomViewHolder.room_title.setText(changedTitle);
             } else {
                 roomViewHolder.room_title.setText(chatRoomModel.getRoomTitle());
             }
@@ -191,18 +167,15 @@ public class ChatRoomFragment extends Fragment {
 
             roomViewHolder.last_time.setText(simpleDateFormat.format(chatRoomModel.getLastMessageTime()));
 
-//            Glide.with(getActivity()).load(R.drawable.ic_user)
-//                    .apply(requestOptions)
-//                    .into(roomViewHolder.room_image);
             try {
-                DocumentReference documentReference = FirebaseFirestore.getInstance().collection("users")
-                        .document(hostUID);
+                DocumentReference documentReference = FirebaseFirestore.getInstance()
+                        .collection("users")
+                        .document(AES256Util.aesEncode(otherUser));
                 documentReference
                         .get()
                         .addOnCompleteListener(task -> {
                             DocumentSnapshot snapshot = task.getResult();
                             if (!snapshot.get("userPhotoUri").equals("")) {
-
                                 Glide
                                         .with(getContext())
                                         .load(snapshot.get("userPhotoUri"))
@@ -214,7 +187,7 @@ public class ChatRoomFragment extends Fragment {
             }
 
             if (chatRoomModel.getRoomUserList().size() > 2) {
-                roomViewHolder.room_count.setText(Integer.toString(chatRoomModel.getRoomUserList().size()));
+                roomViewHolder.room_count.setText(chatRoomModel.getRoomUserList().size());
                 roomViewHolder.room_count.setVisibility(View.VISIBLE);
             } else {
                 roomViewHolder.room_count.setVisibility(View.INVISIBLE);
@@ -229,9 +202,6 @@ public class ChatRoomFragment extends Fragment {
             }
 
             roomViewHolder.itemView.setOnClickListener(v -> {
-                List<String> userList = new ArrayList<String>(chatRoomModel.getRoomUserList());
-                userList.remove(sUID);
-                String otherUser = userList.get(0);
                 Intent intent = new Intent(v.getContext(), ChatActivity.class);
                 intent.putExtra("roomID", chatRoomModel.getRoomId());
                 intent.putExtra("roomTitle", chatRoomModel.getRoomTitle());
