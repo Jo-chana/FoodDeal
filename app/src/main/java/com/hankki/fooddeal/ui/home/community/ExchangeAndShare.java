@@ -305,7 +305,7 @@ public class ExchangeAndShare extends Fragment {
     }
 
     public ArrayList<PostItem> getMapPostItems(){
-        ArrayList<PostItem> items = postItems;
+        ArrayList<PostItem> items = new ArrayList<>(postItems);
         if(category.equals("INGREDIENT EXCHANGE")) {
             items.addAll(BoardController.getBoardList(getContext(),"INGREDIENT SHARE"));
         } else {

@@ -80,8 +80,8 @@ public class ChatActivity extends AppCompatActivity {
         setContentView(R.layout.activity_chat);
 
         View view = getWindow().getDecorView();
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
-            if(view != null){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (view != null) {
                 view.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
                 getWindow().setStatusBarColor(getResources().getColor(R.color.grey_100));
             }
@@ -89,7 +89,7 @@ public class ChatActivity extends AppCompatActivity {
 
         if (getIntent() != null) {
             roomId = getIntent().getStringExtra("roomID");
-            roomTitle = getIntent().getStringExtra("roomTitle");              // 채팅방의 이름으로 쓸 게시글 타이틀
+            roomTitle = getIntent().getStringExtra("roomTitle"); // 채팅방의 이름으로 쓸 게시글 타이틀
             userTotal = getIntent().getIntExtra("userTotal", -1);
             // 각 채팅마다 안 읽은 사람을 표시하기 위해 필요한 건데 채팅을 하다가 새로운 사람이 들어온 경우를
             // 처리못하기 때문에 메시지 리스너에서 userTotal을 계속 처리해줘야할듯
@@ -100,7 +100,7 @@ public class ChatActivity extends AppCompatActivity {
         documentReference
                 .get()
                 .addOnCompleteListener(task -> {
-                    if(task.isSuccessful()) {
+                    if (task.isSuccessful()) {
                         DocumentSnapshot snapshot = task.getResult();
                         otherUserPhotoUrl = snapshot.get("userPhotoUri").toString();
                     }
@@ -470,54 +470,20 @@ public class ChatActivity extends AppCompatActivity {
 
             if (!uid.equals(message.getMessageSenderUid())) {
                 messageViewHolder.msg_name.setText(message.getMessageSenderUid());
-                if(otherUserPhotoUrl != null) {
-                    if(!otherUserPhotoUrl.equals("")) {
-                        Glide
-                                .with(getApplicationContext())
-                                .load(otherUserPhotoUrl)
-                                .into(messageViewHolder.user_photo);
-                        messageViewHolder.user_photo.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                        messageViewHolder.user_photo.setClipToOutline(true);
-                    } else {
-                        messageViewHolder.user_photo.setImageResource(R.drawable.ic_group_rec_60dp);
-                        messageViewHolder.user_photo.setScaleType(ImageView.ScaleType.FIT_XY);
-                        messageViewHolder.user_photo.setClipToOutline(true);
-                    }
-                }
 
-
-                /*try {
-                    DocumentReference documentReference = FirebaseFirestore.getInstance().collection("users")
-                            .document(hostUID);
-                    documentReference
-                            .get()
-                            .addOnCompleteListener(task -> {
-                                DocumentSnapshot snapshot = task.getResult();
-                                if (!snapshot.get("userPhotoUri").equals("")) {
-
-                                    Glide
-                                            .with(getApplicationContext())
-                                            .load(snapshot.get("userPhotoUri"))
-                                            .into(messageViewHolder.user_photo);
-                                    messageViewHolder.user_photo.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                                    messageViewHolder.user_photo.setClipToOutline(true);
-                                }
-                            });
-                } catch (Exception e){
+                if (!otherUserPhotoUrl.equals("")) {
+                    Glide
+                            .with(getApplicationContext())
+                            .load(otherUserPhotoUrl)
+                            .into(messageViewHolder.user_photo);
+                    messageViewHolder.user_photo.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                    messageViewHolder.user_photo.setClipToOutline(true);
+                } else {
                     messageViewHolder.user_photo.setImageResource(R.drawable.ic_group_rec_60dp);
                     messageViewHolder.user_photo.setScaleType(ImageView.ScaleType.FIT_XY);
                     messageViewHolder.user_photo.setClipToOutline(true);
-                }*/
-                /*if (userModel.getUserphoto() == null) {
-                    Glide.with(getContext()).load(R.drawable.user)
-                            .apply(requestOptions)
-                            .into(messageViewHolder.user_photo);
-                } else {
-                    Glide.with(getContext())
-                            .load(storageReference.child("userPhoto/" + userModel.getUserphoto()))
-                            .apply(requestOptions)
-                            .into(messageViewHolder.user_photo);
-                }*/
+                }
+
             }
             messageViewHolder.divider.setVisibility(View.INVISIBLE);
             messageViewHolder.divider.getLayoutParams().height = 0;
