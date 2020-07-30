@@ -79,7 +79,7 @@ public class AddressActivity extends AppCompatActivity {
     private ArrayList<String> latitudeList;
 
     private Timer timer = new Timer();
-    private final long DELAY = 1000; // in ms
+    private final long DELAY = 500; // in ms
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
