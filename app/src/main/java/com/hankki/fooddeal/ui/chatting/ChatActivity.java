@@ -63,7 +63,7 @@ public class ChatActivity extends AppCompatActivity {
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
     private SimpleDateFormat dateFormatDay = new SimpleDateFormat("yyyy-MM-dd");
     private SimpleDateFormat dateFormatHour = new SimpleDateFormat("aa hh:mm");
-    private String roomId, roomTitle, uid, otherUID, otherUserPhotoUrl = "";
+    private String roomId, roomTitle, uid, otherUID, otherUserPhotoUrl = null;
     private Integer userTotal;
     private View toolbar;
     private TextView toolbar_title;
@@ -470,7 +470,6 @@ public class ChatActivity extends AppCompatActivity {
 
             if (!uid.equals(message.getMessageSenderUid())) {
                 messageViewHolder.msg_name.setText(message.getMessageSenderUid());
-
                 if (!otherUserPhotoUrl.equals("")) {
                     Glide
                             .with(getApplicationContext())
@@ -483,7 +482,6 @@ public class ChatActivity extends AppCompatActivity {
                     messageViewHolder.user_photo.setScaleType(ImageView.ScaleType.FIT_XY);
                     messageViewHolder.user_photo.setClipToOutline(true);
                 }
-
             }
             messageViewHolder.divider.setVisibility(View.INVISIBLE);
             messageViewHolder.divider.getLayoutParams().height = 0;
