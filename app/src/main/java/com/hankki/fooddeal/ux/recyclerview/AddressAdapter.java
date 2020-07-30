@@ -1,11 +1,12 @@
 package com.hankki.fooddeal.ux.recyclerview;
 
-import android.content.Intent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.hankki.fooddeal.R;
 
 import java.util.ArrayList;
@@ -27,10 +28,12 @@ public class AddressAdapter extends RecyclerView.Adapter<AddressAdapter.AddressV
 
     public class AddressViewholder extends RecyclerView.ViewHolder {
         private TextView tv_address;
+        private View parentView;
 
         public AddressViewholder(@NonNull View view) {
             super(view);
             tv_address = view.findViewById(R.id.tv_address);
+            parentView = view.findViewById(R.id.layout_address);
             view.setOnClickListener(new View.OnClickListener()
             {
                 @Override
