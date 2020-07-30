@@ -11,7 +11,6 @@ import android.graphics.drawable.shapes.OvalShape;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -637,7 +636,7 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
         mapPost.animateCamera(CameraUpdateFactory.newLatLngZoom(latlng, 17));
 
         UiSettings uiSettings = googleMap.getUiSettings();
-        uiSettings.setZoomGesturesEnabled(false);
+        uiSettings.setAllGesturesEnabled(false);
     }
 
     @Override
