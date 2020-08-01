@@ -39,7 +39,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     VerticalSeekBar seekBar;
     TextView tv_100, tv_200, tv_400, tv_all;
     int filterDistance = 1000;
-    int zoom = 15;
+    int zoom = 14;
     Context mContext;
     LatLng currentPostion;
 
@@ -148,11 +148,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         map.addMarker(markerOptions);
 
 
-        CircleOptions circle1KM = new CircleOptions().center(currentPostion) // 원점
-                .radius(filterDistance)      // 반지름 단위 : m
-                .strokeWidth(0f)  // 선너비 0f : 선없음
-                .fillColor(Color.parseColor("#88ffb5c5")); // 배경색
-        map.addCircle(circle1KM);
 
 //        postItems.addAll(BoardController.getBoardList(mContext, "INGREDIENT EXCHANGE"));
 //        postItems.addAll(BoardController.getBoardList(mContext,"INGREDIENT SHARE"));
@@ -206,6 +201,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         });
 
         map.animateCamera(CameraUpdateFactory.newLatLngZoom(currentPostion, zoom));
+        CircleOptions circle1KM = new CircleOptions().center(currentPostion) // 원점
+                .radius(filterDistance)      // 반지름 단위 : m
+                .strokeWidth(0f)  // 선너비 0f : 선없음
+                .fillColor(Color.parseColor("#88ffb5c5")); // 배경색
+        map.addCircle(circle1KM);
     }
 
     public ArrayList<PostItem> filterDistance(ArrayList<PostItem> items, int distance){
