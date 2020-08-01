@@ -282,8 +282,8 @@ public class PostItem implements Comparable<PostItem>, Parcelable {
         body.put("BOARD_TITLE",this.getBoardTitle());
         body.put("BOARD_CONTENT",this.getBoardContent());
         body.put("INSERT_DATE",this.getInsertDate());
-        body.put("USER_LAT",PreferenceManager.getString(context, "Latitude"));
-        body.put("USER_LON",PreferenceManager.getString(context,"Longitude"));
+        body.put("USER_LAT",AES256Util.aesDecode(PreferenceManager.getString(context, "Latitude")));
+        body.put("USER_LON",AES256Util.aesDecode(PreferenceManager.getString(context,"Longitude")));
         body.put("REGION_1DEPTH_NAME",PreferenceManager.getString(context, "region1Depth"));
         body.put("REGION_2DEPTH_NAME",PreferenceManager.getString(context, "region2Depth"));
         body.put("REGION_3DEPTH_NAME",PreferenceManager.getString(context, "region3Depth"));
@@ -330,12 +330,12 @@ public class PostItem implements Comparable<PostItem>, Parcelable {
         if(second > 60){
             if(second > 3600){
                 if(second > 86400){
-                    relativeTime = (int) second/86400 + "일 전";
+                    relativeTime = (int) second / 86400 + "일 전";
                 } else {
                     relativeTime = String.valueOf((int) second / 3600) + "시간 전";
                 }
             } else {
-                relativeTime = String.valueOf((int)second/60) + "분 전";
+                relativeTime = String.valueOf((int) second / 60) + "분 전";
             }
         } else {
             relativeTime = "방금 전";
@@ -345,8 +345,8 @@ public class PostItem implements Comparable<PostItem>, Parcelable {
 
     public int calculateDistance(Context context, double lat, double lon){
         Location myLoc = new Location("myLoc");
-        myLoc.setLatitude(Double.parseDouble(PreferenceManager.getString(context, "Latitude")));
-        myLoc.setLongitude(Double.parseDouble(PreferenceManager.getString(context, "Longitude")));
+        myLoc.setLatitude(Double.parseDouble(AES256Util.aesDecode(PreferenceManager.getString(context, "Latitude"))));
+        myLoc.setLongitude(Double.parseDouble(AES256Util.aesDecode(PreferenceManager.getString(context, "Longitude"))));
 
         Location targetLoc = new Location("targetLoc");
         targetLoc.setLatitude(lat);

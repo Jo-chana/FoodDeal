@@ -84,6 +84,47 @@ public class BoardController {
         return items;
     }
 
+    public static ArrayList<PostItem> getBoardList(Context context, String boardCode, int distance) {
+        Log.d("############", "getBoardList Start");
+        ArrayList<PostItem> items = new ArrayList<>();
+
+        String regionFirst = PreferenceManager.getString(context, "region1Depth");
+        String regionSecond = PreferenceManager.getString(context, "region2Depth");
+        String regionThird = PreferenceManager.getString(context, "region3Depth");
+
+        Call<BoardListResponse> boardListCall = apiInterface.getBoardList(regionFirst, regionSecond, regionThird, boardCode);
+        try {
+            items = new AsyncTask<Void, Void, ArrayList<PostItem>>() {
+
+                @Override
+                protected ArrayList<PostItem> doInBackground(Void... voids) {
+                    final ArrayList<PostItem> postItems = new ArrayList<>();
+                    try {
+                        BoardListResponse boardListResponse = boardListCall.execute().body();
+                        assert boardListResponse != null;
+                        List<BoardListResponse.BoardResponse> boardResponses = boardListResponse.getBoardList();
+                        for (BoardListResponse.BoardResponse boardResponse : boardResponses) {
+                            String url = getThumbnailUrl(boardResponse.getInsertDate());
+                            PostItem item = new PostItem();
+                            item.onBindBoardApi(context, boardResponse, url);
+                            if(item.getDistance()<=distance)
+                                postItems.add(0,item);
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    return postItems;
+                }
+
+            }.execute().get();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        Log.d("############", "getBoardList End");
+        return items;
+    }
+
     public static boolean boardWrite(Context context, PostItem item) {
         boolean complete = false;
         HashMap<String, String> body = item.onBindBodyApi(context);

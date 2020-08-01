@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <fragment
         android:layout_width="match_parent"
@@ -11,4 +12,59 @@
         tools:context=".MapActivty"
         android:name="com.google.android.gms.maps.SupportMapFragment" />
 
-</LinearLayout>
+    <TextView
+        android:id="@+id/tv_100"
+        android:text="100m"
+        android:textColor="@color/original_black"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintRight_toLeftOf="@id/seekbar_wrapper"
+        app:layout_constraintTop_toTopOf="@id/seekbar_wrapper"
+        app:layout_constraintTop_toBottomOf="@id/tv_100"
+        android:layout_marginTop="10dp"/>
+    <TextView
+        android:id="@+id/tv_200"
+        android:text="200m"
+        android:textColor="@color/original_black"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintRight_toLeftOf="@id/seekbar_wrapper"
+        app:layout_constraintTop_toBottomOf="@id/tv_100"
+        app:layout_constraintBottom_toTopOf="@id/tv_400"/>
+    <TextView
+        android:id="@+id/tv_400"
+        android:text="400m"
+        android:textColor="@color/original_black"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintRight_toLeftOf="@id/seekbar_wrapper"
+        app:layout_constraintBottom_toTopOf="@id/tv_all"
+        app:layout_constraintTop_toBottomOf="@id/tv_200"/>
+    <TextView
+        android:id="@+id/tv_all"
+        android:text="All"
+        android:textColor="@color/original_primary"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="@id/tv_400"
+        app:layout_constraintEnd_toEndOf="@id/tv_400"
+        app:layout_constraintBottom_toBottomOf="@id/seekbar_wrapper"
+        android:layout_marginBottom="10dp"/>
+
+    <com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBarWrapper
+        android:id="@+id/seekbar_wrapper"
+        android:layout_width="30dp"
+        android:layout_height="150dp"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="30dp">
+        <com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBar
+            android:id="@+id/seekbar"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:splitTrack="false"
+            app:seekBarRotation="CW270"/>
+    </com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBarWrapper>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

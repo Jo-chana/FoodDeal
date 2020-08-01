@@ -304,6 +304,13 @@ public class ExchangeAndShare extends Fragment {
         }
     }
 
+    /*설정한 반경에 따라서 게시글 필터링(100m, 200m 등)*/
+    public void getFilteredPostItems(int distance){
+        if(pageFrom.equals("Main")){
+            postItems = BoardController.getBoardList(getContext(), category, distance);
+        }
+    }
+
     public ArrayList<PostItem> getMapPostItems(){
         ArrayList<PostItem> items = new ArrayList<>(postItems);
         if(category.equals("INGREDIENT EXCHANGE")) {
