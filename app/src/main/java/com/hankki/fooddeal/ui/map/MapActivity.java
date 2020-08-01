@@ -130,7 +130,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         double longitude = Double.parseDouble(AES256Util.aesDecode(PreferenceManager.getString(getApplicationContext(), "Longitude")));
 
         currentPostion = new LatLng(latitude, longitude);
-        setMarkerOption(15);
+        setMarkerOption(zoom);
 
 
     }
