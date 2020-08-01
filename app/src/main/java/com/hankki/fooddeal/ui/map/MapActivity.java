@@ -137,6 +137,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     public void setMarkerOption(int zoom){
         map.clear();
+        markers.clear();
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.position(currentPostion);
         markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_icon_current));
@@ -196,7 +197,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             Intent intent = new Intent(MapActivity.this, Community_detail.class);
             intent.putExtra("page",0);
             intent.putExtra("Tag","Main");
-            intent.putExtra("item",postItems.get(index));
+            intent.putExtra("item", mapItems.get(index));
             startActivity(intent);
         });
 
