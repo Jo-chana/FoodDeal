@@ -48,6 +48,14 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
         mContext = this;
+
+        SupportMapFragment mapFragment = (SupportMapFragment)getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
+
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
         postItems = getIntent().getParcelableArrayListExtra("Items");
         mapItems = postItems;
         findViews();
@@ -103,13 +111,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 setMarkerOption(zoom);
             }
         });
-
-        SupportMapFragment mapFragment = (SupportMapFragment)getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
-
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
     }
 
     public void findViews(){
@@ -129,10 +130,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         double latitude = Double.parseDouble(AES256Util.aesDecode(PreferenceManager.getString(getApplicationContext(), "Latitude")));
         double longitude = Double.parseDouble(AES256Util.aesDecode(PreferenceManager.getString(getApplicationContext(), "Longitude")));
 
-        currentPostion = new LatLng(latitude, longitude);
+        currentPostion = new LatLng(latitude, longitude);setMarkerOption(zoom);
         setMarkerOption(zoom);
-
-
     }
 
     public void setMarkerOption(int zoom){

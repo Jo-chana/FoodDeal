@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.PopupMenu;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -59,6 +60,8 @@ public class HomeFragment extends Fragment {
 
     Disposable disposable;
 
+    ProgressBar progressBar;
+
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState){
 
@@ -68,6 +71,7 @@ public class HomeFragment extends Fragment {
         btn_location = view.findViewById(R.id.btn_location);
         btn_map = view.findViewById(R.id.btn_map);
         tv_location = view.findViewById(R.id.tv_location);
+        progressBar = view.findViewById(R.id.customDialog_progressBar);
 
         setFragments();
         setLocation();
@@ -104,9 +108,26 @@ public class HomeFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), MapActivity.class);
-                intent.putParcelableArrayListExtra("Items",
-                        ((ExchangeAndShare)getChildFragmentManager().getFragments().get(0)).getMapPostItems());
-                startActivity(intent);
+                progressBar.setVisibility(View.VISIBLE);
+                disposable = Observable.fromCallable(new Callable<Object>() {
+                    @Override
+                    public Object call() throws Exception {
+                        intent.putParcelableArrayListExtra("Items",
+                                ((ExchangeAndShare)getChildFragmentManager().getFragments().get(0)).getMapPostItems());
+
+                        return false;
+                    }
+                })
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new Consumer<Object>() {
+                            @Override
+                            public void accept(Object result) throws Exception {
+//                                disposable.dispose();
+                                startActivity(intent);
+                                progressBar.setVisibility(View.GONE);
+                            }
+                        });
             }
         });
     }
