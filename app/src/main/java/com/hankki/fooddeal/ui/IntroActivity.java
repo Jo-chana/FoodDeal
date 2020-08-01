@@ -11,6 +11,7 @@ import com.hankki.fooddeal.R;
 import com.hankki.fooddeal.data.PreferenceManager;
 import com.hankki.fooddeal.data.retrofit.APIClient;
 import com.hankki.fooddeal.data.retrofit.APIInterface;
+import com.hankki.fooddeal.data.security.AES256Util;
 import com.hankki.fooddeal.ui.address.GPSTracker;
 import com.hankki.fooddeal.ui.login.LoginActivity;
 import com.hankki.fooddeal.ui.register.PhoneAuthActivity;
@@ -66,8 +67,8 @@ public class IntroActivity extends AppCompatActivity {
             double latitude = gpsTracker.getLatitude();
             double longitude = gpsTracker.getLongitude();
 
-            PreferenceManager.setString(getApplicationContext(), "Latitude", String.valueOf(latitude));
-            PreferenceManager.setString(getApplicationContext(), "Longitude", String.valueOf(longitude));
+            PreferenceManager.setString(getApplicationContext(), "Latitude", AES256Util.aesEncode(String.valueOf(latitude)));
+            PreferenceManager.setString(getApplicationContext(), "Longitude", AES256Util.aesEncode(String.valueOf(longitude)));
 
             disposable = Observable.fromCallable((Callable<Object>) () -> {
                 Call<ResponseBody> currentAddressCall = apiInterface.getCurrentAddress(longitude, latitude);

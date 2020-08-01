@@ -28,6 +28,7 @@ import com.hankki.fooddeal.R;
 import com.hankki.fooddeal.data.PreferenceManager;
 import com.hankki.fooddeal.data.retrofit.APIClient;
 import com.hankki.fooddeal.data.retrofit.APIInterface;
+import com.hankki.fooddeal.data.security.AES256Util;
 import com.hankki.fooddeal.ui.MainActivity;
 import com.hankki.fooddeal.ux.recyclerview.AddressAdapter;
 
@@ -146,8 +147,8 @@ public class AddressActivity extends AppCompatActivity {
 
         double longitude = gpsTracker.getLongitude();
         double latitude = gpsTracker.getLatitude();
-        PreferenceManager.setString(getApplicationContext(), "Longitude", String.valueOf(longitude));
-        PreferenceManager.setString(getApplicationContext(), "Latitude", String.valueOf(latitude));
+        PreferenceManager.setString(getApplicationContext(), "Longitude", AES256Util.aesEncode(String.valueOf(longitude)));
+        PreferenceManager.setString(getApplicationContext(), "Latitude", AES256Util.aesEncode(String.valueOf(latitude)));
 
         tv_search_result.setText("'현재 위치' 검색 결과");
 
@@ -283,8 +284,8 @@ public class AddressActivity extends AppCompatActivity {
                                 }
                                 PreferenceManager.setString(getApplicationContext(), "region2Depth", region2depthAddressList.get(pos));
                                 PreferenceManager.setString(getApplicationContext(), "region3Depth", region3depthAddressList.get(pos));
-                                PreferenceManager.setString(getApplicationContext(), "Latitude", latitudeList.get(pos));
-                                PreferenceManager.setString(getApplicationContext(), "Longitude", longitudeList.get(pos));
+                                PreferenceManager.setString(getApplicationContext(), "Latitude", AES256Util.aesEncode(latitudeList.get(pos)));
+                                PreferenceManager.setString(getApplicationContext(), "Longitude", AES256Util.aesEncode(longitudeList.get(pos)));
                                 startActivity(intent);
                                 finish();
                             }

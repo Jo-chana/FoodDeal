@@ -23,7 +23,7 @@
         android:textSize="20sp"
         android:textColor="#000000"
         android:textStyle="bold"
-        android:maxLines="1"
+        android:maxLines="2"
         android:ellipsize="end"
         app:layout_constraintTop_toTopOf="@id/iv_post_image"
         app:layout_constraintLeft_toRightOf="@id/iv_post_image"

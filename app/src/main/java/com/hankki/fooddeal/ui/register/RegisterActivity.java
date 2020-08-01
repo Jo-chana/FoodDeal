@@ -385,8 +385,8 @@ public class RegisterActivity extends AppCompatActivity {
                         String longitude = jsonObject.getJSONObject("address").getString("x");
                         String latitude = jsonObject.getJSONObject("address").getString("y");
 
-                        PreferenceManager.setString(getApplicationContext(), "Latitude", latitude);
-                        PreferenceManager.setString(getApplicationContext(), "Longitude", longitude);
+                        PreferenceManager.setString(getApplicationContext(), "Latitude", AES256Util.aesEncode(latitude));
+                        PreferenceManager.setString(getApplicationContext(), "Longitude", AES256Util.aesEncode(longitude));
                     }
                 } catch (IOException | JSONException e) {
                     e.printStackTrace();
