@@ -448,6 +448,7 @@ public class ChatActivity extends AppCompatActivity {
 
             setReadCounter(message, messageViewHolder.read_counter);
 
+
             if ("0".equals(message.getMessageType())) {                                      // text message
                 messageViewHolder.msg_item.setText(message.getMessageContent());
             } /*else if ("2".equals(message.getMessageType())) {                                      // file transfer
