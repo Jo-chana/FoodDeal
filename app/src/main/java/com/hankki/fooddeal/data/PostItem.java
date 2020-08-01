@@ -205,7 +205,7 @@ public class PostItem implements Comparable<PostItem>, Parcelable {
 
     public String getThumbnailUrl() { return thumbnailUrl; }
 
-    public String getRelativeTime(){return relativeTime;}
+    public String getRelativeTime(){ return relativeTime; }
 
     public long getAbsoluteTime() {
         return absoluteTime;

@@ -95,15 +95,18 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 }
                 else {
                     page = 0;
-                    if(postItem.getCategory().equals("INGREDIENT EXCHANGE"))
+                    if(postItem.getCategory().equals("INGREDIENT EXCHANGE")) {
                         category = "식재 교환";
-                    else
+                        markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_icon_marker));
+                    }
+                    else {
                         category = "식재 나눔";
+                        markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_icon_marker_2));
+                    }
                 }
 
                 /*@TODO markerOption.icon 설정*/
                 markerOptions.title(postItem.getBoardTitle());
-                markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_icon_marker));
                 markerOptions.snippet(category);
                 markers.add(map.addMarker(markerOptions));
 

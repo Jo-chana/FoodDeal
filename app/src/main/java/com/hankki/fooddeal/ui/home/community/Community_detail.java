@@ -85,7 +85,7 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
     ConstraintLayout post_common, bottomToolbar; // 게시글 몸통, 하단 툴바(채팅 및 댓글창)
     ImageView profile; // 유저 프로필
     TextView userLocation, mapLocation; // 유저 위치, 게시글 위치(교환/나눔)
-    TextView userId, postInfo, postText, postLike; //아이디, 게시글 정보(시간, 장소 등), 관심도(찜, 좋아요)
+    TextView userId, postInfo, postText, postLike, postTitle; //아이디, 게시글 정보(시간, 장소 등), 관심도(찜, 좋아요)
     RecyclerView rv_comment; // 댓글 리사이클러 뷰
     Button btn_comment;
     EditText et_comment;
@@ -386,6 +386,8 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
         userLocation = post_common.findViewById(R.id.tv_user_location);
         userLocation.setText(mPost.getRegionSecond() + " " + mPost.getRegionFirst());
 
+        postTitle = post_common.findViewById(R.id.tv_post_title);
+        postTitle.setText(mPost.getBoardTitle());
         postInfo = post_common.findViewById(R.id.tv_post_info);
         postText = post_common.findViewById(R.id.tv_post);
         postText.setText(mPost.getBoardContent());

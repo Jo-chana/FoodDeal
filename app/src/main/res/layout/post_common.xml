@@ -6,13 +6,26 @@
     android:layout_marginLeft="20dp"
     android:layout_marginRight="20dp">
 
+    <TextView
+        android:id="@+id/tv_post_title"
+        android:text="글 제목"
+        android:textStyle="bold"
+        android:textColor="@color/original_black"
+        android:textSize="25sp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="20dp"/>
+
     <ImageView
         android:id="@+id/iv_user_profile"
         android:background="#e7e7e7"
         android:layout_width="60dp"
         android:layout_height="60dp"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_post_title"
         android:layout_marginTop="20dp" />
     <TextView
         android:id="@+id/tv_user_id"
