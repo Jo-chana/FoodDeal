@@ -63,6 +63,8 @@
             android:id="@+id/seekbar"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:thumb="@drawable/seekbar_thumb"
+            android:progressDrawable="@drawable/seekbar_background"
             android:splitTrack="false"
             app:seekBarRotation="CW270"/>
     </com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBarWrapper>
