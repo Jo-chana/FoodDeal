@@ -12,7 +12,7 @@
         android:color="@color/original_primary" />
     <!-- 크기 -->
     <size
-        android:width="13dp"
-        android:height="13dp"/>
+        android:width="20dp"
+        android:height="20dp"/>
 </shape>
 
