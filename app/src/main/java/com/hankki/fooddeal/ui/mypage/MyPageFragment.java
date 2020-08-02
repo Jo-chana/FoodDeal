@@ -12,6 +12,7 @@ import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -174,6 +175,7 @@ public class MyPageFragment extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 0) {
             if (resultCode == RESULT_OK) {
+                requireActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
                 progressBar.setVisibility(View.VISIBLE);
                 progressBar.bringToFront();
                 disposable = Observable.fromCallable((Callable<Object>) () -> {
@@ -243,12 +245,14 @@ public class MyPageFragment extends Fragment {
                     @Override
                     public void onSuccess(Void aVoid) {
                         progressBar.setVisibility(View.GONE);
+                        requireActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         progressBar.setVisibility(View.GONE);
+                        requireActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
                     }
                 });
     }
