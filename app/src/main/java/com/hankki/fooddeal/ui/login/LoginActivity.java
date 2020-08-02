@@ -17,6 +17,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -70,6 +71,7 @@ public class LoginActivity extends AppCompatActivity {
     EditText idEditText, passwordEditText;
     Button loginButton;
     ImageView backButton;
+    ProgressBar progressBar;
 
     TextWatcher passwordTextWatcher;
 
@@ -110,6 +112,8 @@ public class LoginActivity extends AppCompatActivity {
             }
         };
 
+        progressBar = findViewById(R.id.customDialog_progressBar);
+
         toolbarView = findViewById(R.id.login_toolbar);
 
         toolbarTextView = toolbarView.findViewById(R.id.toolbar_title);
@@ -126,6 +130,10 @@ public class LoginActivity extends AppCompatActivity {
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                loginButton.setEnabled(false);
+                loginButton.setText("");
+                progressBar.setVisibility(View.VISIBLE);
+
                 String inputID = idEditText.getText().toString();
                 String inputPassword = passwordEditText.getText().toString();
 
@@ -183,6 +191,8 @@ public class LoginActivity extends AppCompatActivity {
 
         firebaseAuth = null;
 
+        progressBar = null;
+
         toolbarView = null;
 
         missingPasswordTextView = null;
@@ -210,6 +220,9 @@ public class LoginActivity extends AppCompatActivity {
                     signInWithCustomToken(memberResponse.getFirebaseToken(), memberResponse.getUserToken());
                 } else {
                     loginErrorHintTextView.setText(getString(R.string.activity_login_error_input));
+                    loginButton.setEnabled(true);
+                    loginButton.setText(getString(R.string.activity_login_login_button));
+                    progressBar.setVisibility(View.GONE);
                 }
             }
 
@@ -230,6 +243,9 @@ public class LoginActivity extends AppCompatActivity {
                             PreferenceManager.setString(getApplicationContext(), "userToken", userToken);
                             Intent toMainIntent = new Intent(LoginActivity.this, MainActivity.class);
                             startActivity(toMainIntent);
+                            loginButton.setEnabled(true);
+                            loginButton.setText(getString(R.string.activity_login_login_button));
+                            progressBar.setVisibility(View.GONE);
                         }
                     }
                 })

@@ -7,6 +7,18 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/original_white">
 
+    <ProgressBar
+        android:id="@+id/customDialog_progressBar"
+        style="@style/Widget.AppCompat.ProgressBar"
+        android:layout_width="32sp"
+        android:layout_height="32sp"
+        android:indeterminateTint="@color/original_primary"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/login_button"
+        app:layout_constraintStart_toStartOf="@+id/login_button"
+        app:layout_constraintTop_toBottomOf="@+id/login_button" />
+
     <include
         android:id="@+id/login_toolbar"
         layout="@layout/layout_default_toolbar"
