@@ -359,6 +359,7 @@ public class RegisterActivity extends AppCompatActivity {
                     public void onSuccess(Void aVoid) {
                         Intent toMainIntent = new Intent(RegisterActivity.this, LoginActivity.class);
                         startActivity(toMainIntent);
+                        finish();
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {

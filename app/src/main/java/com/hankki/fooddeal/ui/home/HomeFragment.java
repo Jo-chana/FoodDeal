@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.PopupMenu;
 import android.widget.ProgressBar;
@@ -107,6 +108,7 @@ public class HomeFragment extends Fragment {
         btn_map.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                requireActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
                 Intent intent = new Intent(getActivity(), MapActivity.class);
                 progressBar.setVisibility(View.VISIBLE);
                 disposable = Observable.fromCallable(new Callable<Object>() {
@@ -126,6 +128,7 @@ public class HomeFragment extends Fragment {
 //                                disposable.dispose();
                                 startActivity(intent);
                                 progressBar.setVisibility(View.GONE);
+                                requireActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
                             }
                         });
             }
