@@ -3,6 +3,11 @@ package com.hankki.fooddeal.data;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+
+import java.util.ArrayList;
+
 public class PreferenceManager {
     public static final String PREFERENCES_NAME = "rebuild_preference";
     private static final String DEFAULT_VALUE_STRING = "";
@@ -25,6 +30,27 @@ public class PreferenceManager {
         SharedPreferences prefs = getPreferences(context);
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString(key, value);
+        editor.commit();
+    }
+
+    /**
+     * String Array List 값 저장
+     * @param context
+     * @param key
+     * @param values
+     */
+    private void setStringArrayList(Context context, String key, ArrayList<String> values) {
+        SharedPreferences prefs = getPreferences(context);
+        SharedPreferences.Editor editor = prefs.edit();
+        JSONArray a = new JSONArray();
+        for (int i = 0; i < values.size(); i++) {
+            a.put(values.get(i));
+        }
+        if (!values.isEmpty()) {
+            editor.putString(key, a.toString());
+        } else {
+            editor.putString(key, null);
+        }
         editor.commit();
     }
 
@@ -94,6 +120,30 @@ public class PreferenceManager {
         SharedPreferences prefs = getPreferences(context);
         String value = prefs.getString(key, DEFAULT_VALUE_STRING);
         return value;
+    }
+
+    /**
+     * String Array List 값 로드
+     * @param context
+     * @param key
+     * @return
+     */
+    private ArrayList<String> getStringArrayList(Context context, String key) {
+        SharedPreferences prefs = getPreferences(context);
+        String json = prefs.getString(key, null);
+        ArrayList<String> values = new ArrayList<String>();
+        if (json != null) {
+            try {
+                JSONArray a = new JSONArray(json);
+                for (int i = 0; i < a.length(); i++) {
+                    String value = a.optString(i);
+                    values.add(value);
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        return values;
     }
 
     /**
