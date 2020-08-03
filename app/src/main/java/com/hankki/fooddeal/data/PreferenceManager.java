@@ -39,7 +39,7 @@ public class PreferenceManager {
      * @param key
      * @param values
      */
-    private void setStringArrayList(Context context, String key, ArrayList<String> values) {
+    public static void setStringArrayList(Context context, String key, ArrayList<String> values) {
         SharedPreferences prefs = getPreferences(context);
         SharedPreferences.Editor editor = prefs.edit();
         JSONArray a = new JSONArray();
@@ -128,7 +128,7 @@ public class PreferenceManager {
      * @param key
      * @return
      */
-    private ArrayList<String> getStringArrayList(Context context, String key) {
+    public static ArrayList<String> getStringArrayList(Context context, String key) {
         SharedPreferences prefs = getPreferences(context);
         String json = prefs.getString(key, null);
         ArrayList<String> values = new ArrayList<String>();
