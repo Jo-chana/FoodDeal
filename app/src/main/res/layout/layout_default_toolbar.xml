@@ -8,6 +8,7 @@
     android:gravity="center">
 
     <View
+        android:id="@+id/paddingView1"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="0.5"/>
@@ -20,6 +21,7 @@
         android:src="@drawable/ic_back_arrow"/>
 
     <View
+        android:id="@+id/paddingView2"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="3.5"/>
@@ -36,6 +38,7 @@
         android:textStyle="bold"/>
 
     <View
+        android:id="@+id/paddingView3"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="5"/>

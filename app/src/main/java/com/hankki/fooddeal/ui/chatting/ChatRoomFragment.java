@@ -72,8 +72,14 @@ public class ChatRoomFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_chatroom, container, false);
 
         View toolbar = view.findViewById(R.id.top_toolbar);
+        View paddingView1 = view.findViewById(R.id.paddingView1);
+        View paddingView2 = view.findViewById(R.id.paddingView2);
+        View paddingView3 = view.findViewById(R.id.paddingView3);
+        paddingView1.setVisibility(View.GONE);
+        paddingView2.setVisibility(View.GONE);
+        paddingView3.setVisibility(View.GONE);
         ImageView backButton = toolbar.findViewById(R.id.back_button);
-        backButton.setVisibility(View.INVISIBLE);
+        backButton.setVisibility(View.GONE);
         TextView title = toolbar.findViewById(R.id.toolbar_title);
         title.setText("채팅방");
 
