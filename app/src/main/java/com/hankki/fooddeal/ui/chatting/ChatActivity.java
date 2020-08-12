@@ -36,6 +36,7 @@ import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.ListenerRegistration;
+import com.google.firebase.firestore.MetadataChanges;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.WriteBatch;
@@ -367,31 +368,29 @@ public class ChatActivity extends AppCompatActivity {
                             for (DocumentChange change : value.getDocumentChanges()) {
                                 switch (change.getType()) {
                                     case ADDED:
-                                        if (change.getNewIndex() == change.getOldIndex()) {
-                                            break;
-                                        } else {
-                                            message = change.getDocument().toObject(Message.class);
-
+                                        message = change.getDocument().toObject(Message.class);
+                                        if (change.getNewIndex() != change.getOldIndex()) {
                                             if (message.getMessageReadUserList().indexOf(uid) == -1) {
                                                 message.getMessageReadUserList().add(uid);
                                                 change.getDocument().getReference().update("messageReadUserList", message.getMessageReadUserList());
                                             }
                                             messageList.add(message);
                                             notifyItemInserted(change.getNewIndex());
-                                            setUnreadtoRead();
-                                            break;
+//                                            setUnreadtoRead();
                                         }
+                                        break;
                                     case MODIFIED:
                                         message = change.getDocument().toObject(Message.class);
                                         messageList.set(change.getOldIndex(), message);
                                         notifyItemChanged(change.getOldIndex());
-                                        setUnreadtoRead();
+//                                        setUnreadtoRead();
                                         break;
                                     case REMOVED:
                                         messageList.remove(change.getOldIndex());
                                         notifyItemRemoved(change.getOldIndex());
                                         break;
                                 }
+                                setUnreadtoRead();
                                 recyclerView.scrollToPosition(messageList.size() - 1);
                             }
                         }
