@@ -82,7 +82,8 @@ public class BoardListResponse {
         private String delYn;
         @SerializedName("COMMENT_COUNT")
         private int commentCount;
-
+        @SerializedName("BOARD_IMAGE_SIZE")
+        private int boardImageSize;
 
         public void setBoardSeq(int boardSeq) {
             this.boardSeq = boardSeq;
@@ -144,6 +145,10 @@ public class BoardListResponse {
             this.userHashId = userHashId;
         }
 
+        public void setBoardImageSize(int boardImageSize) {
+            this.boardImageSize = boardImageSize;
+        }
+
         public int getBoardSeq() {
             return boardSeq;
         }
@@ -203,6 +208,10 @@ public class BoardListResponse {
 
         public int getCommentCount() {
             return commentCount;
+        }
+
+        public int getBoardImageSize() {
+            return boardImageSize;
         }
     }
 

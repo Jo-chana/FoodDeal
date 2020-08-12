@@ -38,6 +38,7 @@ public class PostItem implements Comparable<PostItem>, Parcelable {
     ArrayList<Bitmap> images = new ArrayList<>();
     String thumbnailUrl;
     String category = "";
+    int imgCount = 0;
     int likeCount = 0;
     int commentCount = 0;
     int boardSeq;
@@ -69,6 +70,7 @@ public class PostItem implements Comparable<PostItem>, Parcelable {
         distance = in.readInt();
         userHashId = in.readString();
         relativeTime = in.readString();
+        imgCount = in.readInt();
     }
 
     public static final Creator<PostItem> CREATOR = new Creator<PostItem>() {
@@ -99,7 +101,7 @@ public class PostItem implements Comparable<PostItem>, Parcelable {
         return category;
     }
 
-
+    public int getImgCount(){return imgCount;}
 
     public PostItem(){
     }
@@ -120,6 +122,7 @@ public class PostItem implements Comparable<PostItem>, Parcelable {
         this.distance = distance;
     }
 
+    public void setImgCount(int imgCount) {this.imgCount = imgCount; }
 
     public String getBoardContent() {
         return boardContent;
@@ -282,11 +285,12 @@ public class PostItem implements Comparable<PostItem>, Parcelable {
         body.put("BOARD_TITLE",this.getBoardTitle());
         body.put("BOARD_CONTENT",this.getBoardContent());
         body.put("INSERT_DATE",this.getInsertDate());
-        body.put("USER_LAT",AES256Util.aesDecode(PreferenceManager.getString(context, "Latitude")));
-        body.put("USER_LON",AES256Util.aesDecode(PreferenceManager.getString(context,"Longitude")));
+        body.put("USER_LAT",PreferenceManager.getString(context, "Latitude"));
+        body.put("USER_LON",PreferenceManager.getString(context,"Longitude"));
         body.put("REGION_1DEPTH_NAME",PreferenceManager.getString(context, "region1Depth"));
         body.put("REGION_2DEPTH_NAME",PreferenceManager.getString(context, "region2Depth"));
         body.put("REGION_3DEPTH_NAME",PreferenceManager.getString(context, "region3Depth"));
+        body.put("BOARD_IMAGE_SIZE", String.valueOf(this.getImgCount()));
 
         return body;
     }
@@ -318,6 +322,7 @@ public class PostItem implements Comparable<PostItem>, Parcelable {
         dest.writeInt(distance);
         dest.writeString(userHashId);
         dest.writeString(relativeTime);
+        dest.writeInt(imgCount);
     }
 
     public String calculateTime(String date) throws ParseException {

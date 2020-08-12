@@ -68,7 +68,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     case 0:
                         filterDistance = 1000;
                         zoom = 14;
-                        tv_all.setTextColor(getResources().getColor(R.color.original_primary));
+                        tv_all.setTextColor(getResources(). getColor(R.color.original_primary));
                         tv_100.setTextColor(getResources().getColor(R.color.original_black));
                         tv_200.setTextColor(getResources().getColor(R.color.original_black));
                         tv_400.setTextColor(getResources().getColor(R.color.original_black));
