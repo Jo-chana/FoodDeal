@@ -10,6 +10,7 @@ import androidx.navigation.fragment.NavHostFragment;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -43,9 +44,11 @@ import com.google.firebase.storage.UploadTask;
 import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.TedPermission;
 import com.hankki.fooddeal.R;
+import com.hankki.fooddeal.amazon.AmazonS3Util;
 import com.hankki.fooddeal.data.PostItem;
 import com.hankki.fooddeal.data.PreferenceManager;
 import com.hankki.fooddeal.data.retrofit.BoardController;
+import com.hankki.fooddeal.image.ImageUtil;
 import com.hankki.fooddeal.ui.MainActivity;
 import com.hankki.fooddeal.ux.dialog.CustomDialog;
 import com.hankki.fooddeal.ux.dialog.CustomPostImageDialog;
@@ -60,6 +63,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 
 /**게시글 쓰기 액티비티*/
@@ -254,6 +258,7 @@ public class PostActivity extends AppCompatActivity {
                     item.setBoardContent(et_post.getText().toString());
                     item.setBoardTitle(et_title.getText().toString());
                     item.setCategory(category);
+                    item.setImgCount(postImages.size());
 
 //                    /**테스트*/
 //                    PreferenceManager.setString(mContext,"Latitude","37.4758562");
@@ -264,10 +269,18 @@ public class PostActivity extends AppCompatActivity {
                         final ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
                         for(int i=0;i<postImages.size();i++) {
-                            postImages.get(i).compress(Bitmap.CompressFormat.JPEG, 20, baos);
-                            byte[] data = baos.toByteArray();
+//                            postImages.get(i).compress(Bitmap.CompressFormat.JPEG, 20, baos);
+//                            byte[] data = baos.toByteArray();
 
-                            uploadPostPhoto(data, item.getInsertDate(), Integer.toString(i), postImages.size());
+//                            uploadPostPhoto(data, item.getInsertDate(), Integer.toString(i), postImages.size());
+
+                            File file = ImageUtil.saveBitmapToJpeg(getApplicationContext(),postImages.get(i),"test");
+                            try {
+                                String filename = String.valueOf(i);
+                                AmazonS3Util.uploadImageToServer(mContext,category,item.getInsertDate()+item.getBoardTitle(),filename,file);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
                             baos.reset();
                         }
 
@@ -559,7 +572,7 @@ public class PostActivity extends AppCompatActivity {
                 });
     }
 
-    private void updateRecyclerView() {
+    public void updateRecyclerView() {
         /**게시글 추가 후, 해당 커뮤니티에서 즉각적으로 Update*/
         NavHostFragment navHostFragment = (NavHostFragment) ((MainActivity) MainActivity.mainContext)
                 .getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
