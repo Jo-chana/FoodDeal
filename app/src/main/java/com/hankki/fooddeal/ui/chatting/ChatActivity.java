@@ -460,6 +460,9 @@ public class ChatActivity extends AppCompatActivity {
                         .with(getApplicationContext())
                         .load(userUrlMap.get(message.getMessageSenderUid()))
                         .into(messageViewHolder.user_photo);
+                messageViewHolder.user_photo.setAdjustViewBounds(true);
+                messageViewHolder.user_photo.setClipToOutline(true);
+                messageViewHolder.user_photo.setScaleType(ImageView.ScaleType.CENTER_CROP);
 
                 /*if (!otherUserPhotoUrl.equals("")) {
                     Glide
