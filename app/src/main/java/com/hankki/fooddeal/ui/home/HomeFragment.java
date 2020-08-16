@@ -13,6 +13,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.PopupMenu;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -34,6 +35,7 @@ import com.hankki.fooddeal.ui.home.community.RecipeShare;
 import com.hankki.fooddeal.ui.map.MapActivity;
 import com.hankki.fooddeal.ux.dialog.HomeLocationDialog;
 import com.hankki.fooddeal.ux.viewpager.viewPagerAdapter;
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.util.concurrent.Callable;
 import java.util.zip.Inflater;
@@ -51,6 +53,7 @@ public class HomeFragment extends Fragment {
     TabLayout tabLayout;
     viewPagerAdapter viewPagerAdapter;
     View view;
+    SlidingUpPanelLayout main_panel;
 
     Button btn_search;
     AppBarLayout ctl_home;
@@ -58,6 +61,7 @@ public class HomeFragment extends Fragment {
     Button btn_filter;
     Button btn_location;
     Button btn_map;
+    View bottomTrickView;
 
     Disposable disposable;
 
@@ -73,7 +77,10 @@ public class HomeFragment extends Fragment {
         btn_map = view.findViewById(R.id.btn_map);
         tv_location = view.findViewById(R.id.tv_location);
         progressBar = view.findViewById(R.id.customDialog_progressBar);
-
+        main_panel = view.findViewById(R.id.main_panel);
+        main_panel.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
+        bottomTrickView = view.findViewById(R.id.bottomView);
+        bottomLayoutTrick();
         setFragments();
         setLocation();
         setViewPager();
@@ -102,6 +109,23 @@ public class HomeFragment extends Fragment {
         setLocation();
 
         return view;
+    }
+
+    public void bottomLayoutTrick(){
+        main_panel.addPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
+            @Override
+            public void onPanelSlide(View panel, float slideOffset) {
+
+            }
+            @Override
+            public void onPanelStateChanged(View panel, SlidingUpPanelLayout.PanelState previousState, SlidingUpPanelLayout.PanelState newState) {
+                if(newState== SlidingUpPanelLayout.PanelState.EXPANDED){
+                    bottomTrickView.setVisibility(View.VISIBLE);
+                } else {
+                    bottomTrickView.setVisibility(View.GONE);
+                }
+            }
+        });
     }
 
     public void setMapButtonOnClickListener() {

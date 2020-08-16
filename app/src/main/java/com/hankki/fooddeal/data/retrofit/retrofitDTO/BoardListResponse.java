@@ -84,6 +84,8 @@ public class BoardListResponse {
         private int commentCount;
         @SerializedName("BOARD_IMAGE_SIZE")
         private int boardImageSize;
+        @SerializedName("BOARD_THUMBNAIL")
+        private String boardThumbnail;
 
         public void setBoardSeq(int boardSeq) {
             this.boardSeq = boardSeq;
@@ -212,6 +214,10 @@ public class BoardListResponse {
 
         public int getBoardImageSize() {
             return boardImageSize;
+        }
+
+        public String getBoardThumbnail() {
+            return boardThumbnail;
         }
     }
 

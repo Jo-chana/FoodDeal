@@ -53,8 +53,8 @@ public class FreeCommunity extends Fragment {
 
         view = inflater.inflate(R.layout.fragment_free, container, false);
 
-        /*progressBar = view.findViewById(R.id.customDialog_progressBar);
-        progressBar.setVisibility(View.VISIBLE);*/
+        progressBar = view.findViewById(R.id.customDialog_progressBar);
+        progressBar.setVisibility(View.VISIBLE);
 
         disposable = Observable.fromCallable(new Callable<Object>() {
             @Override
@@ -78,7 +78,7 @@ public class FreeCommunity extends Fragment {
                             setMyPostOption();
                         }
                         setRefresh();
-                        /*progressBar.setVisibility(View.GONE);*/
+                        progressBar.setVisibility(View.GONE);
 
                         disposable.dispose();
                     }

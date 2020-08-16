@@ -7,7 +7,9 @@ import android.graphics.Bitmap;
 import android.location.Location;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
+import com.hankki.fooddeal.amazon.AmazonS3Util;
 import com.hankki.fooddeal.data.retrofit.BoardController;
 import com.hankki.fooddeal.data.retrofit.retrofitDTO.BoardListResponse;
 import com.hankki.fooddeal.data.security.AES256Util;
@@ -242,12 +244,21 @@ public class PostItem implements Comparable<PostItem>, Parcelable {
     }
 
 
-    public void onBindBoardApi(Context context, BoardListResponse.BoardResponse boardResponse, String url) throws ParseException {
+    public void onBindBoardApi(Context context, BoardListResponse.BoardResponse boardResponse) throws ParseException {
         boardSeq = boardResponse.getBoardSeq();
         boardTitle = boardResponse.getBoardTitle();
+        Log.d("bind",boardTitle);
         boardContent = boardResponse.getBoardContent();
-        userLatitude = AES256Util.aesDecode(boardResponse.getUserLat());
-        userLongitude = AES256Util.aesDecode(boardResponse.getUserLon());
+        Log.d("bind",boardResponse.getUserLat());
+        Log.d("bind",boardResponse.getUserLon());
+        try {
+            userLatitude = AES256Util.aesDecode(boardResponse.getUserLat());
+            Log.d("bind", userLatitude);
+            userLongitude = AES256Util.aesDecode(boardResponse.getUserLon());
+            Log.d("bind", userLongitude);
+        } catch (Exception e) {
+            Log.d("bind","Location Failed");
+        }
         userHashId = boardResponse.getUserHashId();
         regionFirst = boardResponse.getRegionFirst();
         regionSecond = boardResponse.getRegionSecond();
@@ -269,11 +280,12 @@ public class PostItem implements Comparable<PostItem>, Parcelable {
             default:
                 category = boardResponse.getBoardCodeSeq();
         }
+        imgCount = boardResponse.getBoardImageSize();
         insertDate = boardResponse.getInsertDate();
         likeCount = boardResponse.getLikeCount();
         delYN = boardResponse.getDelYn();
         commentCount = boardResponse.getCommentCount();
-        thumbnailUrl = url;
+        thumbnailUrl = boardResponse.getBoardThumbnail();
         relativeTime = calculateTime(insertDate);
         distance = calculateDistance(context, Double.parseDouble(userLatitude),Double.parseDouble(userLongitude));
     }
@@ -291,7 +303,10 @@ public class PostItem implements Comparable<PostItem>, Parcelable {
         body.put("REGION_2DEPTH_NAME",PreferenceManager.getString(context, "region2Depth"));
         body.put("REGION_3DEPTH_NAME",PreferenceManager.getString(context, "region3Depth"));
         body.put("BOARD_IMAGE_SIZE", String.valueOf(this.getImgCount()));
-
+        if(imgCount>0){
+            body.put("BOARD_THUMBNAIL", AmazonS3Util.s3.getUrl("hankki-s3","community/"+category+"/"+
+                    insertDate+boardTitle+"/"+0).toString());
+        }
         return body;
     }
 

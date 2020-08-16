@@ -264,36 +264,29 @@ public class PostActivity extends AppCompatActivity {
 //                    PreferenceManager.setString(mContext,"Latitude","37.4758562");
 //                    PreferenceManager.setString(mContext,"Longitude","127.1482274");
 
-                    if(BoardController.boardWrite(mContext,item)){
-                        // 이현준 이미지 Firebase 업로드 추가
-                        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-
-                        for(int i=0;i<postImages.size();i++) {
+                    ArrayList<File> files = new ArrayList<>();
+                    if(BoardController.boardWrite(mContext,item)) {
+                        if (postImages.size() > 0) {
+                            for (int i = 0; i < postImages.size(); i++) {
 //                            postImages.get(i).compress(Bitmap.CompressFormat.JPEG, 20, baos);
 //                            byte[] data = baos.toByteArray();
 
 //                            uploadPostPhoto(data, item.getInsertDate(), Integer.toString(i), postImages.size());
 
-                            File file = ImageUtil.saveBitmapToJpeg(getApplicationContext(),postImages.get(i),"test");
+                                File file = ImageUtil.saveBitmapToJpeg(getApplicationContext(), postImages.get(i), "test" + i);
+                                files.add(file);
+                            }
+
                             try {
-                                String filename = String.valueOf(i);
-                                AmazonS3Util.uploadImageToServer(mContext,category,item.getInsertDate()+item.getBoardTitle(),filename,file);
-                            } catch (Exception e) {
+                                AmazonS3Util.uploadImageToServer(mContext, category, item.getInsertDate() + item.getBoardTitle(), files);
+                            } catch (ExecutionException | InterruptedException e) {
                                 e.printStackTrace();
                             }
-                            baos.reset();
                         }
-
-                        try {
-                            baos.flush();
-                            baos.close();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        // 이현준 이미지 Firebase 업로드 끝
                     } else {
-                        Toast.makeText(mContext,"실패!",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(mContext, "실패!", Toast.LENGTH_SHORT).show();
                     }
+                    updateRecyclerView();
                     finish();
                 }
             }
