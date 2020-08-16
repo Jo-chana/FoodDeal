@@ -23,12 +23,10 @@ public class HashMsgUtil {
         return SHA;
     }
 
-    // TODO 채팅방을 더 식별할 수 있는 구분자가 필요
-    public static String getSHARoomID(String insertDate, List<String> userList) {
+    public static String getSHARoomID(String insertDate, String roomTitle) {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(insertDate);
-
-        for(String user : userList) stringBuilder.append(user);
+        stringBuilder.append(roomTitle);
 
         return getSHA256(stringBuilder.toString());
     }

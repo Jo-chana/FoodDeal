@@ -122,7 +122,7 @@ public class ChatRoomFragment extends Fragment {
                     .whereArrayContains("roomUserList", sUID)
                     .orderBy("lastMessageTime", Query.Direction.DESCENDING)
                     .addSnapshotListener((value, error) -> {
-                        // TODO 여기서 다이얼로그 팝업
+                        // 여기서 다이얼로그 팝업
                         if (error != null) return;
 
                         roomList.clear();
@@ -132,7 +132,7 @@ public class ChatRoomFragment extends Fragment {
                         }
 
                         notifyDataSetChanged();
-                        // TODO 여기서 다이얼로그 디스미스
+                        // 여기서 다이얼로그 디스미스
                     });
         }
 
@@ -175,33 +175,7 @@ public class ChatRoomFragment extends Fragment {
 
             roomViewHolder.last_time.setText(simpleDateFormat.format(chatRoomModel.getLastMessageTime()));
 
-//            try {
-//                DocumentReference documentReference = FirebaseFirestore.getInstance()
-//                        .collection("users")
-//                        .document(AES256Util.aesEncode(otherUser));
-//                documentReference
-//                        .get()
-//                        .addOnCompleteListener(task -> {
-//                            DocumentSnapshot snapshot = task.getResult();
-//                            if (!snapshot.get("userPhotoUri").equals("")) {
-//                                /*조찬아 @TODO 채팅방에서 다른 페이지로 넘어간 후 아래 코드가 실행될 경우 에러 발생.
-//                                *       S3 스토리지로 이주 */
-//                                Glide
-//                                        .with(getContext())
-//                                        .load(snapshot.get("userPhotoUri"))
-//                                        .into(roomViewHolder.room_image);
-//                            } else {
-//                                roomViewHolder.room_image.setImageResource(R.drawable.ic_group_rec_60dp);
-//                                roomViewHolder.room_image.setClipToOutline(true);
-//                                roomViewHolder.room_image.setScaleType(ImageView.ScaleType.CENTER_CROP);
-//                            }
-//                        });
-//            } catch (Exception e){
-//                roomViewHolder.room_image.setImageResource(R.drawable.ic_group_rec_60dp);
-//                roomViewHolder.room_image.setClipToOutline(true);
-//                roomViewHolder.room_image.setScaleType(ImageView.ScaleType.CENTER_CROP);
-//            }
-            String url = AmazonS3Util.s3.getUrl("hankki-s3","profile/"+otherUser).toString();
+            String url = AmazonS3Util.s3.getUrl("hankki-s3","profile/"+AES256Util.aesEncode(otherUser)).toString();
             Glide.with(getContext())
                     .load(url)
                     .error(R.drawable.ic_group_60dp)
@@ -209,6 +183,15 @@ public class ChatRoomFragment extends Fragment {
                     .skipMemoryCache(true)
                     .into(roomViewHolder.room_image);
             roomViewHolder.room_image.setAdjustViewBounds(true);
+            roomViewHolder.room_image.setClipToOutline(true);
+            roomViewHolder.room_image.setScaleType(ImageView.ScaleType.CENTER_CROP);
+
+            if (chatRoomModel.getRoomUserList().size() > 2) {
+                roomViewHolder.room_count.setText(chatRoomModel.getRoomUserList().size());
+                roomViewHolder.room_count.setVisibility(View.VISIBLE);
+            } else {
+                roomViewHolder.room_count.setVisibility(View.INVISIBLE);
+            }
 
             //noinspection ConstantConditions
             if(chatRoomModel.getUnreadMemberCountMap().get(sUID) > 0) {
@@ -222,8 +205,8 @@ public class ChatRoomFragment extends Fragment {
                 Intent intent = new Intent(v.getContext(), ChatActivity.class);
                 intent.putExtra("roomID", chatRoomModel.getRoomId());
                 intent.putExtra("roomTitle", chatRoomModel.getRoomTitle());
-                intent.putExtra("userTotal", chatRoomModel.getRoomUserList().size());
-                intent.putExtra("otherUID", otherUser);
+//                intent.putExtra("userTotal", chatRoomModel.getRoomUserList().size());
+                intent.putStringArrayListExtra("userList", chatRoomModel.getRoomUserList());
                 startActivity(intent);
             });
         }

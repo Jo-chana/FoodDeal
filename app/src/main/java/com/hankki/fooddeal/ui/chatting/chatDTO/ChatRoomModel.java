@@ -1,5 +1,6 @@
 package com.hankki.fooddeal.ui.chatting.chatDTO;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -8,7 +9,7 @@ public class ChatRoomModel {
     private String roomId;
     private Integer roomType;
     private String roomTitle;
-    private List<String> roomUserList;
+    private ArrayList<String> roomUserList;
     private Map<String, Integer> unreadMemberCountMap;
     private String lastMessageContent;
     private Date lastMessageTime;
@@ -16,7 +17,7 @@ public class ChatRoomModel {
     public ChatRoomModel() {
     }
 
-    public ChatRoomModel(String roomId, Integer roomType, String roomTitle, List<String> roomUserList, Map<String, Integer> unreadMemberCountMap, String lastMessageContent, Date lastMessageTime) {
+    public ChatRoomModel(String roomId, Integer roomType, String roomTitle, ArrayList<String> roomUserList, Map<String, Integer> unreadMemberCountMap, String lastMessageContent, Date lastMessageTime) {
         this.roomId = roomId;
         this.roomType = roomType;
         this.roomTitle = roomTitle;
@@ -50,11 +51,11 @@ public class ChatRoomModel {
         this.roomTitle = roomTitle;
     }
 
-    public List<String> getRoomUserList() {
+    public ArrayList<String> getRoomUserList() {
         return roomUserList;
     }
 
-    public void setRoomUserList(List<String> roomUserList) {
+    public void setRoomUserList(ArrayList<String> roomUserList) {
         this.roomUserList = roomUserList;
     }
 

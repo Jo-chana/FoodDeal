@@ -246,12 +246,12 @@ public class PostActivity extends AppCompatActivity {
                     customDialog = new CustomDialog(mContext,"사진과 제목은 필수 입력 사항입니다!");
                     customDialog.setCanceledOnTouchOutside(false);
                     customDialog.show();
-
+                    btn_write.setVisibility(View.VISIBLE);
                 } else if(et_title.getText().toString().equals("")) {
                     customDialog = new CustomDialog(mContext,"제목은 필수 입력 사항입니다!");
                     customDialog.setCanceledOnTouchOutside(false);
                     customDialog.show();
-
+                    btn_write.setVisibility(View.VISIBLE);
                 } else {
                     PostItem item = new PostItem();
                     item.setInsertDate(BoardController.getTime());

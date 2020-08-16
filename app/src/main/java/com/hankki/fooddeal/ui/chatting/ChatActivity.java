@@ -41,21 +41,24 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.WriteBatch;
 import com.hankki.fooddeal.R;
+import com.hankki.fooddeal.amazon.AmazonS3Util;
 import com.hankki.fooddeal.data.security.AES256Util;
 import com.hankki.fooddeal.ui.chatting.chatDTO.ChatModel;
 import com.hankki.fooddeal.ui.chatting.chatDTO.Message;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * 채팅방 상세화면
  */
-// TODO 채팅을 보낼때, 서버에 등록되는 시간을 기준으로 해야지 동기화 문제가 해결될거같음. 이 문제 해결 필요
-// TODO 아직 내가 채팅방을 보고 있을때 다른 사람이 보낸 채팅을 실시간으로 읽음 처리 할 수 있는지 모름
+// TODO 채팅방 다인 처리 및 URL 처리
 public class ChatActivity extends AppCompatActivity {
     private Button sendBtn;
     private EditText msg_input;
@@ -64,7 +67,7 @@ public class ChatActivity extends AppCompatActivity {
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
     private SimpleDateFormat dateFormatDay = new SimpleDateFormat("yyyy-MM-dd");
     private SimpleDateFormat dateFormatHour = new SimpleDateFormat("aa hh:mm");
-    private String roomId, roomTitle, uid, otherUID, otherUserPhotoUrl = null;
+    private String roomId, roomTitle, uid, otherUserPhotoUrl = null;
     private Integer userTotal;
     private View toolbar;
     private TextView toolbar_title;
@@ -74,6 +77,9 @@ public class ChatActivity extends AppCompatActivity {
 
     private LinearLayoutManager linearLayoutManager;
     private FirebaseFirestore firestore;
+
+    private ArrayList<String> userList = new ArrayList<>();
+    private HashMap<String, String> userUrlMap = new HashMap<>();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -91,21 +97,13 @@ public class ChatActivity extends AppCompatActivity {
         if (getIntent() != null) {
             roomId = getIntent().getStringExtra("roomID");
             roomTitle = getIntent().getStringExtra("roomTitle"); // 채팅방의 이름으로 쓸 게시글 타이틀
-            userTotal = getIntent().getIntExtra("userTotal", -1);
+//            userTotal = getIntent().getIntExtra("userTotal", -1);
             // 각 채팅마다 안 읽은 사람을 표시하기 위해 필요한 건데 채팅을 하다가 새로운 사람이 들어온 경우를
             // 처리못하기 때문에 메시지 리스너에서 userTotal을 계속 처리해줘야할듯
-            otherUID = getIntent().getStringExtra("otherUID");
+//            otherUID = getIntent().getStringExtra("otherUID");
+            userList.addAll(Objects.requireNonNull(getIntent().getStringArrayListExtra("userList")));
+            userTotal = userList.size();
         }
-
-        final DocumentReference documentReference = FirebaseFirestore.getInstance().collection("users").document(AES256Util.aesEncode(otherUID));
-        documentReference
-                .get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        DocumentSnapshot snapshot = task.getResult();
-                        otherUserPhotoUrl = snapshot.get("userPhotoUri").toString();
-                    }
-                });
 
         uid = AES256Util.aesDecode(FirebaseAuth.getInstance().getCurrentUser().getUid());
         firestore = FirebaseFirestore.getInstance();
@@ -113,6 +111,14 @@ public class ChatActivity extends AppCompatActivity {
 //                .setPersistenceEnabled(false)
 //                .build();
 //        firestore.setFirestoreSettings(settings);
+
+        userList.remove(uid);
+        for(int i=0;i<userList.size();i++) {
+            otherUserPhotoUrl = AmazonS3Util
+                    .s3
+                    .getUrl("hankki-s3","profile/"+AES256Util.aesEncode(userList.get(i))).toString();
+            userUrlMap.put(userList.get(i), otherUserPhotoUrl);
+        }
 
         msg_input = findViewById(R.id.msg_input);
         sendBtn = findViewById(R.id.sendBtn);
@@ -256,27 +262,6 @@ public class ChatActivity extends AppCompatActivity {
                                     }
                                 });
 
-//                        batch.commit()
-//                                .addOnCompleteListener(new OnCompleteListener<Void>() {
-//                                    @Override
-//                                    public void onComplete(@NonNull Task<Void> task) {
-//                                        if (task.isSuccessful()) {
-////                                            sendBtn.setEnabled(true);
-//                                        }
-//                                    }
-//                                })
-//                                .addOnCanceledListener(new OnCanceledListener() {
-//                                    @Override
-//                                    public void onCanceled() {
-//                                        Toast.makeText(getApplicationContext(), "캔슬", Toast.LENGTH_LONG).show();
-//                                    }
-//                                })
-//                                .addOnFailureListener(new OnFailureListener() {
-//                                    @Override
-//                                    public void onFailure(@NonNull Exception e) {
-//                                        Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_LONG).show();
-//                                    }
-//                                });
                     }
                 });
     }
@@ -470,7 +455,13 @@ public class ChatActivity extends AppCompatActivity {
 
             if (!uid.equals(message.getMessageSenderUid())) {
                 messageViewHolder.msg_name.setText(message.getMessageSenderUid());
-                if (!otherUserPhotoUrl.equals("")) {
+
+                Glide
+                        .with(getApplicationContext())
+                        .load(userUrlMap.get(message.getMessageSenderUid()))
+                        .into(messageViewHolder.user_photo);
+
+                /*if (!otherUserPhotoUrl.equals("")) {
                     Glide
                             .with(getApplicationContext())
                             .load(otherUserPhotoUrl)
@@ -481,7 +472,7 @@ public class ChatActivity extends AppCompatActivity {
                     messageViewHolder.user_photo.setImageResource(R.drawable.ic_group_rec_60dp);
                     messageViewHolder.user_photo.setScaleType(ImageView.ScaleType.FIT_XY);
                     messageViewHolder.user_photo.setClipToOutline(true);
-                }
+                }*/
             }
             messageViewHolder.divider.setVisibility(View.INVISIBLE);
             messageViewHolder.divider.getLayoutParams().height = 0;

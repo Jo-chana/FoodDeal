@@ -201,9 +201,9 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
             unreadUserCountMap.put(AES256Util.aesDecode(mPost.getUserHashId()), 0);
 
             // id에 글 등록 시간과 유저리스트가 포함되어 있기 때문에 나중에 해당 게시글의 채팅 참여하기 버튼으로 해당 채팅방 접근 가능
-            String roomId = HashMsgUtil.getSHARoomID(mPost.getInsertDate(), roomUserList);
-//            String newRoomTitle = "[" + category + "] " + mPost.getBoardTitle();
             String newRoomTitle = mPost.getBoardTitle();
+            String roomId = HashMsgUtil.getSHARoomID(mPost.getInsertDate(), newRoomTitle);
+
             DocumentReference docRef = FirebaseFirestore.getInstance().collection("rooms").document(roomId);
             docRef
                     .get()
@@ -215,8 +215,9 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
                                 Intent intent = new Intent(getApplicationContext(), ChatActivity.class);
                                 intent.putExtra("roomID", roomId);
                                 intent.putExtra("roomTitle", newRoomTitle);
-                                intent.putExtra("userTotal", 2);
-                                intent.putExtra("otherUID", AES256Util.aesDecode(mPost.getUserHashId()));
+//                                intent.putExtra("userTotal", 2);
+                                intent.putStringArrayListExtra("userList", roomUserList);
+//                                intent.putExtra("otherUID", AES256Util.aesDecode(mPost.getUserHashId()));
                                 startActivity(intent);
                             }
                             // 없는 채팅방이면 생성 후 참가
@@ -230,7 +231,7 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
         });
     }
 
-    private void createChattingRoom(final DocumentReference room, String roomID, String roomTitle, List<String> userList, HashMap<String, Integer> unreadUserCountMap) {
+    private void createChattingRoom(final DocumentReference room, String roomID, String roomTitle, ArrayList<String> userList, HashMap<String, Integer> unreadUserCountMap) {
         // 첫 방 생성할때는 메시지가 없으므로 타임만 서버에 채팅방이 등록되는 시간으로 설정, unreadUserCountMap들의 값들도 0
         ChatRoomModel chatRoomModel = new ChatRoomModel(roomID, 3, roomTitle, userList, unreadUserCountMap, null, new Date(System.currentTimeMillis()));
 
@@ -242,8 +243,8 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
                         Intent intent = new Intent(getApplicationContext(), ChatActivity.class);
                         intent.putExtra("roomID", roomID);
                         intent.putExtra("roomTitle", roomTitle);
-                        intent.putExtra("userTotal", 2);
-                        intent.putExtra("otherUID", AES256Util.aesDecode(mPost.getUserHashId()));
+//                        intent.putExtra("userTotal", 2);
+                        intent.putStringArrayListExtra("userList", userList);
                         startActivity(intent);
                     }
                 })
