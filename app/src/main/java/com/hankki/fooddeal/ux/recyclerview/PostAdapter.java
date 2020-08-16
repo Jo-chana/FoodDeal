@@ -33,6 +33,16 @@ public class PostAdapter extends RecyclerView.Adapter<PostViewHolder> {
 
     StorageReference ref;
 
+    @Override
+    public int getItemViewType(int position) {
+        PostItem item = postItems.get(position);
+        if(item.getImgCount()==0){
+            return 0;
+        } else {
+            return 1;
+        }
+    }
+
     public PostAdapter(Context context, ArrayList<PostItem> itemList, int layout) {
         mContext = context;
         postItems = itemList;
@@ -47,7 +57,12 @@ public class PostAdapter extends RecyclerView.Adapter<PostViewHolder> {
     @Override
     public PostViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
-        View baseView = View.inflate(mContext, layout, null);
+        View baseView;
+        if(viewType==1) {
+            baseView = View.inflate(mContext, layout, null);
+        } else {
+            baseView = View.inflate(mContext,R.layout.community_item2,null);
+        }
         postViewHolder = new PostViewHolder(baseView);
 
         return postViewHolder;
@@ -95,28 +110,24 @@ public class PostAdapter extends RecyclerView.Adapter<PostViewHolder> {
     public void setCommunityItem(PostViewHolder holder, PostItem item) {
 
         holder.mTitle.setText(item.getBoardTitle()); // 수정해야 함! 테스트용
-        if(item.getDistance()==0){
+        if(item.getDistance()<=10){
             holder.mUserLocation.setText("근처");
         } else {
-            holder.mUserLocation.setText(String.valueOf(item.getDistance()) + "m");
+            holder.mUserLocation.setText(item.getDistance() + "m");
         }
         holder.mTime.setText(item.getRelativeTime());
 
         // 썸네일로 쓸 내용이 있으면 표시 없으면 빈 값
-        if (!item.getThumbnailUrl().equals("")) {
-            holder.mImage.setScaleType(ImageView.ScaleType.FIT_XY);
-
+        if (holder.getItemViewType()==1) {
+            holder.mImage = holder.itemView.findViewById(R.id.iv_post_image);
             Glide
                     .with(mContext)
                     .load(item.getThumbnailUrl())
                     .thumbnail(0.1f)
                     .into(holder.mImage);
+            holder.mImage.setScaleType(ImageView.ScaleType.FIT_XY);
             holder.mImage.setClipToOutline(true);
-        } else {
-            holder.mImage.setImageBitmap(null);
-            holder.mImage.getLayoutParams().width = 0;
         }
-
 
         if (page == 0) { // 식재 나눔 교환
             /**찜 아이콘을 지우고, 댓글 부분은 찜으로 대체*/

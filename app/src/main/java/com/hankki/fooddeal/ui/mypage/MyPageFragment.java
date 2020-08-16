@@ -2,6 +2,7 @@ package com.hankki.fooddeal.ui.mypage;
 
 import android.Manifest;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.ShapeDrawable;
@@ -23,7 +24,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferState;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -39,10 +44,14 @@ import com.google.firebase.storage.UploadTask;
 import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.TedPermission;
 import com.hankki.fooddeal.R;
+import com.hankki.fooddeal.amazon.AmazonS3Util;
+import com.hankki.fooddeal.data.PurchaseItem;
 import com.hankki.fooddeal.data.security.AES256Util;
+import com.hankki.fooddeal.image.ImageUtil;
 import com.hankki.fooddeal.ux.dialog.CustomPostImageDialog;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.InputStream;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -180,16 +189,50 @@ public class MyPageFragment extends Fragment {
                 progressBar.bringToFront();
                 disposable = Observable.fromCallable((Callable<Object>) () -> {
                     try {
+                        String[] filePath = {MediaStore.Images.Media.DATA};
+                        Cursor cursor = getContext().getContentResolver().query(data.getData(), filePath ,null,null,null);
+                        cursor.moveToFirst();
+                        String imgPath = cursor.getString(cursor.getColumnIndex(filePath[0]));
                         InputStream in = getContext().getContentResolver().openInputStream(data.getData());
 
                         Bitmap img = BitmapFactory.decodeStream(in);
+                        Bitmap rotatedImg = ImageUtil.rotateBitmap(imgPath,img);
                         in.close();
+                        File file = ImageUtil.saveBitmapToJpeg(getContext(),rotatedImg,uid);
+                        String filename = uid;
 
-                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                        img.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-                        byte[] imageData = baos.toByteArray();
+                        TransferObserver observer = AmazonS3Util.transferUtility.upload(
+                                "hankki-s3/profile",
+                                filename,
+                                file
+                        );
+                        observer.setTransferListener(new TransferListener() {
+                            @Override
+                            public void onStateChanged(int id, TransferState state) {
+                                if(state==TransferState.COMPLETED){
+                                    Toast.makeText(getContext(), "사진 업로드 완료", Toast.LENGTH_SHORT).show();
+                                    progressBar.setVisibility(View.GONE);
+                                    requireActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                                    setUserProfile();
+                                }
+                            }
 
-                        uploadUserProfilePhoto(imageData);
+                            @Override
+                            public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
+                            }
+
+                            @Override
+                            public void onError(int id, Exception ex) {
+                                Toast.makeText(getContext(), "에러가 발생했습니다", Toast.LENGTH_SHORT).show();
+                                ex.printStackTrace();
+                            }
+                        });
+
+//                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//                        img.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+//                        byte[] imageData = baos.toByteArray();
+//
+//                        uploadUserProfilePhoto(imageData);
 
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -258,9 +301,13 @@ public class MyPageFragment extends Fragment {
     }
 
     private void setUserProfile() {
+        String url = AmazonS3Util.s3.getUrl("hankki-s3","profile/"+uid).toString();
         Glide
                 .with(getContext())
-                .load(R.drawable.ic_group_60dp)
+                .load(Uri.parse(url))
+                .error(Glide.with(getContext()).load(R.drawable.ic_group_60dp))
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .skipMemoryCache(true)
                 .into(iv_my_profile);
 
         if(!uid.equals("")) {
@@ -270,13 +317,13 @@ public class MyPageFragment extends Fragment {
                     .addOnCompleteListener(task -> {
                         if(task.isSuccessful()) {
                             DocumentSnapshot documentSnapshot = task.getResult();
-                            if(!documentSnapshot.get("userPhotoUri").equals("")) {
-
-                                Glide
-                                        .with(getContext())
-                                        .load(documentSnapshot.get("userPhotoUri"))
-                                        .into(iv_my_profile);
-                            }
+//                            if(!documentSnapshot.get("userPhotoUri").equals("")) {
+//
+//                                Glide
+//                                        .with(getContext())
+//                                        .load(documentSnapshot.get("userPhotoUri"))
+//                                        .into(iv_my_profile);
+//                            }
                             if(!documentSnapshot.get("userNickname").equals(""))
                                 tv_my_name.setText(documentSnapshot.get("userNickname").toString());
                             else

@@ -49,6 +49,9 @@ public class BoardController {
     public static String option = "distance";
 
     public static ArrayList<PostItem> getBoardList(Context context, String boardCode) {
+        if(AmazonS3Util.transferUtility==null) {
+            AmazonS3Util.init(context);
+        }
         Log.d("Timecheck", "getBoardList Start");
         ArrayList<PostItem> items = new ArrayList<>();
         Log.d("Timecheck", "Preference Start");
@@ -70,22 +73,20 @@ public class BoardController {
                         assert boardListResponse != null;
                         List<BoardListResponse.BoardResponse> boardResponses = boardListResponse.getBoardList();
                         for (BoardListResponse.BoardResponse boardResponse : boardResponses) {
-                            PostItem item = new PostItem();
-                            String title = boardResponse.getBoardTitle();
-                            String date = boardResponse.getInsertDate();
-                            String category = boardResponse.getBoardCodeSeq();
-                            int size = boardResponse.getBoardImageSize();
-                            String url;
-                            AmazonS3Util.init(context);
-                            if(size > 0) //썸네일을 db로 변경
-                                url = getThumbnailUrl(title, date, category);
-                            else
-                                url = "";
-                            item.onBindBoardApi(context, boardResponse, url);
-                            postItems.add(0,item);
-                            Log.d("Timecheck", "Call End");
+                            try {
+                                PostItem item = new PostItem();
+                                Log.d("getBoardList", "line 76");
+                                item.onBindBoardApi(context, boardResponse);
+                                Log.d("getBoardList", "line 77");
+                                postItems.add(0, item);
+                                Log.d("getBoardList", "line 78");
+                                Log.d("Timecheck", "Call End");
+                            } catch (Exception e){
+                                e.printStackTrace();
+                            }
                         }
                     } catch (Exception e) {
+                        Log.d("getBoardList",e.getMessage());
                         e.printStackTrace();
                     }
                     return postItems;
@@ -121,16 +122,8 @@ public class BoardController {
                         List<BoardListResponse.BoardResponse> boardResponses = boardListResponse.getBoardList();
                         for (BoardListResponse.BoardResponse boardResponse : boardResponses) {
                             PostItem item = new PostItem();
-                            String title = boardResponse.getBoardTitle();
-                            String date = boardResponse.getInsertDate();
-                            String category = boardResponse.getBoardCodeSeq();
-                            int size = boardResponse.getBoardImageSize();
-                            String url;
-                            if(size > 0)
-                                url = getThumbnailUrl(title, date, category);
-                            else
-                                url = "";
-                            item.onBindBoardApi(context, boardResponse, url);
+
+                            item.onBindBoardApi(context, boardResponse);
                             if(item.getDistance()<=distance)
                                 postItems.add(0,item);
                         }
@@ -429,16 +422,8 @@ public class BoardController {
                             List<BoardListResponse.BoardResponse> boardResponses = response.getBoardList();
                             for (BoardListResponse.BoardResponse boardResponse : boardResponses) {
                                 PostItem item = new PostItem();
-                                String title = boardResponse.getBoardTitle();
-                                String date = boardResponse.getInsertDate();
-                                String category = boardResponse.getBoardCodeSeq();
-                                int size = boardResponse.getBoardImageSize();
-                                String url;
-                                if(size > 0)
-                                    url = getThumbnailUrl(title, date, category);
-                                else
-                                    url = "";
-                                item.onBindBoardApi(context, boardResponse, url);
+
+                                item.onBindBoardApi(context, boardResponse);
                                 items.add(item);
                             }
                         }
@@ -470,16 +455,8 @@ public class BoardController {
                             List<BoardListResponse.BoardResponse> boardResponses = response.getBoardList();
                             for (BoardListResponse.BoardResponse boardResponse : boardResponses) {
                                 PostItem item = new PostItem();
-                                String title = boardResponse.getBoardTitle();
-                                String date = boardResponse.getInsertDate();
-                                String category = boardResponse.getBoardCodeSeq();
-                                int size = boardResponse.getBoardImageSize();
-                                String url;
-                                if(size > 0)
-                                    url = getThumbnailUrl(title, date, category);
-                                else
-                                    url = "";
-                                item.onBindBoardApi(context, boardResponse, url);
+
+                                item.onBindBoardApi(context, boardResponse);
                                 if (item.getCategory().equals(category))
                                     items.add(0,item);
                             }
@@ -512,16 +489,8 @@ public class BoardController {
                             List<BoardListResponse.BoardResponse> boardResponses = response.getBoardList();
                             for (BoardListResponse.BoardResponse boardResponse : boardResponses) {
                                 PostItem item = new PostItem();
-                                String title = boardResponse.getBoardTitle();
-                                String date = boardResponse.getInsertDate();
-                                String category = boardResponse.getBoardCodeSeq();
-                                int size = boardResponse.getBoardImageSize();
-                                String url;
-                                if(size > 0)
-                                    url = getThumbnailUrl(title, date, category);
-                                else
-                                    url = "";
-                                item.onBindBoardApi(context, boardResponse, url);
+
+                                item.onBindBoardApi(context, boardResponse);
                                 if (item.getCategory().equals("RECIPE")) {
                                     items.add(0,item);
                                 }
@@ -555,16 +524,8 @@ public class BoardController {
                             List<BoardListResponse.BoardResponse> boardResponses = response.getBoardList();
                             for (BoardListResponse.BoardResponse boardResponse : boardResponses) {
                                 PostItem item = new PostItem();
-                                String title = boardResponse.getBoardTitle();
-                                String date = boardResponse.getInsertDate();
-                                String category = boardResponse.getBoardCodeSeq();
-                                int size = boardResponse.getBoardImageSize();
-                                String url;
-                                if(size > 0)
-                                    url = getThumbnailUrl(title, date, category);
-                                else
-                                    url = "";
-                                item.onBindBoardApi(context, boardResponse, url);
+
+                                item.onBindBoardApi(context, boardResponse);
                                 if (item.getCategory().equals("FREE")) {
                                     items.add(0,item);
                                 }
@@ -598,16 +559,8 @@ public class BoardController {
                             List<BoardListResponse.BoardResponse> boardResponses = response.getLikeList();
                             for (BoardListResponse.BoardResponse boardResponse : boardResponses) {
                                 PostItem item = new PostItem();
-                                String title = boardResponse.getBoardTitle();
-                                String date = boardResponse.getInsertDate();
-                                String category = boardResponse.getBoardCodeSeq();
-                                int size = boardResponse.getBoardImageSize();
-                                String url;
-                                if(size > 0)
-                                    url = getThumbnailUrl(title, date, category);
-                                else
-                                    url = "";
-                                item.onBindBoardApi(context, boardResponse, url);
+
+                                item.onBindBoardApi(context, boardResponse);
                                 items.add(0,item);
                             }
                         }
@@ -639,16 +592,8 @@ public class BoardController {
                             List<BoardListResponse.BoardResponse> boardResponses = response.getLikeList();
                             for (BoardListResponse.BoardResponse boardResponse : boardResponses) {
                                 PostItem item = new PostItem();
-                                String title = boardResponse.getBoardTitle();
-                                String date = boardResponse.getInsertDate();
-                                String category = boardResponse.getBoardCodeSeq();
-                                int size = boardResponse.getBoardImageSize();
-                                String url;
-                                if(size > 0)
-                                    url = getThumbnailUrl(title, date, category);
-                                else
-                                    url = "";
-                                item.onBindBoardApi(context, boardResponse, url);
+
+                                item.onBindBoardApi(context, boardResponse);
                                 if (item.getCategory().equals(category))
                                     items.add(0,item);
                             }
@@ -681,16 +626,8 @@ public class BoardController {
                             List<BoardListResponse.BoardResponse> boardResponses = response.getLikeList();
                             for (BoardListResponse.BoardResponse boardResponse : boardResponses) {
                                 PostItem item = new PostItem();
-                                String title = boardResponse.getBoardTitle();
-                                String date = boardResponse.getInsertDate();
-                                String category = boardResponse.getBoardCodeSeq();
-                                int size = boardResponse.getBoardImageSize();
-                                String url;
-                                if(size > 0)
-                                    url = getThumbnailUrl(title, date, category);
-                                else
-                                    url = "";
-                                item.onBindBoardApi(context, boardResponse, url);
+
+                                item.onBindBoardApi(context, boardResponse);
                                 if (item.getCategory().equals("RECIPE")) {
                                     items.add(0,item);
                                 }
@@ -724,16 +661,8 @@ public class BoardController {
                             List<BoardListResponse.BoardResponse> boardResponses = response.getLikeList();
                             for (BoardListResponse.BoardResponse boardResponse : boardResponses) {
                                 PostItem item = new PostItem();
-                                String title = boardResponse.getBoardTitle();
-                                String date = boardResponse.getInsertDate();
-                                String category = boardResponse.getBoardCodeSeq();
-                                int size = boardResponse.getBoardImageSize();
-                                String url;
-                                if(size > 0)
-                                    url = getThumbnailUrl(title, date, category);
-                                else
-                                    url = "";
-                                item.onBindBoardApi(context, boardResponse, url);
+
+                                item.onBindBoardApi(context, boardResponse);
                                 if (item.getCategory().equals("FREE")) {
                                     items.add(0,item);
                                 }

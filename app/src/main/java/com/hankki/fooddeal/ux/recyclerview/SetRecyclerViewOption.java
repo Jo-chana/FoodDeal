@@ -9,12 +9,16 @@ import android.view.animation.Transformation;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.appbar.AppBarLayout;
 import com.hankki.fooddeal.R;
 import com.hankki.fooddeal.data.PostItem;
+import com.hankki.fooddeal.ui.MainActivity;
+import com.hankki.fooddeal.ui.home.HomeFragment;
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -80,27 +84,20 @@ public class SetRecyclerViewOption {
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 if (dy > 0 && cv.getVisibility() == View.VISIBLE) {
-                    cv.setAnimation(AnimationUtils.loadAnimation(context,R.anim.fade_out));
+                    cv.setAnimation(AnimationUtils.loadAnimation(context, R.anim.fade_out));
                     cv.setVisibility(View.INVISIBLE);
                 } else if (dy < 0 && cv.getVisibility() != View.VISIBLE) {
-                    cv.startAnimation(AnimationUtils.loadAnimation(context,R.anim.fade_in));
+                    cv.startAnimation(AnimationUtils.loadAnimation(context, R.anim.fade_in));
                     cv.setVisibility(View.VISIBLE);
                 }
-//                if(dy > 0 && appBarLayout.getVisibility()==View.VISIBLE)
-//                    collapse(appBarLayout);
-//                else if (!(mRecyclerView.canScrollVertically(-1)) && dy < 0){
-//                    expand(appBarLayout);
+//                if(dy > 0 && homeFragment.getPanelState()== SlidingUpPanelLayout.PanelState.EXPANDED)
+//                    homeFragment.panelCollapse();
+//                else if (dy < 0 ){
+//                    homeFragment.panelExpand();
 //                }
             }
         });
     }
-
-//    NavHostFragment navHostFragment = (NavHostFragment) ((MainActivity) MainActivity.mainContext)
-//            .getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
-//    AppBarLayout appBarLayout = ((HomeFragment) navHostFragment.getChildFragmentManager()
-//            .getFragments().get(0)).getView().findViewById(R.id.ctl_home);
-//    ViewPager2 pager = ((HomeFragment) navHostFragment.getChildFragmentManager()
-//            .getFragments().get(0)).getView().findViewById(R.id.vp_home);
 
 
     public static void expand(final View v) {

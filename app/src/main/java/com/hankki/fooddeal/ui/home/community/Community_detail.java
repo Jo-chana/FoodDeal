@@ -35,6 +35,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -55,6 +56,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.hankki.fooddeal.R;
+import com.hankki.fooddeal.amazon.AmazonS3Util;
 import com.hankki.fooddeal.data.CommentItem;
 import com.hankki.fooddeal.data.PostItem;
 import com.hankki.fooddeal.data.retrofit.BoardController;
@@ -66,6 +68,7 @@ import com.hankki.fooddeal.ui.chatting.chatDTO.ChatRoomModel;
 import com.hankki.fooddeal.ux.recyclerview.CommentAdapter;
 import com.hankki.fooddeal.ux.viewpager.GalleryAdapter;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -365,23 +368,29 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
         profile.setClipToOutline(true);
         profile.setScaleType(ImageView.ScaleType.CENTER_CROP);
 
-        DocumentReference documentReference = FirebaseFirestore.getInstance().collection("users")
-                .document(mPost.getUserHashId());
-        documentReference
-                .get()
-                .addOnCompleteListener(task -> {
-                    DocumentSnapshot snapshot = task.getResult();
-                    if(!snapshot.get("userPhotoUri").equals("")) {
-
-                        Glide
-                                .with(mContext)
-                                .load(snapshot.get("userPhotoUri"))
-                                .into(profile);
-                    }
-                });
+//        DocumentReference documentReference = FirebaseFirestore.getInstance().collection("users")
+//                .document(mPost.getUserHashId());
+//        documentReference
+//                .get()
+//                .addOnCompleteListener(task -> {
+//                    DocumentSnapshot snapshot = task.getResult();
+//                    if(!snapshot.get("userPhotoUri").equals("")) {
+//
+//                        Glide
+//                                .with(mContext)
+//                                .load(snapshot.get("userPhotoUri"))
+//                                .into(profile);
+//                    }
+//                });
+        String userUID = mPost.getUserHashId();
+        Glide.with(mContext).load(AmazonS3Util.s3.getUrl("hankki-s3","profile/"+userUID).toString())
+                .error(Glide.with(mContext).load(R.drawable.ic_group_60dp))
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .skipMemoryCache(true)
+                .into(profile);
 
         userId = post_common.findViewById(R.id.tv_user_id);
-        userId.setText(AES256Util.aesDecode(mPost.getUserHashId()));
+        userId.setText(AES256Util.aesDecode(userUID));
 
         userLocation = post_common.findViewById(R.id.tv_user_location);
         userLocation.setText(mPost.getRegionSecond() + " " + mPost.getRegionFirst());
@@ -397,7 +406,8 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
             postLike.setText(String.valueOf(mPost.getLikeCount()) + " 명이 찜했어요");
         }
 
-        setBroadPostImages(mPost.getInsertDate());
+//        setBroadPostImages(mPost.getInsertDate());
+        setImageViewPager();
     }
 
     /*조찬아 @TODO 수정 모드일 때 Null pointer 오류 수정할 것*/
@@ -538,7 +548,14 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
             builder.setPositiveButton("확인", (dialog, which) -> {
 
                 if (BoardController.boardDelete(mContext, mPost)) {
-                    deleteDownloadUrl(mContext, mPost.getInsertDate());
+//                    deleteDownloadUrl(mContext, mPost.getInsertDate());
+                    try {
+                        AmazonS3Util.deleteImageOfServer(mContext,mPost);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        Toast.makeText(mContext, "S3 데이터 삭제 실패", Toast.LENGTH_SHORT).show();
+                    }
+                    finish();
                 } else {
                     Toast.makeText(mContext, "AWS 데이터 삭제 실패", Toast.LENGTH_SHORT).show();
                 }
@@ -583,10 +600,14 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
     }
 
     public void setImageViewPager() {
-        if(postImages != null && postImages.size() > 0) {
+        if(mPost.getImgCount() > 0) {
+            if(mPost.getImgCount() == 1){
+                TabLayout dots = findViewById(R.id.tl_dots);
+                tl_dots.setVisibility(View.INVISIBLE);
+            }
             vp_image.setVisibility(View.VISIBLE);
             trickView.setVisibility(View.GONE);
-            galleryAdapter = new GalleryAdapter(this, postImages);
+            galleryAdapter = new GalleryAdapter(this, mPost);
             tl_dots.setupWithViewPager(vp_image, true);
             vp_image.setAdapter(galleryAdapter);
         }

@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
@@ -41,6 +42,7 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.hankki.fooddeal.R;
+import com.hankki.fooddeal.amazon.AmazonS3Util;
 import com.hankki.fooddeal.data.security.AES256Util;
 import com.hankki.fooddeal.data.security.HashMsgUtil;
 import com.hankki.fooddeal.ui.chatting.chatDTO.ChatRoomModel;
@@ -167,37 +169,40 @@ public class ChatRoomFragment extends Fragment {
 
             roomViewHolder.last_time.setText(simpleDateFormat.format(chatRoomModel.getLastMessageTime()));
 
-            try {
-                DocumentReference documentReference = FirebaseFirestore.getInstance()
-                        .collection("users")
-                        .document(AES256Util.aesEncode(otherUser));
-                documentReference
-                        .get()
-                        .addOnCompleteListener(task -> {
-                            DocumentSnapshot snapshot = task.getResult();
-                            if (!snapshot.get("userPhotoUri").equals("")) {
-                                Glide
-                                        .with(getContext())
-                                        .load(snapshot.get("userPhotoUri"))
-                                        .into(roomViewHolder.room_image);
-                            } else {
-                                roomViewHolder.room_image.setImageResource(R.drawable.ic_group_rec_60dp);
-                                roomViewHolder.room_image.setClipToOutline(true);
-                                roomViewHolder.room_image.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                            }
-                        });
-            } catch (Exception e){
-                roomViewHolder.room_image.setImageResource(R.drawable.ic_group_rec_60dp);
-                roomViewHolder.room_image.setClipToOutline(true);
-                roomViewHolder.room_image.setScaleType(ImageView.ScaleType.CENTER_CROP);
-            }
-
-            if (chatRoomModel.getRoomUserList().size() > 2) {
-                roomViewHolder.room_count.setText(chatRoomModel.getRoomUserList().size());
-                roomViewHolder.room_count.setVisibility(View.VISIBLE);
-            } else {
-                roomViewHolder.room_count.setVisibility(View.INVISIBLE);
-            }
+//            try {
+//                DocumentReference documentReference = FirebaseFirestore.getInstance()
+//                        .collection("users")
+//                        .document(AES256Util.aesEncode(otherUser));
+//                documentReference
+//                        .get()
+//                        .addOnCompleteListener(task -> {
+//                            DocumentSnapshot snapshot = task.getResult();
+//                            if (!snapshot.get("userPhotoUri").equals("")) {
+//                                /*조찬아 @TODO 채팅방에서 다른 페이지로 넘어간 후 아래 코드가 실행될 경우 에러 발생.
+//                                *       S3 스토리지로 이주 */
+//                                Glide
+//                                        .with(getContext())
+//                                        .load(snapshot.get("userPhotoUri"))
+//                                        .into(roomViewHolder.room_image);
+//                            } else {
+//                                roomViewHolder.room_image.setImageResource(R.drawable.ic_group_rec_60dp);
+//                                roomViewHolder.room_image.setClipToOutline(true);
+//                                roomViewHolder.room_image.setScaleType(ImageView.ScaleType.CENTER_CROP);
+//                            }
+//                        });
+//            } catch (Exception e){
+//                roomViewHolder.room_image.setImageResource(R.drawable.ic_group_rec_60dp);
+//                roomViewHolder.room_image.setClipToOutline(true);
+//                roomViewHolder.room_image.setScaleType(ImageView.ScaleType.CENTER_CROP);
+//            }
+            String url = AmazonS3Util.s3.getUrl("hankki-s3","profile/"+otherUser).toString();
+            Glide.with(getContext())
+                    .load(url)
+                    .error(R.drawable.ic_group_60dp)
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .skipMemoryCache(true)
+                    .into(roomViewHolder.room_image);
+            roomViewHolder.room_image.setAdjustViewBounds(true);
 
             //noinspection ConstantConditions
             if(chatRoomModel.getUnreadMemberCountMap().get(sUID) > 0) {
