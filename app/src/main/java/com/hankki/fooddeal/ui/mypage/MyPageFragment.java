@@ -311,25 +311,7 @@ public class MyPageFragment extends Fragment {
                 .into(iv_my_profile);
 
         if(!uid.equals("")) {
-            final DocumentReference documentReference = FirebaseFirestore.getInstance().collection("users").document(uid);
-            documentReference
-                    .get()
-                    .addOnCompleteListener(task -> {
-                        if(task.isSuccessful()) {
-                            DocumentSnapshot documentSnapshot = task.getResult();
-//                            if(!documentSnapshot.get("userPhotoUri").equals("")) {
-//
-//                                Glide
-//                                        .with(getContext())
-//                                        .load(documentSnapshot.get("userPhotoUri"))
-//                                        .into(iv_my_profile);
-//                            }
-                            if(!documentSnapshot.get("userNickname").equals(""))
-                                tv_my_name.setText(documentSnapshot.get("userNickname").toString());
-                            else
-                                tv_my_name.setText(AES256Util.aesDecode(uid));
-                        }
-                    });
+            tv_my_name.setText(AES256Util.aesDecode(uid));
         } else {
             tv_my_name.setText("게스트");
         }
