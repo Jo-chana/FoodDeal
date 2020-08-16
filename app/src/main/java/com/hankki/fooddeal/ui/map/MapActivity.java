@@ -2,14 +2,20 @@ package com.hankki.fooddeal.ui.map;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
 import android.view.WindowManager;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -26,8 +32,12 @@ import com.hankki.fooddeal.data.PostItem;
 import com.hankki.fooddeal.data.PreferenceManager;
 import com.hankki.fooddeal.data.security.AES256Util;
 import com.hankki.fooddeal.ui.home.community.Community_detail;
+import com.hankki.fooddeal.ui.home.community.PostActivity;
+import com.hankki.fooddeal.ux.recyclerview.PostAdapter;
+import com.hankki.fooddeal.ux.snaphelper.SnapHelperOneByOne;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback {
@@ -36,6 +46,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private ArrayList<PostItem> postItems = new ArrayList<>();
     private ArrayList<PostItem> mapItems = new ArrayList<>();
     private ArrayList<Marker> markers = new ArrayList<>();
+    RecyclerView rv_map;
+    SnapHelperOneByOne snapHelperOneByOne;
     VerticalSeekBar seekBar;
     TextView tv_100, tv_200, tv_400, tv_all;
     int filterDistance = 1000;
@@ -121,6 +133,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         seekBar = findViewById(R.id.seekbar);
         seekBar.bringToFront();
         seekBar.setMax(300);
+        rv_map = findViewById(R.id.rv_map);
+        snapHelperOneByOne = new SnapHelperOneByOne();
+        snapHelperOneByOne.attachToRecyclerView(rv_map);
     }
 
     @Override
@@ -151,54 +166,92 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
 //        postItems.addAll(BoardController.getBoardList(mContext, "INGREDIENT EXCHANGE"));
 //        postItems.addAll(BoardController.getBoardList(mContext,"INGREDIENT SHARE"));
-
+        HashMap<String, ArrayList<PostItem>> placeMap = new HashMap<>();
+        ArrayList<String> placeKey = new ArrayList<>();
         for (PostItem postItem : mapItems) {
+            String key = String.valueOf(postItem.getUserLatitude()) + " " + String.valueOf(postItem.getUserLongitude());
+            if(placeMap.get(key)==null){
+                ArrayList<PostItem> items = new ArrayList<>();
+                items.add(postItem);
+                placeMap.put(key,items);
+            } else {
+                ArrayList<PostItem> items = placeMap.get(key);
+                items.add(0,postItem);
+                placeMap.put(key,items);
+            }
+            if (!placeKey.contains(key)) {
+                placeKey.add(key);
+            }
+        }
+
+        for(String key : placeKey){
+            String[] location = key.split(" ");
+            double latitude = Double.parseDouble(location[0]);
+            double longitude = Double.parseDouble(location[1]);
             try {
-                LatLng position = new LatLng(Double.parseDouble(postItem.getUserLatitude()), Double.parseDouble(postItem.getUserLongitude()));
+                LatLng position = new LatLng(latitude, longitude);
 
                 markerOptions = new MarkerOptions();
                 markerOptions.position(position);
 
-                int page;
-                String category;
-                if(postItem.getCategory().equals("RECIPE")) {
-                    page = 1;
-                    category = "레시피 게시판";
+                ArrayList<PostItem> items = placeMap.get(key);
+                int size = items.size();
+                int markerHeight = 49*2;
+                int markerWidth = 32*2;
+                if(size <= 3){
+                } else if(size <=6){
+                    markerHeight += 24;
+                    markerWidth += 16;
+                } else if(size <=9){
+                    markerHeight += 49;
+                    markerWidth += 32;
+                } else {
+                    markerHeight += 73;
+                    markerWidth += 48;
                 }
-                else if(postItem.getCategory().equals("FREE")) {
-                    page = 2;
-                    category = "자유 게시판";
+                PostItem postItem = items.get(0);
+
+                if(postItem.getCategory().equals("INGREDIENT EXCHANGE")) {
+                    BitmapDrawable bitmapDrawable = (BitmapDrawable) getResources().getDrawable(R.drawable.ic_icon_marker);
+                    Bitmap bitmap = bitmapDrawable.getBitmap();
+                    Bitmap markerIcon = Bitmap.createScaledBitmap(bitmap,markerWidth,markerHeight,false);
+                    markerOptions.icon(BitmapDescriptorFactory.fromBitmap(markerIcon));
                 }
                 else {
-                    page = 0;
-                    if(postItem.getCategory().equals("INGREDIENT EXCHANGE")) {
-                        category = "식재 교환";
-                        markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_icon_marker));
-                    }
-                    else {
-                        category = "식재 나눔";
-                        markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_icon_marker_2));
-                    }
+                    BitmapDrawable bitmapDrawable = (BitmapDrawable) getResources().getDrawable(R.drawable.ic_icon_marker_2);
+                    Bitmap bitmap = bitmapDrawable.getBitmap();
+                    Bitmap markerIcon = Bitmap.createScaledBitmap(bitmap,markerWidth,markerHeight,false);
+                    markerOptions.icon(BitmapDescriptorFactory.fromBitmap(markerIcon));
                 }
 
+
                 /*@TODO markerOption.icon 설정*/
-                markerOptions.title(postItem.getBoardTitle());
-                markerOptions.snippet(category);
+                markerOptions.title(size+"개의 게시글이 있어요");
                 markers.add(map.addMarker(markerOptions));
 
-            } catch (Exception ignored){
-
+            } catch (Exception e){
+                Log.d("map",e.getMessage());
             }
         }
-
-        map.setOnInfoWindowClickListener(marker -> {
-            int index = markers.indexOf(marker);
-            Intent intent = new Intent(MapActivity.this, Community_detail.class);
-            intent.putExtra("page",0);
-            intent.putExtra("Tag","Main");
-            intent.putExtra("item", mapItems.get(index));
-            startActivity(intent);
+        map.setOnMarkerClickListener(marker -> {
+            LatLng position = marker.getPosition();
+            String key = position.latitude + " " + position.longitude;
+            ArrayList<PostItem> items = placeMap.get(key);
+            PostAdapter adapter = new PostAdapter(this,items,R.layout.community_item3);
+            rv_map.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,false));
+            rv_map.setAdapter(adapter);
+            rv_map.setVisibility(View.VISIBLE);
+            return false;
         });
+
+//        map.setOnInfoWindowClickListener(marker -> {
+//            int index = markers.indexOf(marker);
+//            Intent intent = new Intent(MapActivity.this, Community_detail.class);
+//            intent.putExtra("page",0);
+//            intent.putExtra("Tag","Main");
+//            intent.putExtra("item", mapItems.get(index));
+//            startActivity(intent);
+//        });
 
         map.animateCamera(CameraUpdateFactory.newLatLngZoom(currentPostion, zoom));
         CircleOptions circle1KM = new CircleOptions().center(currentPostion) // 원점

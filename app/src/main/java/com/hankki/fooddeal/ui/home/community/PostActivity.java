@@ -246,11 +246,13 @@ public class PostActivity extends AppCompatActivity {
                     customDialog = new CustomDialog(mContext,"사진과 제목은 필수 입력 사항입니다!");
                     customDialog.setCanceledOnTouchOutside(false);
                     customDialog.show();
+                    btn_write.setVisibility(View.VISIBLE);
 
                 } else if(et_title.getText().toString().equals("")) {
                     customDialog = new CustomDialog(mContext,"제목은 필수 입력 사항입니다!");
                     customDialog.setCanceledOnTouchOutside(false);
                     customDialog.show();
+                    btn_write.setVisibility(View.VISIBLE);
 
                 } else {
                     PostItem item = new PostItem();
@@ -323,11 +325,17 @@ public class PostActivity extends AppCompatActivity {
             if (requestCode == 0) {
                 if (resultCode == RESULT_OK) {
 
+                    String[] filePath = {MediaStore.Images.Media.DATA};
+                    Cursor cursor = getContentResolver().query(data.getData(), filePath ,null,null,null);
+                    cursor.moveToFirst();
+                    String imgPath = cursor.getString(cursor.getColumnIndex(filePath[0]));
                     InputStream in = getContentResolver().openInputStream(data.getData());
-
                     Bitmap img = BitmapFactory.decodeStream(in);
+                    Bitmap rotatedImg = ImageUtil.rotateBitmap(imgPath,img);
                     in.close();
-                    postImages.add(img);
+                    cursor.close();
+
+                    postImages.add(rotatedImg);
                     /**이미지 Attach*/
                     onImageAttach();
 
