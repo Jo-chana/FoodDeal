@@ -314,6 +314,8 @@ public class MyPageFragment extends Fragment {
             tv_my_name.setText(AES256Util.aesDecode(uid));
         } else {
             tv_my_name.setText("게스트");
+            view_like.setClickable(false);
+            view_my_post.setClickable(false);
         }
     }
 

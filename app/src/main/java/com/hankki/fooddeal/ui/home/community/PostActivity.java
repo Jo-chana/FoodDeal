@@ -323,11 +323,17 @@ public class PostActivity extends AppCompatActivity {
             if (requestCode == 0) {
                 if (resultCode == RESULT_OK) {
 
+                    String[] filePath = {MediaStore.Images.Media.DATA};
+                    Cursor cursor = getContentResolver().query(data.getData(), filePath ,null,null,null);
+                    cursor.moveToFirst();
+                    String imgPath = cursor.getString(cursor.getColumnIndex(filePath[0]));
                     InputStream in = getContentResolver().openInputStream(data.getData());
-
                     Bitmap img = BitmapFactory.decodeStream(in);
+                    Bitmap rotatedImg = ImageUtil.rotateBitmap(imgPath,img);
                     in.close();
-                    postImages.add(img);
+                    cursor.close();
+
+                    postImages.add(rotatedImg);
                     /**이미지 Attach*/
                     onImageAttach();
 
