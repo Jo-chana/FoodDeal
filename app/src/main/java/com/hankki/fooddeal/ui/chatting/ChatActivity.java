@@ -43,6 +43,7 @@ import com.google.firebase.firestore.WriteBatch;
 import com.hankki.fooddeal.R;
 import com.hankki.fooddeal.amazon.AmazonS3Util;
 import com.hankki.fooddeal.data.security.AES256Util;
+import com.hankki.fooddeal.data.security.HashMsgUtil;
 import com.hankki.fooddeal.ui.chatting.chatDTO.ChatModel;
 import com.hankki.fooddeal.ui.chatting.chatDTO.Message;
 
@@ -81,6 +82,8 @@ public class ChatActivity extends AppCompatActivity {
     private ArrayList<String> userList = new ArrayList<>();
     private HashMap<String, String> userUrlMap = new HashMap<>();
 
+    private final static String TAG = "ChatActivity";
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -107,10 +110,6 @@ public class ChatActivity extends AppCompatActivity {
 
         uid = AES256Util.aesDecode(FirebaseAuth.getInstance().getCurrentUser().getUid());
         firestore = FirebaseFirestore.getInstance();
-//        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
-//                .setPersistenceEnabled(false)
-//                .build();
-//        firestore.setFirestoreSettings(settings);
 
         userList.remove(uid);
         for(int i=0;i<userList.size();i++) {
@@ -268,6 +267,7 @@ public class ChatActivity extends AppCompatActivity {
 
     // 채팅방 입장시 내가 안 읽은 메시지들 읽음 처리
     private void setUnreadtoRead() {
+        Log.d(TAG, "setUnreadToRead start");
         firestore
                 .collection("rooms")
                 .document(roomId)
@@ -305,6 +305,7 @@ public class ChatActivity extends AppCompatActivity {
                                             if (uid.equals(key)) unreadUserCountMap.put(key, 0L);
                                         }
                                         documentSnapshot.getReference().update("unreadMemberCountMap", unreadUserCountMap);
+                                        Log.d(TAG, "setUnreadToRead end");
                                     }
                                 });
                     }
@@ -347,9 +348,14 @@ public class ChatActivity extends AppCompatActivity {
                                 Toast.makeText(getApplicationContext(), "check query indexing!", Toast.LENGTH_SHORT).show();
                                 return;
                             }
+                            if (value.getMetadata().isFromCache()) {
+                                Log.d("ChatActivity", "local");
+                                return;
+                            }
 
                             Message message;
                             assert value != null;
+
                             for (DocumentChange change : value.getDocumentChanges()) {
                                 switch (change.getType()) {
                                     case ADDED:
@@ -361,6 +367,7 @@ public class ChatActivity extends AppCompatActivity {
                                             }
                                             messageList.add(message);
                                             notifyItemInserted(change.getNewIndex());
+                                            Log.d("ChatActivity", "add  " + message.getMessageContent());
 //                                            setUnreadtoRead();
                                         }
                                         break;
@@ -368,6 +375,7 @@ public class ChatActivity extends AppCompatActivity {
                                         message = change.getDocument().toObject(Message.class);
                                         messageList.set(change.getOldIndex(), message);
                                         notifyItemChanged(change.getOldIndex());
+                                        Log.d("ChatActivity", "mod  " + message.getMessageContent());
 //                                        setUnreadtoRead();
                                         break;
                                     case REMOVED:
@@ -375,8 +383,8 @@ public class ChatActivity extends AppCompatActivity {
                                         notifyItemRemoved(change.getOldIndex());
                                         break;
                                 }
-                                setUnreadtoRead();
                                 recyclerView.scrollToPosition(messageList.size() - 1);
+                                setUnreadtoRead();
                             }
                         }
                     });
@@ -433,7 +441,11 @@ public class ChatActivity extends AppCompatActivity {
             setReadCounter(message, messageViewHolder.read_counter);
 
 
-            if ("0".equals(message.getMessageType())) {                                      // text message
+            if ("0".equals(message.getMessageType())) {
+                Log.d(TAG, "onBindViewHolder에 전달된 메시지 내용  " + message.getMessageContent());
+                Log.d(TAG, "onBindViewHolder에 전달된 메시지 송신자  " + message.getMessageSenderUid());
+                Log.d(TAG, "onBindViewHolder에 전달된 메시지 위치  " + position);
+                // text message
                 messageViewHolder.msg_item.setText(message.getMessageContent());
             } /*else if ("2".equals(message.getMessageType())) {                                      // file transfer
                 messageViewHolder.msg_item.setText(message.getFilename() + "\n" + message.getFilesize());

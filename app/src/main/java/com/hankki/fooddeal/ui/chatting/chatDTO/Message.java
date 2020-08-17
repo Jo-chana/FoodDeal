@@ -21,23 +21,13 @@ public class Message {
         this.messageReadUserList = messageReadUserList;
     }
 
-    public String getMessageSenderUid() {
-        return messageSenderUid;
-    }
+    public String getMessageSenderUid() { return messageSenderUid; }
 
-    public String getMessageContent() {
-        return messageContent;
-    }
+    public String getMessageContent() { return messageContent; }
 
-    public Date getMessageTime() {
-        return messageTime;
-    }
+    public Date getMessageTime() { return messageTime; }
 
-    public String getMessageType() {
-        return messageType;
-    }
+    public String getMessageType() { return messageType; }
 
-    public List<String> getMessageReadUserList() {
-        return messageReadUserList;
-    }
+    public List<String> getMessageReadUserList() { return messageReadUserList; }
 }
