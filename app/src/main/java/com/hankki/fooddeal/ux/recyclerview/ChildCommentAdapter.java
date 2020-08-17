@@ -9,11 +9,13 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.hankki.fooddeal.R;
+import com.hankki.fooddeal.amazon.AmazonS3Util;
 import com.hankki.fooddeal.data.CommentItem;
 import com.hankki.fooddeal.data.retrofit.BoardController;
 import com.hankki.fooddeal.data.security.AES256Util;
@@ -45,20 +47,14 @@ public class ChildCommentAdapter extends RecyclerView.Adapter<CommentViewHolder>
         holder.tv_message.setText(item.getCommentContent());
         holder.tv_time.setText(item.getRelativeTime());
         holder.tv_username.setText(AES256Util.aesDecode(item.getUserHashId()));
+        String uid = item.getUserHashId();
 
-        DocumentReference documentReference = FirebaseFirestore.getInstance().collection("users")
-                .document(item.getUserHashId());
-        documentReference
-                .get()
-                .addOnCompleteListener(task -> {
-                    DocumentSnapshot snapshot = task.getResult();
-                    if(!snapshot.get("userPhotoUri").equals("")) {
-                        Glide
-                                .with(context)
-                                .load(snapshot.get("userPhotoUri"))
-                                .into(holder.iv_profile);
-                    }
-                });
+        Glide.with(context).load(AmazonS3Util.s3.getUrl("hankki-s3","profile/"+uid).toString())
+                .error(Glide.with(context).load(R.drawable.ic_group_60dp))
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .skipMemoryCache(true)
+                .into(holder.iv_profile);
+
 
         if(!item.getUserHashId().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())){
             holder.tv_btn_delete.setVisibility(View.GONE);
