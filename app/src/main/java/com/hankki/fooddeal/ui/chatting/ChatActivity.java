@@ -366,7 +366,7 @@ public class ChatActivity extends AppCompatActivity {
                                                 change.getDocument().getReference().update("messageReadUserList", message.getMessageReadUserList());
                                             }
                                             messageList.add(message);
-                                            notifyItemInserted(change.getNewIndex());
+//                                            notifyItemInserted(change.getNewIndex());
                                             Log.d("ChatActivity", "add  " + message.getMessageContent());
 //                                            setUnreadtoRead();
                                         }
@@ -374,18 +374,20 @@ public class ChatActivity extends AppCompatActivity {
                                     case MODIFIED:
                                         message = change.getDocument().toObject(Message.class);
                                         messageList.set(change.getOldIndex(), message);
-                                        notifyItemChanged(change.getOldIndex());
+//                                        notifyItemChanged(change.getOldIndex());
                                         Log.d("ChatActivity", "mod  " + message.getMessageContent());
 //                                        setUnreadtoRead();
                                         break;
                                     case REMOVED:
                                         messageList.remove(change.getOldIndex());
-                                        notifyItemRemoved(change.getOldIndex());
+//                                        notifyItemRemoved(change.getOldIndex());
                                         break;
                                 }
                                 recyclerView.scrollToPosition(messageList.size() - 1);
                                 setUnreadtoRead();
                             }
+
+                            notifyDataSetChanged();
                         }
                     });
         }
