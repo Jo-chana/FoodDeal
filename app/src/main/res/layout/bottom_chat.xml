@@ -16,13 +16,13 @@
     
     <Button
         android:id="@+id/btn_chatting"
-        android:background="@color/original_primary"
+        android:background="@drawable/main_color_button_style"
         android:text="채팅하기"
         android:textColor="@color/original_white"
         android:textSize="20sp"
         android:textStyle="bold"
         android:layout_width="0dp"
-        android:layout_height="40dp"
+        android:layout_height="50dp"
         app:layout_constraintWidth_percent="0.8"
         app:layout_constraintLeft_toRightOf="@id/iv_like"
         app:layout_constraintTop_toTopOf="parent"

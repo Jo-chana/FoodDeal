@@ -14,6 +14,8 @@ public class PurchaseItem {
     int joinNum;
     int allNum;
 
+
+
     public PurchaseItem(){}
 
     public String getTitle() {
