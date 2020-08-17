@@ -176,7 +176,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 placeMap.put(key,items);
             } else {
                 ArrayList<PostItem> items = placeMap.get(key);
-                items.add(0,postItem);
+                items.add(postItem);
                 placeMap.put(key,items);
             }
             if (!placeKey.contains(key)) {
