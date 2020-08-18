@@ -230,7 +230,7 @@ public class ChatActivity extends AppCompatActivity {
                                 unreadUserCountMap.put(key, unreadUserCountMap.get(key) + 1);
                         }
 
-                        userList.add(uid);
+                        if(!userList.contains(uid)) userList.add(uid);
                         final Map<String, Object> rooms = new HashMap<>();
                         rooms.put("lastMessageContent", msg);
                         rooms.put("lastMessageTime", FieldValue.serverTimestamp());
