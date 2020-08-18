@@ -1,11 +1,14 @@
 package com.hankki.fooddeal.ui.chatting.chatDTO;
 
+import com.google.firebase.firestore.ServerTimestamp;
+
 import java.util.Date;
 import java.util.List;
 
 public class Message {
     private String messageSenderUid;
     private String messageContent;
+    @ServerTimestamp
     private Date messageTime;
     private String messageType;
     private List<String> messageReadUserList;

@@ -8,6 +8,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Build;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,12 +35,14 @@ import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.MetadataChanges;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.firestore.WriteBatch;
 import com.hankki.fooddeal.R;
 import com.hankki.fooddeal.amazon.AmazonS3Util;
@@ -75,12 +79,15 @@ public class ChatActivity extends AppCompatActivity {
     private ImageView back_button;
 
     private ListenerRegistration messageListenerRegistration;
+    private TextWatcher textWatcher;
 
     private LinearLayoutManager linearLayoutManager;
     private FirebaseFirestore firestore;
 
     private ArrayList<String> userList = new ArrayList<>();
     private HashMap<String, String> userUrlMap = new HashMap<>();
+
+    private boolean isSending = false;
 
     private final static String TAG = "ChatActivity";
 
@@ -120,13 +127,16 @@ public class ChatActivity extends AppCompatActivity {
         }
 
         msg_input = findViewById(R.id.msg_input);
+
         sendBtn = findViewById(R.id.sendBtn);
         sendBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String msg = msg_input.getText().toString();
-                sendMessage(msg, "0", null);
-                msg_input.setText("");
+                if(msg.length()>0) {
+                    sendMessage(msg, "0", null);
+                    msg_input.setText("");
+                }
             }
         });
 
@@ -180,7 +190,7 @@ public class ChatActivity extends AppCompatActivity {
     private void sendMessage(final String msg, String msgType, final ChatModel.FileInfo fileInfo) {
 //        sendBtn.setEnabled(false);
         Log.d("***************", "SEND");
-        Date date = new Date(System.currentTimeMillis());
+
         /*if(fileInfo != null) {
             messages.put("filename", fileInfo.filename);
             messages.put("filesize", fileInfo.filesize);
@@ -200,12 +210,15 @@ public class ChatActivity extends AppCompatActivity {
                         List<String> readUserList = new ArrayList<>();
                         readUserList.add(uid);
 
-                        // 메시지 리스트에 들어갈 내용 정리
-                        Message newMessage = new Message(uid, msg, date, msgType, readUserList);
-//                        String messageDocument = date.toString() + " " + AES256Util.aesEncode(uid);
-//                        batch.set(documentReference.collection("messages").document(messageDocument), newMessage);
-                        batch.set(documentReference.collection("messages").document(), newMessage);
-                        batch.commit();
+                        // 메시지 작성
+                        final Map<String, Object> messages = new HashMap<>();
+                        messages.put("messageSenderUid", uid);
+                        messages.put("messageContent", msg);
+                        messages.put("messageTime", FieldValue.serverTimestamp());
+                        messages.put("messageType", msgType);
+                        messages.put("messageReadUserList", readUserList);
+
+                        batch.set(documentReference.collection("messages").document(), messages);
 
                         // 다른 사람들의 unreadUserCountMap 추가
                         DocumentSnapshot documentSnapshot = task.getResult();
@@ -216,7 +229,19 @@ public class ChatActivity extends AppCompatActivity {
                             if (!uid.equals(key))
                                 unreadUserCountMap.put(key, unreadUserCountMap.get(key) + 1);
                         }
-                        documentSnapshot.getReference()
+
+                        userList.add(uid);
+                        final Map<String, Object> rooms = new HashMap<>();
+                        rooms.put("lastMessageContent", msg);
+                        rooms.put("lastMessageTime", FieldValue.serverTimestamp());
+                        rooms.put("roomId", roomId);
+                        rooms.put("roomTitle", roomTitle);
+                        rooms.put("roomUserList", userList);
+                        rooms.put("unreadMemberCountMap", unreadUserCountMap);
+
+                        batch.set(documentReference, rooms, SetOptions.merge());
+
+                        /*documentSnapshot.getReference()
                                 .update("unreadMemberCountMap", unreadUserCountMap)
                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
@@ -229,39 +254,17 @@ public class ChatActivity extends AppCompatActivity {
                                     public void onFailure(@NonNull Exception e) {
                                         Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_LONG).show();
                                     }
-                                });
+                                });*/
 
-                        documentReference
-                                .update("lastMessageContent", msg)
-                                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
-                                        Log.d("######", "Last Message Content Update Success");
-                                    }
-                                })
-                                .addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_SHORT).show();
-                                    }
-                                });
-
-                        documentReference
-                                .update("lastMessageTime", date)
-                                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
-                                        Log.d("######", "Last Message Time Update Success");
-                                    }
-                                })
-                                .addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_SHORT).show();
-                                    }
-                                });
-
-                    }
+                        batch.commit().addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                if (task.isSuccessful()) {
+                                    Log.d("######", "Sending is Success");
+                                }
+                            }
+                        });
+                        }
                 });
     }
 
@@ -366,7 +369,7 @@ public class ChatActivity extends AppCompatActivity {
                                                 change.getDocument().getReference().update("messageReadUserList", message.getMessageReadUserList());
                                             }
                                             messageList.add(message);
-//                                            notifyItemInserted(change.getNewIndex());
+                                            notifyItemInserted(change.getNewIndex());
                                             Log.d("ChatActivity", "add  " + message.getMessageContent());
 //                                            setUnreadtoRead();
                                         }
@@ -374,9 +377,10 @@ public class ChatActivity extends AppCompatActivity {
                                     case MODIFIED:
                                         message = change.getDocument().toObject(Message.class);
                                         messageList.set(change.getOldIndex(), message);
-//                                        notifyItemChanged(change.getOldIndex());
+                                        notifyItemChanged(change.getOldIndex());
                                         Log.d("ChatActivity", "mod  " + message.getMessageContent());
 //                                        setUnreadtoRead();
+                                        notifyDataSetChanged();
                                         break;
                                     case REMOVED:
                                         messageList.remove(change.getOldIndex());
@@ -386,8 +390,6 @@ public class ChatActivity extends AppCompatActivity {
                                 recyclerView.scrollToPosition(messageList.size() - 1);
                                 setUnreadtoRead();
                             }
-
-                            notifyDataSetChanged();
                         }
                     });
         }

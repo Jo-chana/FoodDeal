@@ -1,5 +1,7 @@
 package com.hankki.fooddeal.ui.chatting.chatDTO;
 
+import com.google.firebase.firestore.ServerTimestamp;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -7,19 +9,18 @@ import java.util.Map;
 
 public class ChatRoomModel {
     private String roomId;
-    private Integer roomType;
     private String roomTitle;
     private ArrayList<String> roomUserList;
     private Map<String, Integer> unreadMemberCountMap;
     private String lastMessageContent;
+    @ServerTimestamp
     private Date lastMessageTime;
 
     public ChatRoomModel() {
     }
 
-    public ChatRoomModel(String roomId, Integer roomType, String roomTitle, ArrayList<String> roomUserList, Map<String, Integer> unreadMemberCountMap, String lastMessageContent, Date lastMessageTime) {
+    public ChatRoomModel(String roomId, String roomTitle, ArrayList<String> roomUserList, Map<String, Integer> unreadMemberCountMap, String lastMessageContent, Date lastMessageTime) {
         this.roomId = roomId;
-        this.roomType = roomType;
         this.roomTitle = roomTitle;
         this.roomUserList = roomUserList;
         this.unreadMemberCountMap = unreadMemberCountMap;
@@ -33,14 +34,6 @@ public class ChatRoomModel {
 
     public void setRoomId(String roomId) {
         this.roomId = roomId;
-    }
-
-    public Integer getRoomType() {
-        return roomType;
-    }
-
-    public void setRoomType(Integer roomType) {
-        this.roomType = roomType;
     }
 
     public String getRoomTitle() {

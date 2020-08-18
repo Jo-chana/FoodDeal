@@ -233,7 +233,7 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
 
     private void createChattingRoom(final DocumentReference room, String roomID, String roomTitle, ArrayList<String> userList, HashMap<String, Integer> unreadUserCountMap) {
         // 첫 방 생성할때는 메시지가 없으므로 타임만 서버에 채팅방이 등록되는 시간으로 설정, unreadUserCountMap들의 값들도 0
-        ChatRoomModel chatRoomModel = new ChatRoomModel(roomID, 3, roomTitle, userList, unreadUserCountMap, null, new Date(System.currentTimeMillis()));
+        ChatRoomModel chatRoomModel = new ChatRoomModel(roomID, roomTitle, userList, unreadUserCountMap, null, new Date(System.currentTimeMillis()));
 
         room
                 .set(chatRoomModel)
