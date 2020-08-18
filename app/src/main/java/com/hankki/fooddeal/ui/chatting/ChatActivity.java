@@ -204,21 +204,8 @@ public class ChatActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                         if (!task.isSuccessful()) return;
 
+                        Log.d("ChatActivity", "initialize writebtach");
                         WriteBatch batch = firestore.batch();
-
-                        // 내가 읽었다는걸 표시, rooms의 unreadUserCount는 내가 보내면서 읽은것으로 처리되기 때문에 건드릴필요 X
-                        List<String> readUserList = new ArrayList<>();
-                        readUserList.add(uid);
-
-                        // 메시지 작성
-                        final Map<String, Object> messages = new HashMap<>();
-                        messages.put("messageSenderUid", uid);
-                        messages.put("messageContent", msg);
-                        messages.put("messageTime", FieldValue.serverTimestamp());
-                        messages.put("messageType", msgType);
-                        messages.put("messageReadUserList", readUserList);
-
-                        batch.set(documentReference.collection("messages").document(), messages);
 
                         // 다른 사람들의 unreadUserCountMap 추가
                         DocumentSnapshot documentSnapshot = task.getResult();
@@ -240,27 +227,26 @@ public class ChatActivity extends AppCompatActivity {
                         rooms.put("unreadMemberCountMap", unreadUserCountMap);
 
                         batch.set(documentReference, rooms, SetOptions.merge());
+                        Log.d("ChatActivity", "set batch with room's data");
 
-                        /*documentSnapshot.getReference()
-                                .update("unreadMemberCountMap", unreadUserCountMap)
-                                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
-                                        Log.d("########", "Send Message Success");
-                                    }
-                                })
-                                .addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_LONG).show();
-                                    }
-                                });*/
+                        // 내가 읽었다는걸 표시, rooms의 unreadUserCount는 내가 보내면서 읽은것으로 처리되기 때문에 건드릴필요 X
+                        List<String> readUserList = new ArrayList<>();
+                        readUserList.add(uid);
+                        // 메시지 작성
+                        final Map<String, Object> messages = new HashMap<>();
+                        messages.put("messageSenderUid", uid);
+                        messages.put("messageContent", msg);
+                        messages.put("messageTime", FieldValue.serverTimestamp());
+                        messages.put("messageType", msgType);
+                        messages.put("messageReadUserList", readUserList);
 
+                        batch.set(documentReference.collection("messages").document(), messages);
+                        Log.d("ChatActivity", "set batch with message's data");
                         batch.commit().addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
                                 if (task.isSuccessful()) {
-                                    Log.d("######", "Sending is Success");
+                                    Log.d("ChatActivity", "sending batch is successful");
                                 }
                             }
                         });
@@ -438,12 +424,13 @@ public class ChatActivity extends AppCompatActivity {
 
         @Override
         public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+            Log.d("ChatActivity", "start viewHolder");
+
             // messageType이 String 형식임을 주의!
             final MessageViewHolder messageViewHolder = (MessageViewHolder) holder;
             final Message message = messageList.get(position);
 
             setReadCounter(message, messageViewHolder.read_counter);
-
 
             if ("0".equals(message.getMessageType())) {
                 Log.d(TAG, "onBindViewHolder에 전달된 메시지 내용  " + message.getMessageContent());
@@ -502,7 +489,13 @@ public class ChatActivity extends AppCompatActivity {
 
             String day = dateFormatDay.format(message.getMessageTime());
             String timestamp = dateFormatHour.format(message.getMessageTime());
-            messageViewHolder.timestamp.setText(timestamp);
+
+            if(!timestamp.equals("")) {
+                messageViewHolder.timestamp.setText(timestamp);
+            } else {
+                timestamp = dateFormatHour.format(new Date(System.currentTimeMillis()));
+                messageViewHolder.timestamp.setText(timestamp);
+            }
 
             if (position == 0) {
                 messageViewHolder.divider_date.setText(day);
@@ -510,7 +503,9 @@ public class ChatActivity extends AppCompatActivity {
                 messageViewHolder.divider.getLayoutParams().height = 60;
             } else {
                 Message beforeMsg = messageList.get(position - 1);
-                String beforeDay = dateFormatDay.format(beforeMsg.getMessageTime());
+                if(beforeMsg.getMessageTime() != null) {
+                    beforeDay = dateFormatDay.format(beforeMsg.getMessageTime());
+                }
 
                 if (!day.equals(beforeDay) && beforeDay != null) {
                     messageViewHolder.divider_date.setText(day);
@@ -518,6 +513,8 @@ public class ChatActivity extends AppCompatActivity {
                     messageViewHolder.divider.getLayoutParams().height = 60;
                 }
             }
+
+            Log.d("ChatActivity", "end viewHolder");
         }
 
         void setReadCounter(Message message, final TextView textView) {

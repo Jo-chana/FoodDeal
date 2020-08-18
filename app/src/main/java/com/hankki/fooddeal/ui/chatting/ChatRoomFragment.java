@@ -175,6 +175,9 @@ public class ChatRoomFragment extends Fragment {
 
             roomViewHolder.last_time.setText(simpleDateFormat.format(chatRoomModel.getLastMessageTime()));
 
+            if(AmazonS3Util.transferUtility==null) {
+                AmazonS3Util.init(getContext());
+            }
             String url = AmazonS3Util.s3.getUrl("hankki-s3","profile/"+AES256Util.aesEncode(otherUser)).toString();
             Glide.with(getContext())
                     .load(url)
