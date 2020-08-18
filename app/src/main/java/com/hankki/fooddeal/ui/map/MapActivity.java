@@ -244,6 +244,21 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             return false;
         });
 
+        map.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+            @Override
+            public View getInfoWindow(Marker marker) {
+                return null;
+            }
+
+            @Override
+            public View getInfoContents(Marker marker) {
+                View view = getLayoutInflater().inflate(R.layout.marker_layout,null);
+                TextView textView = view.findViewById(R.id.tv_snippet_title);
+                textView.setText(marker.getTitle());
+                return view;
+            }
+        });
+
 //        map.setOnInfoWindowClickListener(marker -> {
 //            int index = markers.indexOf(marker);
 //            Intent intent = new Intent(MapActivity.this, Community_detail.class);

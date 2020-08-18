@@ -21,7 +21,7 @@
         android:paddingLeft="15dp"
         android:hint="댓글을 입력하세요."
         android:layout_width="0dp"
-        android:layout_height="40dp"
+        android:layout_height="50dp"
         app:layout_constraintWidth_percent="0.8"
         app:layout_constraintLeft_toRightOf="@id/iv_like"
         app:layout_constraintTop_toTopOf="parent"
