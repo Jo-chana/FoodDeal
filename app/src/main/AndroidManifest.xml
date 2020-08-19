@@ -2,17 +2,17 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.hankki.fooddeal">
 
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.SEND_SMS" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.CAMERA"/>
-    <uses-feature android:name="android.hardware.camera2"
-                    android:required="true"/> <!--    false-->
+    <uses-permission android:name="android.permission.CAMERA" />
 
-
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-feature
+        android:name="android.hardware.camera2"
+        android:required="true" /> <!-- false -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <application
         android:allowBackup="false"
@@ -22,7 +22,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".ui.mypage.MySettingActivity"></activity>
+        <activity android:name=".ui.grouppurchase.GroupPurchaseActivity"></activity>
+        <activity android:name=".ui.mypage.MySettingActivity" />
         <activity android:name=".ui.mypage.MyPostActivity" />
 
         <service
@@ -32,8 +33,8 @@
             android:name="com.amazonaws.mobileconnectors.s3.transferutility.TransferService"
             android:enabled="true" />
 
-        <activity android:name=".ui.register.PhoneAuthActivity"/>
-        <activity android:name=".ui.chatting.ChatActivity"/>
+        <activity android:name=".ui.register.PhoneAuthActivity" />
+        <activity android:name=".ui.chatting.ChatActivity" />
         <activity android:name=".ui.home.community.PostActivity" />
         <activity android:name=".ui.SplashActivity">
             <intent-filter>
@@ -42,12 +43,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity android:name=".ui.IntroActivity" />
         <activity android:name=".ui.MainActivity" />
         <activity android:name=".ui.home.community.Community_detail" />
         <activity android:name=".ui.login.LoginActivity" />
-        <activity android:name=".ui.register.RegisterActivity"/>
+        <activity android:name=".ui.register.RegisterActivity" />
         <activity android:name=".ui.address.AddressActivity" />
         <activity android:name=".ui.map.MapActivity" />
         <activity android:name=".ui.register.WebViewActivity" />
@@ -59,13 +59,12 @@
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths"></meta-data>
+                android:resource="@xml/file_paths" />
         </provider>
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyCFEIRFOY3kEbnRi0kMnKHEQn-w09-_d38"/>
-
+            android:value="AIzaSyCFEIRFOY3kEbnRi0kMnKHEQn-w09-_d38" />
     </application>
 
 </manifest>

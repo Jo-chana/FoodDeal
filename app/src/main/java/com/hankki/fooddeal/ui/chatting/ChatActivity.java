@@ -510,7 +510,7 @@ public class ChatActivity extends AppCompatActivity {
                 messageViewHolder.divider.getLayoutParams().height = 60;
             } else {
                 Message beforeMsg = messageList.get(position - 1);
-                String beforeDay = dateFormatDay.format(beforeMsg.getMessageTime());
+                String beforeDay = dateFormatDay.format(beforeMsg.getMessageTime());/*채팅 마구 칠 경우 Error Null Pointer Exception*/
 
                 if (!day.equals(beforeDay) && beforeDay != null) {
                     messageViewHolder.divider_date.setText(day);
