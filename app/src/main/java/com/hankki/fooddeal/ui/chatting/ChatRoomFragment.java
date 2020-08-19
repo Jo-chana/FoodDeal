@@ -193,7 +193,7 @@ public class ChatRoomFragment extends Fragment {
             roomViewHolder.room_image.setScaleType(ImageView.ScaleType.CENTER_CROP);
 
             if (chatRoomModel.getRoomUserList().size() > 2) {
-                roomViewHolder.room_count.setText(chatRoomModel.getRoomUserList().size());
+                roomViewHolder.room_count.setText(chatRoomModel.getRoomUserList().size()); // Error ClassNotFoundException
                 roomViewHolder.room_count.setVisibility(View.VISIBLE);
             } else {
                 roomViewHolder.room_count.setVisibility(View.INVISIBLE);

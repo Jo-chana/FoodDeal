@@ -3,6 +3,7 @@ package com.hankki.fooddeal.image;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
+import android.media.ExifInterface;
 import android.os.Build;
 import android.util.Log;
 
@@ -51,7 +52,7 @@ public class ImageUtil {
 
     public static Bitmap rotateBitmap(String src, Bitmap bitmap) {
         try {
-            int orientation = getExifOrientation(src);
+            int orientation = getExifOrientation2(src);
             if (orientation == 1) {
                 return bitmap;
             }
@@ -118,6 +119,12 @@ public class ImageUtil {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return orientation;
+    }
+
+    private static int getExifOrientation2(String src) throws IOException {
+        ExifInterface exif = new ExifInterface(src);
+        int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION,1);
         return orientation;
     }
 }

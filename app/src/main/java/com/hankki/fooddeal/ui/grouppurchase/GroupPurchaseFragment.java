@@ -1,5 +1,6 @@
 package com.hankki.fooddeal.ui.grouppurchase;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -68,7 +69,7 @@ public class GroupPurchaseFragment extends Fragment {
     }
 
     public void setChipView(){
-        cv_all.setOnClickListener(v -> {
+        cv_all.setOnClickListener(v -> { // 모든 딜
             fl_all.setBackgroundResource(R.drawable.cardview_selector_2);
             tv_all.setTextColor(getResources().getColor(R.color.original_white));
             fl_join.setBackgroundResource(R.drawable.cardview_selector);
@@ -76,7 +77,7 @@ public class GroupPurchaseFragment extends Fragment {
             fl_my.setBackgroundResource(R.drawable.cardview_selector);
             tv_my.setTextColor(getResources().getColor(R.color.original_black));
         });
-        cv_join.setOnClickListener(v -> {
+        cv_join.setOnClickListener(v -> { // 내가 참여한 딜
             fl_join.setBackgroundResource(R.drawable.cardview_selector_2);
             tv_join.setTextColor(getResources().getColor(R.color.original_white));
             fl_all.setBackgroundResource(R.drawable.cardview_selector);
@@ -84,13 +85,19 @@ public class GroupPurchaseFragment extends Fragment {
             fl_my.setBackgroundResource(R.drawable.cardview_selector);
             tv_my.setTextColor(getResources().getColor(R.color.original_black));
         });
-        cv_my.setOnClickListener(v -> {
+        cv_my.setOnClickListener(v -> { // 내가 개설한 딜
             fl_my.setBackgroundResource(R.drawable.cardview_selector_2);
             tv_my.setTextColor(getResources().getColor(R.color.original_white));
             fl_join.setBackgroundResource(R.drawable.cardview_selector);
             tv_join.setTextColor(getResources().getColor(R.color.original_black));
             fl_all.setBackgroundResource(R.drawable.cardview_selector);
             tv_all.setTextColor(getResources().getColor(R.color.original_black));
+        });
+
+        cv_write.setOnClickListener(v -> {
+            // 공동 구매 개설
+            Intent intent = new Intent(getContext(),GroupPurchaseActivity.class);
+            startActivity(intent);
         });
     }
 
