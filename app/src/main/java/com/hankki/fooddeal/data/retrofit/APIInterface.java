@@ -57,20 +57,12 @@ public interface APIInterface {
     Call<MemberResponse> boardWrite(@Body HashMap<String, String> body);
 
     @Headers("Content-Type: application/json")
-    @POST("board/address/search")
-    Call<BoardListResponse> boardSearch(@Body HashMap<String, String> body);
-
-    @Headers("Content-Type: application/json")
-    @PATCH("board/revise")
+    @POST("board/revise")
     Call<MemberResponse> boardRevise(@Body HashMap<String, String> body);
 
     @Headers("Content-Type: application/json")
-    @POST("board/comment/write")
-    Call<MemberResponse> commentWrite(@Body HashMap<String, String> body);
-
-    @Headers("Content-Type: application/json")
-    @PATCH("board/comment/revise")
-    Call<MemberResponse> commentRevise(@Body HashMap<String, String> body);
+    @POST("board/delete")
+    Call<MemberResponse> boardDelete(@Body HashMap<String,String> body);
 
     @Headers("Content-Type: application/json")
     @GET("board/list")
@@ -80,23 +72,31 @@ public interface APIInterface {
                                          @Query("BOARD_CODE_SORT")String boardCode);
 
     @Headers("Content-Type: application/json")
+    @POST("board/address/search")
+    Call<BoardListResponse> boardSearch(@Body HashMap<String, String> body);
+
+    @Headers("Content-Type: application/json")
+    @POST("board/comment/write")
+    Call<MemberResponse> commentWrite(@Body HashMap<String, String> body);
+
+    @Headers("Content-Type: application/json")
+    @POST("board/comment/revise")
+    Call<MemberResponse> commentRevise(@Body HashMap<String, String> body);
+
+    @Headers("Content-Type: application/json")
+    @POST("board/comment/delete")
+    Call<MemberResponse> commentDelete(@Body HashMap<String, String> body);
+
+    @Headers("Content-Type: application/json")
     @GET("board/comment/list")
     Call<CommentListResponse> getBoardCommentList(@Query("BOARD_SEQ")int boardSeq);
-
-    @Headers("Content-Type: application/json")
-    @PATCH("board/delete")
-    Call<MemberResponse> boardDelete(@Body HashMap<String,String> body);
-
-    @Headers("Content-Type: application/json")
-    @PATCH("board/comment/delete")
-    Call<MemberResponse> commentDelete(@Body HashMap<String, String> body);
 
     @Headers("Content-Type: application/json")
     @POST("board/like/plus")
     Call<MemberResponse> boardLikePlus(@Body HashMap<String, String> body);
 
     @Headers("Content-Type: application/json")
-    @PATCH("board/like/minus")
+    @POST("board/like/minus")
     Call<MemberResponse> boardLikeMinus(@Body HashMap<String, String> body);
 
     @Headers("Content-Type: application/json")
