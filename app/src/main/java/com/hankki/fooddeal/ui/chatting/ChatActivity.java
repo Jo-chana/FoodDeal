@@ -334,7 +334,7 @@ public class ChatActivity extends AppCompatActivity {
                         @Override
                         public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
                             if (error != null) {
-                                Toast.makeText(getApplicationContext(), "check query indexing!", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getApplicationContext(), error.toString(), Toast.LENGTH_SHORT).show();
                                 return;
                             }
                             if (value.getMetadata().isFromCache()) {

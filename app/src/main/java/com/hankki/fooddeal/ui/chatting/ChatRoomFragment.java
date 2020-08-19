@@ -123,7 +123,10 @@ public class ChatRoomFragment extends Fragment {
                     .orderBy("lastMessageTime", Query.Direction.DESCENDING)
                     .addSnapshotListener((value, error) -> {
                         // 여기서 다이얼로그 팝업
-                        if (error != null) return;
+                        if (error != null) {
+                            Toast.makeText(getContext(), error.toString(), Toast.LENGTH_SHORT).show();
+                            return;
+                        }
 
                         roomList.clear();
                         for (final QueryDocumentSnapshot queryDocumentSnapshot : value) {
