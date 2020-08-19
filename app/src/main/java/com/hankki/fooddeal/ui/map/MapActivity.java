@@ -235,7 +235,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }
         map.setOnMarkerClickListener(marker -> {
             if(marker.getTitle().equals("현재 위치"))
-                return false;
+                return true;
             LatLng position = marker.getPosition();
             String key = position.latitude + " " + position.longitude;
             ArrayList<PostItem> items = placeMap.get(key);
