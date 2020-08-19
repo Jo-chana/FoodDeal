@@ -16,26 +16,16 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.hankki.fooddeal.R;
 import com.hankki.fooddeal.data.PostItem;
-import com.hankki.fooddeal.data.PreferenceManager;
 import com.hankki.fooddeal.data.retrofit.BoardController;
 import com.hankki.fooddeal.ui.MainActivity;
-import com.hankki.fooddeal.ui.address.AddressActivity;
-import com.hankki.fooddeal.ux.dialog.CustomAnimationDialog;
-import com.hankki.fooddeal.ux.recyclerview.AddressAdapter;
 import com.hankki.fooddeal.ux.recyclerview.SetRecyclerViewOption;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.Callable;
 
@@ -44,8 +34,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
-import okhttp3.ResponseBody;
-import retrofit2.Call;
 
 
 public class ExchangeAndShare extends Fragment {
