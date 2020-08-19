@@ -123,7 +123,10 @@ public class ChatRoomFragment extends Fragment {
                     .orderBy("lastMessageTime", Query.Direction.DESCENDING)
                     .addSnapshotListener((value, error) -> {
                         // 여기서 다이얼로그 팝업
-                        if (error != null) return;
+                        if (error != null) {
+                            Toast.makeText(getContext(), error.toString(), Toast.LENGTH_SHORT).show();
+                            return;
+                        }
 
                         roomList.clear();
                         for (final QueryDocumentSnapshot queryDocumentSnapshot : value) {
@@ -175,6 +178,9 @@ public class ChatRoomFragment extends Fragment {
 
             roomViewHolder.last_time.setText(simpleDateFormat.format(chatRoomModel.getLastMessageTime()));
 
+            if(AmazonS3Util.transferUtility==null) {
+                AmazonS3Util.init(getContext());
+            }
             String url = AmazonS3Util.s3.getUrl("hankki-s3","profile/"+AES256Util.aesEncode(otherUser)).toString();
             Glide.with(getContext())
                     .load(url)
