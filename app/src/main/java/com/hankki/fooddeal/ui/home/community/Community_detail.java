@@ -202,7 +202,7 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
 
             // id에 글 등록 시간과 유저리스트가 포함되어 있기 때문에 나중에 해당 게시글의 채팅 참여하기 버튼으로 해당 채팅방 접근 가능
             String newRoomTitle = mPost.getBoardTitle();
-            String roomId = HashMsgUtil.getSHARoomID(mPost.getInsertDate(), newRoomTitle);
+            String roomId = HashMsgUtil.getSHARoomID(mPost.getInsertDate(), newRoomTitle, roomUserList);
 
             DocumentReference docRef = FirebaseFirestore.getInstance().collection("rooms").document(roomId);
             docRef
