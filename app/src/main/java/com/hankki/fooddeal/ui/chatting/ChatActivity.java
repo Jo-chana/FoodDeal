@@ -118,7 +118,6 @@ public class ChatActivity extends AppCompatActivity {
         uid = AES256Util.aesDecode(FirebaseAuth.getInstance().getCurrentUser().getUid());
         firestore = FirebaseFirestore.getInstance();
 
-        userList.remove(uid);
         for(int i=0;i<userList.size();i++) {
             otherUserPhotoUrl = AmazonS3Util
                     .s3
@@ -217,7 +216,6 @@ public class ChatActivity extends AppCompatActivity {
                                 unreadUserCountMap.put(key, unreadUserCountMap.get(key) + 1);
                         }
 
-                        if(!userList.contains(uid)) userList.add(uid);
                         final Map<String, Object> rooms = new HashMap<>();
                         rooms.put("lastMessageContent", msg);
                         rooms.put("lastMessageTime", FieldValue.serverTimestamp());

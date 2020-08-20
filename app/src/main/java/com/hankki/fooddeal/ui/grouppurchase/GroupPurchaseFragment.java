@@ -24,6 +24,9 @@ import com.hankki.fooddeal.ux.recyclerview.PurchaseAdapter;
 import java.util.ArrayList;
 
 /**공동구매 화면*/
+/* 이현준
+TODO 새로운 공동 구매자 추가 시, 채팅방의 userList에 새로운 사람을 추가해주기만 하면 됨(ChatRoomModel을 그대로 가져와서 userList와 unreadUserMap 수정해서 Merge)
+*/
 public class GroupPurchaseFragment extends Fragment {
 
     TextView tv_location, tv_all, tv_join, tv_my;

@@ -60,7 +60,6 @@ public class BoardController {
                                 Log.d("getBoardList", "line 77");
                                 postItems.add(0, item);
                                 Log.d("getBoardList", "line 78");
-                                Log.d("Timecheck", "Call End");
                             } catch (Exception e){
                                 e.printStackTrace();
                             }
@@ -69,6 +68,7 @@ public class BoardController {
                         Log.d("getBoardList",e.getMessage());
                         e.printStackTrace();
                     }
+                    Log.d("Timecheck", "Call End");
                     return postItems;
                 }
 
