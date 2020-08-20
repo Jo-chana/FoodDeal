@@ -313,7 +313,6 @@ public class ChatActivity extends AppCompatActivity {
         String beforeDay = null;
         MessageViewHolder beforeViewHolder;
 
-        // TODO 이걸 어댑터에서 추가를 해줬기 때문에 어뎁터의 내용이 바뀔때마다 setUnreadToRead가 실행되서 내가 채팅방을 보고있을때 안 읽은 사람 수가 실시간으로 바뀌지 않을까 싶은데 테스트 필요
         RecyclerViewAdapter() {
             messageList = new ArrayList<Message>();
             setUnreadtoRead();
@@ -363,7 +362,8 @@ public class ChatActivity extends AppCompatActivity {
                                         messageList.set(change.getOldIndex(), message);
                                         notifyItemChanged(change.getOldIndex());
                                         Log.d("ChatActivity", "mod  " + message.getMessageContent());
-//                                        setUnreadtoRead();
+                                        // TODO 같은 내용으로 modified 되는 메시지들이 있는데 이때마다 setUnreadtoRead가 실행되기 때문에 이 횟수를 줄이는 방법 생각해야함
+                                        setUnreadtoRead();
                                         notifyDataSetChanged();
                                         break;
                                     case REMOVED:
@@ -372,7 +372,7 @@ public class ChatActivity extends AppCompatActivity {
                                         break;
                                 }
                                 recyclerView.scrollToPosition(messageList.size() - 1);
-                                setUnreadtoRead();
+//                                setUnreadtoRead();
                             }
                         }
                     });
