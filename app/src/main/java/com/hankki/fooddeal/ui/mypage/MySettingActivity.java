@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
@@ -13,6 +14,7 @@ import android.widget.TextView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.hankki.fooddeal.R;
 import com.hankki.fooddeal.data.PreferenceManager;
+import com.hankki.fooddeal.ui.login.LoginActivity;
 
 import java.util.Objects;
 
@@ -40,15 +42,38 @@ public class MySettingActivity extends AppCompatActivity {
 
         iv_logout = findViewById(R.id.iv_logout);
         tv_logout = findViewById(R.id.tv_logout);
+        if(FirebaseAuth.getInstance().getCurrentUser()==null){
+            tv_logout.setText("로그인");
+            tv_logout.setOnClickListener(login);
+            iv_logout.setOnClickListener(login);
+        } else {
+            tv_logout.setOnClickListener(logout);
+            iv_logout.setOnClickListener(logout);
+        }
         iv_bye_bye = findViewById(R.id.iv_bye_bye);
         tv_bye_bye = findViewById(R.id.tv_sign_out);
 
-        iv_logout.setOnClickListener(logout);
-        tv_logout.setOnClickListener(logout);
+
 
         iv_bye_bye.setOnClickListener(signOut);
         tv_bye_bye.setOnClickListener(signOut);
     }
+
+    View.OnClickListener login = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+            builder.setMessage("로그인 하시겠습니까?");
+            builder.setPositiveButton("확인", (dialog, which) -> {
+                Intent intent = new Intent(MySettingActivity.this, LoginActivity.class);
+                startActivity(intent);
+                finishAffinity();
+            }).setNegativeButton("취소", (dialog, which) -> {
+            });
+            AlertDialog alertDialog = builder.create();
+            alertDialog.show();
+        }
+    };
 
     View.OnClickListener logout = new View.OnClickListener() {
         @Override

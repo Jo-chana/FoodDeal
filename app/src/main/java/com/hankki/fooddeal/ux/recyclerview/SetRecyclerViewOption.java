@@ -84,11 +84,15 @@ public class SetRecyclerViewOption {
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 if (dy > 0 && cv.getVisibility() == View.VISIBLE) {
-                    cv.setAnimation(AnimationUtils.loadAnimation(context, R.anim.fade_out));
-                    cv.setVisibility(View.INVISIBLE);
+                    if(cv.getVisibility()!=View.GONE) {
+                        cv.setAnimation(AnimationUtils.loadAnimation(context, R.anim.fade_out));
+                        cv.setVisibility(View.INVISIBLE);
+                    }
                 } else if (dy < 0 && cv.getVisibility() != View.VISIBLE) {
-                    cv.startAnimation(AnimationUtils.loadAnimation(context, R.anim.fade_in));
-                    cv.setVisibility(View.VISIBLE);
+                    if(cv.getVisibility()!=View.GONE) {
+                        cv.startAnimation(AnimationUtils.loadAnimation(context, R.anim.fade_in));
+                        cv.setVisibility(View.VISIBLE);
+                    }
                 }
 //                if(dy > 0 && homeFragment.getPanelState()== SlidingUpPanelLayout.PanelState.EXPANDED)
 //                    homeFragment.panelCollapse();

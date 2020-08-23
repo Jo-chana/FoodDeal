@@ -61,7 +61,7 @@ public interface APIInterface {
     Call<BoardListResponse> boardSearch(@Body HashMap<String, String> body);
 
     @Headers("Content-Type: application/json")
-    @PATCH("board/revise")
+    @POST("board/revise")
     Call<MemberResponse> boardRevise(@Body HashMap<String, String> body);
 
     @Headers("Content-Type: application/json")
@@ -69,7 +69,7 @@ public interface APIInterface {
     Call<MemberResponse> commentWrite(@Body HashMap<String, String> body);
 
     @Headers("Content-Type: application/json")
-    @PATCH("board/comment/revise")
+    @POST("board/comment/revise")
     Call<MemberResponse> commentRevise(@Body HashMap<String, String> body);
 
     @Headers("Content-Type: application/json")
@@ -84,11 +84,11 @@ public interface APIInterface {
     Call<CommentListResponse> getBoardCommentList(@Query("BOARD_SEQ")int boardSeq);
 
     @Headers("Content-Type: application/json")
-    @PATCH("board/delete")
+    @POST("board/delete")
     Call<MemberResponse> boardDelete(@Body HashMap<String,String> body);
 
     @Headers("Content-Type: application/json")
-    @PATCH("board/comment/delete")
+    @POST("board/comment/delete")
     Call<MemberResponse> commentDelete(@Body HashMap<String, String> body);
 
     @Headers("Content-Type: application/json")
@@ -96,7 +96,7 @@ public interface APIInterface {
     Call<MemberResponse> boardLikePlus(@Body HashMap<String, String> body);
 
     @Headers("Content-Type: application/json")
-    @PATCH("board/like/minus")
+    @POST("board/like/minus")
     Call<MemberResponse> boardLikeMinus(@Body HashMap<String, String> body);
 
     @Headers("Content-Type: application/json")

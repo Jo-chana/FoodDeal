@@ -1,7 +1,6 @@
 package com.hankki.fooddeal.ui.map;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
@@ -12,7 +11,6 @@ import android.view.WindowManager;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -31,8 +29,6 @@ import com.hankki.fooddeal.R;
 import com.hankki.fooddeal.data.PostItem;
 import com.hankki.fooddeal.data.PreferenceManager;
 import com.hankki.fooddeal.data.security.AES256Util;
-import com.hankki.fooddeal.ui.home.community.Community_detail;
-import com.hankki.fooddeal.ui.home.community.PostActivity;
 import com.hankki.fooddeal.ux.recyclerview.PostAdapter;
 import com.hankki.fooddeal.ux.snaphelper.SnapHelperOneByOne;
 
@@ -53,7 +49,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     int filterDistance = 1000;
     int zoom = 14;
     Context mContext;
-    LatLng currentPostion;
+    LatLng currentPosition;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -145,7 +141,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         double latitude = Double.parseDouble(AES256Util.aesDecode(PreferenceManager.getString(getApplicationContext(), "Latitude")));
         double longitude = Double.parseDouble(AES256Util.aesDecode(PreferenceManager.getString(getApplicationContext(), "Longitude")));
 
-        currentPostion = new LatLng(latitude, longitude);setMarkerOption(zoom);
+        currentPosition = new LatLng(latitude, longitude);setMarkerOption(zoom);
         setMarkerOption(zoom);
     }
 
@@ -153,7 +149,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         map.clear();
         markers.clear();
         MarkerOptions markerOptions = new MarkerOptions();
-        markerOptions.position(currentPostion);
+        markerOptions.position(currentPosition);
         markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_icon_current));
         markerOptions.title("현재 위치");
         markerOptions.anchor((float)0.5,(float)0.5);
@@ -163,9 +159,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         map.addMarker(markerOptions);
 
 
-
-//        postItems.addAll(BoardController.getBoardList(mContext, "INGREDIENT EXCHANGE"));
-//        postItems.addAll(BoardController.getBoardList(mContext,"INGREDIENT SHARE"));
         HashMap<String, ArrayList<PostItem>> placeMap = new HashMap<>();
         ArrayList<String> placeKey = new ArrayList<>();
         for (PostItem postItem : mapItems) {
@@ -270,8 +263,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 //            startActivity(intent);
 //        });
 
-        map.animateCamera(CameraUpdateFactory.newLatLngZoom(currentPostion, zoom));
-        CircleOptions circle1KM = new CircleOptions().center(currentPostion) // 원점
+        map.animateCamera(CameraUpdateFactory.newLatLngZoom(currentPosition, zoom));
+        CircleOptions circle1KM = new CircleOptions().center(currentPosition) // 원점
                 .radius(filterDistance)      // 반지름 단위 : m
                 .strokeWidth(0f)  // 선너비 0f : 선없음
                 .fillColor(Color.parseColor("#88ffb5c5")); // 배경색
