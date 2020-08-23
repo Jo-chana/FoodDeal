@@ -57,23 +57,12 @@ public interface APIInterface {
     Call<MemberResponse> boardWrite(@Body HashMap<String, String> body);
 
     @Headers("Content-Type: application/json")
-    @POST("board/revise")
-    Call<MemberResponse> boardRevise(@Body HashMap<String, String> body);
-
-    @Headers("Content-Type: application/json")
-    @POST("board/delete")
-    Call<MemberResponse> boardDelete(@Body HashMap<String,String> body);
-
-    @Headers("Content-Type: application/json")
-    @GET("board/list")
-    Call<BoardListResponse> getBoardList(@Query("REGION_1DEPTH_NAME") String regionFirst,
-                                         @Query("REGION_2DEPTH_NAME") String regionSecond,
-                                         @Query("REGION_3DEPTH_NAME") String regionThird,
-                                         @Query("BOARD_CODE_SORT")String boardCode);
-
-    @Headers("Content-Type: application/json")
     @POST("board/address/search")
     Call<BoardListResponse> boardSearch(@Body HashMap<String, String> body);
+
+    @Headers("Content-Type: application/json")
+    @POST("board/revise")
+    Call<MemberResponse> boardRevise(@Body HashMap<String, String> body);
 
     @Headers("Content-Type: application/json")
     @POST("board/comment/write")
@@ -84,12 +73,23 @@ public interface APIInterface {
     Call<MemberResponse> commentRevise(@Body HashMap<String, String> body);
 
     @Headers("Content-Type: application/json")
-    @POST("board/comment/delete")
-    Call<MemberResponse> commentDelete(@Body HashMap<String, String> body);
+    @GET("board/list")
+    Call<BoardListResponse> getBoardList(@Query("REGION_1DEPTH_NAME") String regionFirst,
+                                         @Query("REGION_2DEPTH_NAME") String regionSecond,
+                                         @Query("REGION_3DEPTH_NAME") String regionThird,
+                                         @Query("BOARD_CODE_SORT")String boardCode);
 
     @Headers("Content-Type: application/json")
     @GET("board/comment/list")
     Call<CommentListResponse> getBoardCommentList(@Query("BOARD_SEQ")int boardSeq);
+
+    @Headers("Content-Type: application/json")
+    @POST("board/delete")
+    Call<MemberResponse> boardDelete(@Body HashMap<String,String> body);
+
+    @Headers("Content-Type: application/json")
+    @POST("board/comment/delete")
+    Call<MemberResponse> commentDelete(@Body HashMap<String, String> body);
 
     @Headers("Content-Type: application/json")
     @POST("board/like/plus")

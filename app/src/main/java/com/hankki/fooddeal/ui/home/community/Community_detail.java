@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.OvalShape;
 import android.os.Bundle;
@@ -136,19 +137,23 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
             tag = intent.getStringExtra("Tag");
             mPost = intent.getParcelableExtra("item");
         }
-        try {
-            FirebaseAuth.getInstance().getCurrentUser().getUid();
-            uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        } catch (Exception e) {
+
+        if(FirebaseAuth.getInstance().getCurrentUser()!=null) {
+            try {
+                FirebaseAuth.getInstance().getCurrentUser().getUid();
+                uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+            } catch (Exception e) {
+                uid = "";
+            }
+        } else {
             uid = "";
         }
 
         switch (page) {
             case 0:
                 setContentView(R.layout.post_exchange_share);
-                setPostCommon();
+                setPostCommon(); // Guest 일 때 이 함수가 너무 오래 걸림
                 setExchangeSharePostDetail();
-
                 SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                         .findFragmentById(R.id.map_post);
                 mapFragment.getMapAsync(this);
@@ -338,10 +343,13 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
         CheckBox iv_like = bottomToolbar.findViewById(R.id.iv_like);
         /*내가 이미 찜한 게시글이면, iv_like 는 체크 상태 코드 추가
           if (mPost.isLiked == true) { iv_like.setChecked(true) }*/
-        if (BoardController.isLikedBoard(mContext, mPost)) {
-            iv_like.setChecked(true);
+        Log.d("timecheck","2");
+        if(!uid.equals("")) {
+            if (BoardController.isLikedBoard(mContext, mPost)) {
+                iv_like.setChecked(true);
+            }
         }
-
+        Log.d("timecheck","3");
         iv_like.setOnClickListener(v -> {
             /*유저가 기존에 찜한 게시글이 아닐 경우*/
             if (!(iv_like.isChecked())) {
@@ -360,7 +368,6 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
                 }
             }
         });
-
         post_common = findViewById(R.id.post_common);
 
         profile = post_common.findViewById(R.id.iv_user_profile);
@@ -645,7 +652,11 @@ public class Community_detail extends AppCompatActivity implements OnMapReadyCal
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.position(latlng);
 
-        markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_icon_home));
+        BitmapDrawable bitmapDrawable = (BitmapDrawable) getResources().getDrawable(R.drawable.ic_icon_home);
+        Bitmap bitmap = bitmapDrawable.getBitmap();
+        Bitmap markerIcon = Bitmap.createScaledBitmap(bitmap,64,64,false);
+//        markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_icon_home));
+        markerOptions.icon(BitmapDescriptorFactory.fromBitmap(markerIcon));
         markerOptions.anchor((float)0.5,(float)0.5);
 
         mapPost.addMarker(markerOptions);

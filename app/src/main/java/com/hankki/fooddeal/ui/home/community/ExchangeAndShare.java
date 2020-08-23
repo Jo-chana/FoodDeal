@@ -102,8 +102,7 @@ public class ExchangeAndShare extends Fragment {
         recyclerView = view.findViewById(R.id.rv_exchange);
         cv_postWrite = view.findViewById(R.id.cv_post);
         if(FirebaseAuth.getInstance().getCurrentUser()==null) {
-            cv_postWrite.setClickable(false);
-            cv_postWrite.setVisibility(View.INVISIBLE);
+            cv_postWrite.setVisibility(View.GONE);
         }
         setRecyclerViewOption = new SetRecyclerViewOption(recyclerView, cv_postWrite,view,getContext(),R.layout.community_item);
         setRecyclerViewOption.setPostItems(postItems);

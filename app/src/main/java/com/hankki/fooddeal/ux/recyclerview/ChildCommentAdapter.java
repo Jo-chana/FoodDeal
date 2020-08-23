@@ -56,7 +56,7 @@ public class ChildCommentAdapter extends RecyclerView.Adapter<CommentViewHolder>
                 .into(holder.iv_profile);
 
 
-        if(!item.getUserHashId().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())){
+        if(FirebaseAuth.getInstance().getCurrentUser()!=null&&!item.getUserHashId().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())){
             holder.tv_btn_delete.setVisibility(View.GONE);
         } else {
             holder.tv_btn_delete.setOnClickListener(v -> {
