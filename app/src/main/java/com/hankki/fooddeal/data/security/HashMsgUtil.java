@@ -2,6 +2,7 @@ package com.hankki.fooddeal.data.security;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -24,10 +25,12 @@ public class HashMsgUtil {
         return SHA;
     }
 
-    public static String getSHARoomID(String insertDate, String roomTitle) {
+    public static String getSHARoomID(String insertDate, String roomTitle, ArrayList<String> userList) {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(insertDate);
         stringBuilder.append(roomTitle);
+
+        for(int i=0;i<userList.size();i++) stringBuilder.append(userList.get(i));
 
         return getSHA256(stringBuilder.toString());
     }

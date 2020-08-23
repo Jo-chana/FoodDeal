@@ -2,20 +2,9 @@ package com.hankki.fooddeal.data.retrofit;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.google.android.gms.tasks.Task;
-import com.google.android.gms.tasks.Tasks;
-import com.google.common.base.Ascii;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 import com.hankki.fooddeal.amazon.AmazonS3Util;
 import com.hankki.fooddeal.data.CommentItem;
 import com.hankki.fooddeal.data.PostItem;
@@ -23,7 +12,6 @@ import com.hankki.fooddeal.data.PreferenceManager;
 import com.hankki.fooddeal.data.retrofit.retrofitDTO.BoardListResponse;
 import com.hankki.fooddeal.data.retrofit.retrofitDTO.CommentListResponse;
 import com.hankki.fooddeal.data.retrofit.retrofitDTO.MemberResponse;
-import com.hankki.fooddeal.ux.dialog.CustomAnimationDialog;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -32,17 +20,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
 import java.util.TimeZone;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 
-import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
 import retrofit2.Call;
-import retrofit2.http.Url;
 
 public class BoardController {
     public static APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
@@ -80,7 +60,6 @@ public class BoardController {
                                 Log.d("getBoardList", "line 77");
                                 postItems.add(0, item);
                                 Log.d("getBoardList", "line 78");
-                                Log.d("Timecheck", "Call End");
                             } catch (Exception e){
                                 e.printStackTrace();
                             }
@@ -89,6 +68,7 @@ public class BoardController {
                         Log.d("getBoardList",e.getMessage());
                         e.printStackTrace();
                     }
+                    Log.d("Timecheck", "Call End");
                     return postItems;
                 }
 
