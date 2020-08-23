@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -36,7 +37,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostViewHolder> {
     @Override
     public int getItemViewType(int position) {
         PostItem item = postItems.get(position);
-        if(item.getImgCount()==0){
+        if (item.getImgCount() == 0) {
             return 0;
         } else {
             return 1;
@@ -58,10 +59,10 @@ public class PostAdapter extends RecyclerView.Adapter<PostViewHolder> {
     public PostViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
         View baseView;
-        if(viewType==1) {
+        if (viewType == 1) {
             baseView = View.inflate(mContext, layout, null);
         } else {
-            baseView = View.inflate(mContext,R.layout.community_item2,null);
+            baseView = View.inflate(mContext, R.layout.community_item2, null);
         }
         postViewHolder = new PostViewHolder(baseView);
 
@@ -110,7 +111,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostViewHolder> {
     public void setCommunityItem(PostViewHolder holder, PostItem item) {
 
         holder.mTitle.setText(item.getBoardTitle()); // 수정해야 함! 테스트용
-        if(item.getDistance()<=10){
+        if (item.getDistance() <= 10) {
             holder.mUserLocation.setText("근처");
         } else {
             holder.mUserLocation.setText(item.getDistance() + "m");
@@ -118,7 +119,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostViewHolder> {
         holder.mTime.setText(item.getRelativeTime());
 
         // 썸네일로 쓸 내용이 있으면 표시 없으면 빈 값
-        if (holder.getItemViewType()==1) {
+        if (holder.getItemViewType() == 1) {
             holder.mImage = holder.itemView.findViewById(R.id.iv_post_image);
             Glide
                     .with(mContext)
@@ -142,30 +143,28 @@ public class PostAdapter extends RecyclerView.Adapter<PostViewHolder> {
             }
         } else { // 레시피 자유
             int like = item.getLikeCount();
-            if (item.getCommentCount() > 0) {
-                int comment = item.getCommentCount();
+            int comment = item.getCommentCount();
 
-                if (like == 0 && comment == 0) { // 둘다 0
-                    holder.iv_like.setImageBitmap(null);
-                    holder.tv_like.setText(null);
-                    holder.iv_comment.setImageBitmap(null);
-                    holder.tv_comment.setText(null);
-                } else if (like == 0) { // like 만 0
-                    holder.iv_like.setImageBitmap(null);
-                    holder.tv_like.setText(null);
-                    holder.iv_comment.setImageResource(R.drawable.ic_icon_chat);
-                    holder.tv_comment.setText(String.valueOf(comment));
-                } else if (comment == 0) { // comment 만 0
-                    holder.iv_like.setImageBitmap(null);
-                    holder.tv_like.setText(null);
-                    holder.iv_comment.setImageResource(R.drawable.ic_icon_heart_off);
-                    holder.tv_comment.setText(String.valueOf(like));
-                } else { // 둘다 양수
-                    holder.iv_comment.setImageResource(R.drawable.ic_icon_chat);
-                    holder.tv_comment.setText(String.valueOf(comment));
-                    holder.iv_like.setImageResource(R.drawable.ic_icon_heart_off);
-                    holder.tv_like.setText(String.valueOf(like));
-                }
+            if (like == 0 && comment == 0) { // 둘다 0
+                holder.iv_like.setImageBitmap(null);
+                holder.tv_like.setText(null);
+                holder.iv_comment.setImageBitmap(null);
+                holder.tv_comment.setText(null);
+            } else if (like == 0) { // like 만 0
+                holder.iv_like.setImageBitmap(null);
+                holder.tv_like.setText(null);
+                holder.iv_comment.setImageResource(R.drawable.ic_icon_chat);
+                holder.tv_comment.setText(String.valueOf(comment));
+            } else if (comment == 0) { // comment 만 0
+                holder.iv_like.setImageBitmap(null);
+                holder.tv_like.setText(null);
+                holder.iv_comment.setImageResource(R.drawable.ic_icon_heart_off);
+                holder.tv_comment.setText(String.valueOf(like));
+            } else { // 둘다 양수
+                holder.iv_comment.setImageResource(R.drawable.ic_icon_chat);
+                holder.tv_comment.setText(String.valueOf(comment));
+                holder.iv_like.setImageResource(R.drawable.ic_icon_heart_off);
+                holder.tv_like.setText(String.valueOf(like));
             }
         }
     }

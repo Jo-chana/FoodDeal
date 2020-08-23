@@ -135,6 +135,7 @@ public class BoardController {
                     boolean finalComplete = false;
                     try {
                         MemberResponse response = boardWrite.execute().body();
+                        Log.d("BoardController", response.getResponseMsg());
                         if (response != null && response.getResponseCode() == 400) {
                             finalComplete = true;
                         }
