@@ -14,6 +14,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.slidingpanelayout.widget.SlidingPaneLayout;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -31,6 +32,7 @@ import com.hankki.fooddeal.data.PreferenceManager;
 import com.hankki.fooddeal.data.security.AES256Util;
 import com.hankki.fooddeal.ux.recyclerview.PostAdapter;
 import com.hankki.fooddeal.ux.snaphelper.SnapHelperOneByOne;
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -43,7 +45,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private ArrayList<PostItem> mapItems = new ArrayList<>();
     private ArrayList<Marker> markers = new ArrayList<>();
     RecyclerView rv_map;
-    SnapHelperOneByOne snapHelperOneByOne;
+    SlidingUpPanelLayout SlidingUpPanelLayout;
     VerticalSeekBar seekBar;
     TextView tv_100, tv_200, tv_400, tv_all;
     int filterDistance = 1000;
@@ -130,8 +132,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         seekBar.bringToFront();
         seekBar.setMax(300);
         rv_map = findViewById(R.id.rv_map);
-        snapHelperOneByOne = new SnapHelperOneByOne();
-        snapHelperOneByOne.attachToRecyclerView(rv_map);
+        SlidingUpPanelLayout = findViewById(R.id.map_panel);
     }
 
     @Override
@@ -233,9 +234,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             String key = position.latitude + " " + position.longitude;
             ArrayList<PostItem> items = placeMap.get(key);
             PostAdapter adapter = new PostAdapter(this,items,R.layout.community_item3);
-            rv_map.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,false));
+            rv_map.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false));
             rv_map.setAdapter(adapter);
-            rv_map.setVisibility(View.VISIBLE);
+            SlidingUpPanelLayout.setPanelState(com.sothree.slidinguppanel.SlidingUpPanelLayout.PanelState.EXPANDED);
             return false;
         });
 
