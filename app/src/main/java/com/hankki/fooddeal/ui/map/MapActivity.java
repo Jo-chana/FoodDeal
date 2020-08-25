@@ -1,12 +1,18 @@
 package com.hankki.fooddeal.ui.map;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -43,15 +49,15 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private GoogleMap map;
     private ArrayList<PostItem> postItems = new ArrayList<>();
     private ArrayList<PostItem> mapItems = new ArrayList<>();
-    private ArrayList<Marker> markers = new ArrayList<>();
     RecyclerView rv_map;
     SlidingUpPanelLayout SlidingUpPanelLayout;
     VerticalSeekBar seekBar;
-    TextView tv_100, tv_200, tv_400, tv_all;
+    TextView tv_100, tv_200, tv_400, tv_all, tv_marker;
     int filterDistance = 1000;
     int zoom = 14;
     Context mContext;
     LatLng currentPosition;
+    View markerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +71,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
+
+        markerView = LayoutInflater.from(this).inflate(R.layout.layout_marker,null);
+        tv_marker = markerView.findViewById(R.id.tv_marker);
 
         postItems = getIntent().getParcelableArrayListExtra("Items");
         mapItems = postItems;
@@ -148,7 +158,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     public void setMarkerOption(int zoom){
         map.clear();
-        markers.clear();
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.position(currentPosition);
         markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_icon_current));
@@ -185,51 +194,50 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             try {
                 LatLng position = new LatLng(latitude, longitude);
 
-                markerOptions = new MarkerOptions();
-                markerOptions.position(position);
+                markerOptions = new MarkerOptions().position(position);
 
                 ArrayList<PostItem> items = placeMap.get(key);
                 int size = items.size();
-                int markerHeight = 49*2;
-                int markerWidth = 32*2;
-                if(size <= 3){
-                } else if(size <=6){
-                    markerHeight += 24;
-                    markerWidth += 16;
-                } else if(size <=9){
-                    markerHeight += 49;
-                    markerWidth += 32;
+                int markerHeight = 80;
+                if(size <= 5){
+                } else if(size <=10){
+                    markerHeight += 20;
+                } else if(size <=30){
+                    markerHeight += 40;
                 } else {
-                    markerHeight += 73;
-                    markerWidth += 48;
+                    markerHeight += 60;
                 }
-                PostItem postItem = items.get(0);
+                int markerWidth = markerHeight;
 
-                if(postItem.getCategory().equals("INGREDIENT EXCHANGE")) {
-                    BitmapDrawable bitmapDrawable = (BitmapDrawable) getResources().getDrawable(R.drawable.ic_icon_marker);
-                    Bitmap bitmap = bitmapDrawable.getBitmap();
-                    Bitmap markerIcon = Bitmap.createScaledBitmap(bitmap,markerWidth,markerHeight,false);
-                    markerOptions.icon(BitmapDescriptorFactory.fromBitmap(markerIcon));
-                }
-                else {
-                    BitmapDrawable bitmapDrawable = (BitmapDrawable) getResources().getDrawable(R.drawable.ic_icon_marker_2);
-                    Bitmap bitmap = bitmapDrawable.getBitmap();
-                    Bitmap markerIcon = Bitmap.createScaledBitmap(bitmap,markerWidth,markerHeight,false);
-                    markerOptions.icon(BitmapDescriptorFactory.fromBitmap(markerIcon));
-                }
+                /*TODO 마커 커스텀 해서 숫자로 표현, but Zoom 정도에 따라 겹치는 문제 발생하여
+                 *  Google Clustering 과 병행해야 할 듯 함.
+                 * + 식재 나눔/교환/공동구매 필터링, 현위치 나타내기 버튼 추가*/
+                tv_marker.setText(String.valueOf(size));
+                Bitmap bitmap = createDrawableFromView(this, markerView);
+                Bitmap resized = Bitmap.createScaledBitmap(bitmap, markerWidth, markerHeight, false);
+                markerOptions.icon(BitmapDescriptorFactory.fromBitmap(resized));
 
+//                if(postItem.getCategory().equals("INGREDIENT EXCHANGE")) {
+//                    BitmapDrawable bitmapDrawable = (BitmapDrawable) getResources().getDrawable(R.drawable.ic_icon_marker);
+//                    Bitmap bitmap = bitmapDrawable.getBitmap();
+//                    Bitmap markerIcon = Bitmap.createScaledBitmap(bitmap,markerWidth,markerHeight,false);
+//                    markerOptions.icon(BitmapDescriptorFactory.fromBitmap(markerIcon));
+//                }
+//                else {
+//                    BitmapDrawable bitmapDrawable = (BitmapDrawable) getResources().getDrawable(R.drawable.ic_icon_marker_2);
+//                    Bitmap bitmap = bitmapDrawable.getBitmap();
+//                    Bitmap markerIcon = Bitmap.createScaledBitmap(bitmap,markerWidth,markerHeight,false);
+//                    markerOptions.icon(BitmapDescriptorFactory.fromBitmap(markerIcon));
+//                }
 
                 /*@TODO markerOption.icon 설정*/
-                markerOptions.title(size+"개의 게시글이 있어요");
-                markers.add(map.addMarker(markerOptions));
+                map.addMarker(markerOptions);
 
             } catch (Exception e){
                 Log.d("map",e.getMessage());
             }
         }
         map.setOnMarkerClickListener(marker -> {
-            if(marker.getTitle().equals("현재 위치"))
-                return true;
             LatLng position = marker.getPosition();
             String key = position.latitude + " " + position.longitude;
             ArrayList<PostItem> items = placeMap.get(key);
@@ -248,10 +256,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
             @Override
             public View getInfoContents(Marker marker) {
-                View view = getLayoutInflater().inflate(R.layout.marker_layout,null);
-                TextView textView = view.findViewById(R.id.tv_snippet_title);
-                textView.setText(marker.getTitle());
-                return view;
+                return null;
             }
         });
 
@@ -280,5 +285,20 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             }
         }
         return filteredItems;
+    }
+    private Bitmap createDrawableFromView(Context context, View view) {
+
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        ((Activity) context).getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        view.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        view.measure(displayMetrics.widthPixels, displayMetrics.heightPixels);
+        view.layout(0, 0, displayMetrics.widthPixels, displayMetrics.heightPixels);
+        view.buildDrawingCache();
+        Bitmap bitmap = Bitmap.createBitmap(view.getMeasuredWidth(), view.getMeasuredHeight(), Bitmap.Config.ARGB_8888);
+
+        Canvas canvas = new Canvas(bitmap);
+        view.draw(canvas);
+
+        return bitmap;
     }
 }
